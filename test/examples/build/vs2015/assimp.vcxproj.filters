@@ -1,0 +1,1512 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{85fdcbff-6575-4925-995e-a6bd25adc910}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files %28Interface%29">
+      <UniqueIdentifier>{7709c4ad-fbdf-48ba-8263-adf5d0e73359}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files %28Implementation%29">
+      <UniqueIdentifier>{43441fc0-146c-4cfb-9eb7-9d17ea544797}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External code">
+      <UniqueIdentifier>{1026275e-c1f6-46dc-bbb4-492da4bb70f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External code\Headers">
+      <UniqueIdentifier>{c4eeb6b9-bab2-4ef3-b5a6-0e03f302d41c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="External code\Code">
+      <UniqueIdentifier>{82f2d800-53e3-4be1-a7b3-4e1bbe175e1e}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\3DSConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\3DSExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\3DSLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ACLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ASELoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ASEParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\AssbinExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\AssbinLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Assimp.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\AssimpCExport.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\AssxmlExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\B3DImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BaseImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BaseProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Bitmap.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderBMesh.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderDNA.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderModifier.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderScene.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BlenderTessellator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\BVHLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\CalcTangentsProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\COBLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ColladaExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ColladaLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ColladaParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ComputeUVMappingProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ConvertToLHProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\CSMLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\D3MFImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\D3MFOpcPackage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\DeboneProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\DefaultIOStream.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\DefaultIOSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\DefaultLogger.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\DXFLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Exporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXBinaryTokenizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXConverter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXDeformer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXDocument.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXDocumentUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXMeshGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXModel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXNodeAttribute.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXProperties.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXTokenizer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FBXUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FindDegenerates.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FindInstancesProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FindInvalidDataProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\FixNormalsStep.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\GenFaceNormalsProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\GenVertexNormalsProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\glTFExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\glTFImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\HMPLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCBoolean.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCCurve.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCGeometry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCOpenings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCProfile.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCReaderGen.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IFCUtil.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Importer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ImporterRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ImproveCacheLocality.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IRRLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IRRMeshLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\IRRShared.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\JoinVerticesProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LimitBoneWeightsProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LWOAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LWOBLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LWOLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LWOMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\LWSLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MakeVerboseFormat.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MaterialSystem.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MD2Loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MD3Loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MD5Loader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MD5Parser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MDCLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MDLLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MDLMaterialLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\MS3DLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\NDOLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\NFFLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ObjExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ObjFileImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ObjFileMtlImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ObjFileParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OFFLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OgreBinarySerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OgreImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OgreMaterial.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OgreStructs.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OgreXmlSerializer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OpenGEXExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OpenGEXImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OptimizeGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\OptimizeMeshes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\PlyExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\PlyLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\PlyParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\PostStepRegistry.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\PretransformVertices.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ProcessHelper.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Q3BSPFileImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Q3BSPFileParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Q3BSPZipArchive.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Q3DLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\RawLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\RemoveComments.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\RemoveRedundantMaterials.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\RemoveVCProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SceneCombiner.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ScenePreprocessor.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SGSpatialSort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SIBImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SkeletonMeshBuilder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SMDLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SortByPTypeProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SpatialSort.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SplitByBoneCountProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\SplitLargeMeshes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\StandardShapes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\StepExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\STEPFileEncoding.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\STEPFileReader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\STLExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\STLLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Subdivision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\TargetAnimation.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\TerragenLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\TextureTransform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\TriangulateProcess.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\UnrealLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ValidateDataStructure.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\Version.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\VertexTriangleAdjacency.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\XFileExporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\XFileImporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\XFileParser.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\XGLLoader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\clipper\clipper.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\ConvertUTF\ConvertUTF.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\irrXML\irrXML.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\openddlparser\DDLNode.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLCommon.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLExport.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLParser.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\openddlparser\Value.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\poly2tri\common\shapes.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\advancing_front.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\cdt.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\sweep.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\sweep_context.cpp">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\unzip\ioapi.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\unzip\unzip.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\adler32.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\compress.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\crc32.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\deflate.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\gzclose.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\gzlib.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\gzread.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\gzwrite.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\infback.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\inffast.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\inflate.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\inftrees.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\trees.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\uncompr.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\zlib\zutil.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/detail\ph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\png.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngerror.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngget.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngmem.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngpread.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngread.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngset.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngtrans.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngrtran.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngrutil.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngwrite.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngrio.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngwutil.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngwio.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+    <ClCompile Include="../../code/3rdparty/assimp/contrib\libpng\pngwtran.c">
+      <Filter>External code\Code</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\3DSExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\3DSHelper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\3DSLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ACLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ASELoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ASEParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\assbin_chunks.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\AssbinExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\AssbinLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\AssxmlExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\B3DImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BaseImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BaseProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Bitmap.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderBMesh.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderDNA.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderIntermediate.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderModifier.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderScene.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderSceneGen.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlenderTessellator.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BlobIOSystem.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\BVHLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ByteSwapper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\C4DImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\CalcTangentsProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\CInterfaceIOWrapper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\COBLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\COBScene.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ColladaExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ColladaHelper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ColladaLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ColladaParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ComputeUVMappingProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ConvertToLHProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\CSMLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\D3MFImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\D3MFOpcPackage.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DeboneProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DefaultIOStream.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DefaultIOSystem.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DefaultProgressHandler.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Defines.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DXFHelper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\DXFLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Exceptional.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\fast_atof.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXCompileConfig.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXConverter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXDocument.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXDocumentUtil.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXImportSettings.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXMeshGeometry.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXProperties.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXTokenizer.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FBXUtil.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FileLogStream.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FileSystemFilter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FindDegenerates.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FindInstancesProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FindInvalidDataProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\FixNormalsStep.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\GenericProperty.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\GenFaceNormalsProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\GenVertexNormalsProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\glTFAsset.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\glTFAssetWriter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\glTFExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\glTFImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\HalfLifeFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Hash.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\HMPFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\HMPLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IFCLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IFCReaderGen.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IFCUtil.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IFF.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Importer.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ImproveCacheLocality.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IRRLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IRRMeshLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\IRRShared.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\irrXMLWrapper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\JoinVerticesProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LimitBoneWeightsProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LineSplitter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LogAux.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LWOAnimation.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LWOFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LWOLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\LWSLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Macros.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MakeVerboseFormat.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MaterialSystem.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MathFunctions.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD2FileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD2Loader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD2NormalTable.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD3FileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD3Loader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD4FileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD5Loader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MD5Parser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDCFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDCLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDCNormalTable.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDLDefaultColorMap.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDLFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MDLLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MemoryIOWrapper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\MS3DLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\NDOLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\NFFLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjFileImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjFileMtlImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjFileParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ObjTools.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OFFLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OgreBinarySerializer.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OgreImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OgreParsingUtils.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OgreStructs.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OgreXmlSerializer.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OpenGEXExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OpenGEXImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OpenGEXStructs.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OptimizeGraph.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\OptimizeMeshes.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ParsingUtils.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\PlyExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\PlyLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\PlyParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\PolyTools.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\PretransformVertices.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ProcessHelper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Profiler.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Q3BSPFileData.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Q3BSPFileImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Q3BSPFileParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Q3BSPZipArchive.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Q3DLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\qnan.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\RawLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\RemoveComments.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\RemoveRedundantMaterials.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\RemoveVCProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SceneCombiner.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ScenePreprocessor.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ScenePrivate.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SGSpatialSort.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SIBImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SkeletonMeshBuilder.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SMDLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SmoothingGroups.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SortByPTypeProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SpatialSort.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SplitByBoneCountProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\SplitLargeMeshes.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StandardShapes.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StdOStreamLogStream.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StepExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\STEPFile.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\STEPFileEncoding.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\STEPFileReader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\STLExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\STLLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StreamReader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StreamWriter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StringComparison.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\StringUtils.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Subdivision.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\TargetAnimation.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\TerragenLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\TextureTransform.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\TinyFormatter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\TriangulateProcess.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\UnrealLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ValidateDataStructure.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Vertex.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\VertexTriangleAdjacency.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\Win32DebugLogStream.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XFileExporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XFileHelper.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XFileImporter.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XFileParser.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XGLLoader.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\XMLTools.h">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/ai_assert.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/anim.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/camera.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/cexport.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/cfileio.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/cimport.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/color4.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/config.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/DefaultLogger.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/defs.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/Exporter.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/Importer.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/importerdesc.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/IOStream.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/IOSystem.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/light.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/Logger.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/LogStream.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/material.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/matrix3x3.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/matrix4x4.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/mesh.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/metadata.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/NullLogger.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/postprocess.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/ProgressHandler.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/quaternion.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/scene.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/texture.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/types.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/vector2.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/vector3.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/version.h">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\clipper\clipper.hpp">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\ConvertUTF\ConvertUTF.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\CXMLReaderImpl.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\heapsort.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\irrArray.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\irrString.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\irrTypes.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\irrXML\irrXML.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\DDLNode.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLCommon.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLExport.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLParser.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\OpenDDLParserUtils.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\openddlparser\Value.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\poly2tri.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\common\shapes.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\common\utils.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\advancing_front.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\cdt.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\sweep.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\poly2tri\sweep\sweep_context.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\allocators.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\document.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\encodedstream.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\encodings.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\filereadstream.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\filewritestream.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\memorybuffer.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\memorystream.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\pointer.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\prettywriter.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\rapidjson.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\reader.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\stringbuffer.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\writer.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\error\en.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\error\error.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\biginteger.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\diyfp.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\dtoa.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\ieee754.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\itoa.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\meta.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\pow10.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\stack.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\strfunc.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\strtod.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\internal\swap.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\msinttypes\inttypes.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\rapidjson\msinttypes\stdint.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\unzip\crypt.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\unzip\ioapi.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\unzip\unzip.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\crc32.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\deflate.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\gzguts.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\inffast.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\inffixed.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\inflate.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\inftrees.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\trees.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\zconf.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\zlib.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\zlib\zutil.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/detail\ph.hpp">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\png.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\pngconf.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\pnginfo.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\pngpriv.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\pngstruct.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../code/3rdparty/assimp/contrib\libpng\pnglibconf.h">
+      <Filter>External code\Headers</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>

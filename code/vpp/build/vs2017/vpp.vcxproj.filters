@@ -1,0 +1,435 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
+    </Filter>
+    <Filter Include="Header Files %28Implementation%29">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files %28Interface%29">
+      <UniqueIdentifier>{e13ed987-eca5-42cb-a4f6-868903fdcd0b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SPIRV headers">
+      <UniqueIdentifier>{d0fab763-eb2e-4ecc-9227-6127ab6cb4e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="SPIRV sources">
+      <UniqueIdentifier>{b86ecf9e-1953-4dee-be46-2170a8d3383c}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="../../src/ph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppFormats.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/spirv/disassemble.cpp">
+      <Filter>SPIRV sources</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/spirv/doc.cpp">
+      <Filter>SPIRV sources</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/spirv/Logger.cpp">
+      <Filter>SPIRV sources</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/spirv/SpvBuilder.cpp">
+      <Filter>SPIRV sources</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/spirv/InReadableOrder.cpp">
+      <Filter>SPIRV sources</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppShader.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppPipelineConfig.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppPipelineLayout.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppRenderingOptions.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppRenderGraph.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppCommandBufferRecorder.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppFramebuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppRenderPass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppSurface.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppPhysicalDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppSwapChain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppImageView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppSynchronization.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppQueue.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppRenderManager.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppImageInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppCompiledProcedures.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppCommands.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppImage.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppRenderGraphNodes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppInstance.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppDebugReporter.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppDevice.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppDeviceMemory.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppCommandPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppSampler.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppImageOperations.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppLangBuiltins.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppLangImgFun.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppLangTranslator.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppComputePass.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppLangIntUniform.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppLangIntInOut.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppCommandBuffer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppFrameImageView.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppQueryPool.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppWholeScreenPatch.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppDebugProbe.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="../../src/vppContainers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vppLangVectorTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vppBarriers.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vppComputationEngine.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="../../src/ph.hpp">
+      <Filter>Header Files %28Implementation%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppFormats.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCommon.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSharedObject.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppInstance.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppTypes.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppMutex.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppPhysicalDevice.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppDevice.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppQueue.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppBuffer.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppBufferView.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCommandPool.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCommandBuffer.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppDeviceMemory.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppAll.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppImage.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppImageView.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppRenderPass.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppRenderGraph.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSampler.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppShaderDataBlock.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCommandBufferRecorder.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/disassemble.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/doc.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/Logger.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/spirv.hpp">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/SpvBuilder.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/spvIR.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../src/spirv/GLSL.std.450.h">
+      <Filter>SPIRV headers</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppShaderModule.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppShader.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppPipeline.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppPipelineCache.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppPipelineConfig.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppViewport.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppPipelineLayout.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppRenderingOptions.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppBlendOperators.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppFramebuffer.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSurface.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSwapChain.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSynchronization.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppRenderManager.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppImageInfo.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCompiledProcedures.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppCommands.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppGeometry.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppQueryPool.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppBarriers.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppSupportGLM.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppRenderGraphNodes.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppDebugReporter.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppExceptions.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppInitialValues.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppContainers.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppImageOperations.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangAccessor.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangAggregates.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangBuiltins.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangConstructs.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangConversions.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangFunctions.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangImages.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangImgFun.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangInterface.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangMatrixTypes.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangScalarTypes.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangTranslator.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangVectorTypes.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangIntBase.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangIntImages.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangIntInOut.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangIntUniform.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppLangIntVertex.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppComputePass.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppFrameImageView.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppAttachmentConfig.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppWholeScreenPatch.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppExtSync.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="../../include/vppDebugProbe.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppDefines.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppSupportMath.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppComputationEngine.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppUsageChecks.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
