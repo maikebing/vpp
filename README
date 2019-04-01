@@ -1,0 +1,53 @@
+VPP is a high-level C++ rendering and GPU computation API based on Vulkan.
+
+Vulkan is the new API for 3D graphics rendering and GPU computation developed
+by Khronos Group.
+
+VPP adds high-level, object-oriented C++ interface over Vulkan. The goal is
+to make Vulkan programming easier and more intuitive. VPP provides the following
+features:
+
+- Intuitive, object-oriented abstractions over Vulkan concepts: devices, queues,
+  render passes, pipelines, shader resources, synchronization objects and others.
+
+- Isolation from the C-style interface of Vulkan.
+
+- Easy, conceptual design of render passes and pipelines.
+
+- Unique ability to write all shader code directly in C++ (as class methods),
+  without any need to use GLSL or other intermediate language. No separate compiler
+  passes required. All C++ 14 compliant compilers supported. No compiler extensions
+  required. No hardware vendor / OS dependencies. All types of shaders supported.
+
+- C++ shaders are automatically integrated into a pipeline and can access shader
+  resources in straghtforward, object-oriented manner. Bindings and locations are
+  automatically generated. Entire Vulkan shader interface is supported. Shaders may
+  easily access: vertex inputs, uniform buffers, all kinds of image resources,
+  attachments, push constants, all builtin variables, inter-shader communication variables.
+
+- C++ shaders can be subject to advanced C++ programming and design techniques:
+  parametrization, templating, macros, modularization, OO design.
+
+- Support for multithreading and automatic host synchronization of objects where Vulkan
+  requires it.
+
+- Compile-time detection of some Vulkan usage errors.
+
+- Integration with third party libraries (currently GLM).
+
+- Easier management of Vulkan extensions with automatic dependency resolving for common
+  extensions.
+
+- Selected extension functionality seamlessly built-in into VPP API (e.g. 64-bit atomic
+  variables).
+
+Current version (0.8.1 alpha) supports Visual Studio 2015 and 2017 builds. Later versions
+are planned to support also Linux and other targets using GCC and CLang toolchains.
+VPP itself requires only C++ 14 compliant compiler, no special or vendor-specific technology
+is utilised.
+
+For build instructions, see the HTML documentation in 'docs' subdirectory. Click on "Related
+pages" button and select the "How to build and use VPP under Visual Studio" topic.
+
+The package also includes a set of tests and examples. They are located in 'test' subdirectory.
+
