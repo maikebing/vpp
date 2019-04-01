@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -454,12 +454,12 @@ void VectorBase :: cmdCopyFromImage (
     const auto& imgInfo = img.imageRef().info();
     const std::uint32_t aspectMask = imgInfo.getAspect();
 
-    if ( sourceImageLayout != VK_IMAGE_LAYOUT_GENERAL )
+    if ( sourceImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL )
         UniversalCommands::cmdImagePipelineBarrier (
             img.imageRef(),
             VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT, VK_PIPELINE_STAGE_TRANSFER_BIT,
             VK_ACCESS_MEMORY_WRITE_BIT, VK_ACCESS_TRANSFER_READ_BIT,
-            false, sourceImageLayout, VK_IMAGE_LAYOUT_GENERAL,
+            false, sourceImageLayout, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL,
             static_cast< int >( mipLevel ),
             static_cast< int >( layer ),
             hCmdBuffer
@@ -485,8 +485,19 @@ void VectorBase :: cmdCopyFromImage (
 
     ::vkCmdCopyImageToBuffer (
         hCmdBuffer.handle(), img.imageRef().handle(),
-        VK_IMAGE_LAYOUT_GENERAL, d_pBuffer->handle(),
+        VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, d_pBuffer->handle(),
         1, & copyInfo );
+
+    if ( sourceImageLayout != VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL )
+        UniversalCommands::cmdImagePipelineBarrier (
+            img.imageRef(),
+            VK_PIPELINE_STAGE_TRANSFER_BIT, VK_PIPELINE_STAGE_TOP_OF_PIPE_BIT,
+            VK_ACCESS_TRANSFER_READ_BIT, VK_ACCESS_MEMORY_READ_BIT | VK_ACCESS_MEMORY_WRITE_BIT,
+            false, VK_IMAGE_LAYOUT_TRANSFER_SRC_OPTIMAL, sourceImageLayout,
+            static_cast< int >( mipLevel ),
+            static_cast< int >( layer ),
+            hCmdBuffer
+        );
 
     if ( d_memProfile != MemProfile::DEVICE_STATIC )
     {
@@ -596,7 +607,7 @@ std::uint32_t VectorBase :: getAdditionalUsage (
     {
         case MemProfile::DEVICE_STATIC:
         case MemProfile::DEVICE_ONLY:
-            return Buf::TARGET;
+            return Buf::SOURCE | Buf::TARGET;
 
         default:
             return 0;

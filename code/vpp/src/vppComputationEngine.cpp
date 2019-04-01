@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -35,6 +35,51 @@ namespace vpp {
 // -----------------------------------------------------------------------------
 
 thread_local ComputationEngine* ComputationEngine :: s_pThis = 0;
+
+// -----------------------------------------------------------------------------
+
+ComputationEngine :: ComputationEngine ( const Device& hDevice, EQueueType queueType ) :
+    d_commandPool ( hDevice.defaultCmdPool ( queueType ) ),
+    d_queue ( hDevice )
+{
+    s_pThis = this;
+}
+
+// -----------------------------------------------------------------------------
+
+ComputationEngine :: ComputationEngine (
+    const Queue& hQueue,
+    const CommandPool& hCommandPool ) :
+        d_commandPool ( hCommandPool ),
+        d_queue ( hQueue )
+{
+    s_pThis = this;
+}
+
+// -----------------------------------------------------------------------------
+
+ComputationEngine :: ComputationEngine ( const Queue& hQueue ) :
+    d_commandPool ( hQueue.device().defaultCmdPool ( hQueue.type() ) ),
+    d_queue ( hQueue )
+{
+    s_pThis = this;
+}
+
+// -----------------------------------------------------------------------------
+
+ComputationEngine :: ComputationEngine ( const CommandPool& hCommandPool ) :
+    d_commandPool ( hCommandPool ),
+    d_queue ( hCommandPool.device() )
+{
+    s_pThis = this;
+}
+
+// -----------------------------------------------------------------------------
+
+ComputationEngine* ComputationEngine :: getInstance()
+{
+    return s_pThis;
+}
 
 // -----------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -116,7 +116,7 @@ KTimerArrayImpl :: KTimerArrayImpl (
             ( reinterpret_cast< size_t >( d_pValues ) + 7 )
             & ~static_cast< size_t >( 7 ) ) ),
         d_timeUnitNS (
-            hDevice.physical().getPhysicalDeviceProperties().limits.timestampPeriod )
+            hDevice.physical().properties().limits.timestampPeriod )
 {
 }
 

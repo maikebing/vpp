@@ -249,11 +249,13 @@ private:
 
     VkExtent3D getWindowSize();
 
+    const vpp::DeviceFeatures& enableDeviceFeatures();
+
 private:
     //#ifdef _DEBUG
-        static const unsigned int INSTANCE_FLAGS = vpp::Instance::VALIDATION;
+        //static const bool VALIDATION = true;
     //#else
-        //static const unsigned int INSTANCE_FLAGS = 0u;
+        static const bool VALIDATION = true;
     //#endif
 
     std::ostringstream m_validationLog;
@@ -261,6 +263,7 @@ private:
     vpp::Instance m_instance;
     vpp::StreamDebugReporter m_debugReporter;
     vpp::PhysicalDevice m_physical;
+    vpp::DeviceFeatures m_devFeatures;
     vpp::Device m_device;
     vpp::Surface m_surface;
     vpp::SwapChain m_swapchain;
@@ -307,10 +310,10 @@ public:
 
 VppExMesh :: VppExMesh ( const vpp::SurfaceInfo& si ) :
     vppex::ExampleApp ( "VppExMesh", "VppExMesh", si ),
-    m_instance ( INSTANCE_FLAGS ),
+    m_instance ( vpp::createInstance().validation ( VALIDATION ) ),
     m_debugReporter ( m_validationLog, m_instance ),
     m_physical ( getPhysicalDevice() ),
-    m_device ( vpp::Device ( m_physical ) ),
+    m_device ( vpp::Device ( m_physical, enableDeviceFeatures() ) ),
     m_surface ( vpp::Surface ( surfaceInfo(), m_physical, m_instance ) ),
     m_swapchain ( vpp::SwapChain ( m_device, m_surface ) ),
     m_textureLoader ( m_device ),
@@ -503,6 +506,17 @@ VkExtent3D VppExMesh :: getWindowSize()
         static_cast< unsigned int >( clientRect.bottom ),
         1u
     };
+}
+
+// -----------------------------------------------------------------------------
+
+const vpp::DeviceFeatures& VppExMesh :: enableDeviceFeatures()
+{
+    using namespace vpp;
+    m_devFeatures.enableIfSupported ( fTextureCompressionBC, m_physical );
+    m_devFeatures.enableIfSupported ( fSamplerAnisotropy, m_physical );
+    m_devFeatures.enableIfSupported ( fFillModeNonSolid, m_physical );
+    return m_devFeatures;
 }
 
 // -----------------------------------------------------------------------------

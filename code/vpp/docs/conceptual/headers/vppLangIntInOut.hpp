@@ -38,6 +38,9 @@ namespace vpp {
 class Shader
 {
 public:
+    /** \brief Retrieves the device the shader is currently compiled for. */
+    const Device& device() const;
+
     /**
         \brief Enables diagnostic dump of intermediate SPIR-V code for this shader.
 
@@ -441,8 +444,17 @@ public:
     /** \brief The location of the current invocation within the global workgroup. */
     IVec3 inGlobalInvocationId;
 
-    /** \brief The dimensions of a local workgroup. */
+    /** \brief The dimensions of local workgroup. */
     IVec3 inWorkgroupSize;
+
+    /** \brief Returns CPU-side structure specifying the dimensions of local workgroup. */
+    const SLocalGroupSize& localGroupSize() const;
+
+    /** \brief Retrieves total size (in bytes) of the workgroup-scoped shared memory. */
+    unsigned int getTotalWorkgroupMemory() const;
+
+    /** \brief Retrieves available size (in bytes) of the workgroup-scoped shared memory. */
+    unsigned int getFreeWorkgroupMemory() const;
 };
 
 // -----------------------------------------------------------------------------

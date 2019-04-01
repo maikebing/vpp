@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -108,8 +108,8 @@ namespace vpp {
 
         void computeShaderRoutine ( vpp::ComputeShader* pShader )
         {
-            VArray< Int, 8 > privateArray;
-            Shared(); VArray< Int, 8 > sharedArray;
+            VArray< Int > privateArray ( 8 );
+            WArray< Int > sharedArray ( 8 );
 
             const IVec3 workgroupId = pShader->inWorkgroupId;
             const IVec3 localId = pShader->inLocalInvocationId;

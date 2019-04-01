@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -425,7 +425,7 @@ public:
             ViewT::ARRAYED,
             ViewT::MULTISAMPLED,
             2,
-            FORMAT ) );
+            spv::ImageFormatUnknown ) );
     }
 };
 

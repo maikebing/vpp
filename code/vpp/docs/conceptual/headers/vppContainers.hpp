@@ -181,6 +181,9 @@ public:
 
     /** \brief Generates a command ensuring that valid elements have been synchronized
         from device to host. Optionally can be restricted to a range.
+
+        Caution: the vector must explicitly list Buf::SOURCE flag in order to be able
+        to use this function.
     */
     void cmdLoad (
         CommandBuffer cmdBuffer,
@@ -189,6 +192,9 @@ public:
 
     /** \brief Generates a command (to implicit context) which ensures valid elements
         have been synchronized from device to host.
+
+        Caution: the vector must explicitly list Buf::SOURCE flag in order to be able
+        to use this function.
     */
     void cmdLoad (
         size_t firstItem = 0,
@@ -214,6 +220,9 @@ public:
     
         Submits a command to specified queue. Does not wait for completion,
         uses specified semaphores and fence.
+
+        Caution: the vector must explicitly list Buf::SOURCE flag in order to be able
+        to use this function.
     */
     void load (
         EQueueType eQueue = Q_GRAPHICS,
@@ -221,13 +230,18 @@ public:
         const Semaphore& waitOnBegin = Semaphore(),
         const Semaphore& signalOnEnd = Semaphore() );
 
-    /** \brief Synchronizes entire buffer from device to host and waits for completion. */
+    /** \brief Synchronizes entire buffer from device to host and waits for completion.
+    
+        Caution: the vector must explicitly list Buf::SOURCE flag in order to be able
+        to use this function.
+    */
     void loadAndWait (
         EQueueType eQueue = Q_GRAPHICS );
 
     /** \brief Generates a command to copy the buffer contents to specified image.
     
-        Caution: may generate other auxiliary commands as well.
+        Caution: may generate other auxiliary commands as well. The vector must explicitly
+        list Buf::SOURCE flag in order to be able to use this function.
     */
     void cmdCopyToImage (
         CommandBuffer hCmdBuffer,
@@ -244,7 +258,8 @@ public:
     /** \brief Generates a command (to the default context) to copy
         the buffer contents to specified image.
 
-        Caution: may generate other auxiliary commands as well.
+        Caution: may generate other auxiliary commands as well. The vector must explicitly
+        list Buf::SOURCE flag in order to be able to use this function.
     */
     void cmdCopyToImage (
         const Img& img,
@@ -259,7 +274,8 @@ public:
 
     /** \brief Submits a command to copy the buffer contents to specified image.
     
-        Caution: may generate other auxiliary commands as well.
+        Caution: may generate other auxiliary commands as well. The vector must explicitly
+        list Buf::SOURCE flag in order to be able to use this function.
     */
     void copyToImage (
         EQueueType eQueue,
@@ -279,7 +295,8 @@ public:
     /** \brief Submits a command to copy the buffer contents to specified image,
         waits for completion.
 
-        Caution: may generate other auxiliary commands as well.
+        Caution: may generate other auxiliary commands as well. The vector must explicitly
+        list Buf::SOURCE flag in order to be able to use this function.
     */
     void copyToImageAndWait (
         EQueueType eQueue,

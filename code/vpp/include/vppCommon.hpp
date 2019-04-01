@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -39,6 +39,10 @@
 
 #include <vulkan/vulkan.h>
 
+#if VK_HEADER_VERSION < 70
+    static_assert ( false, "VPP requires Vulkan SDK 1.1.70 or newer" );
+#endif
+
 #undef BadValue
 #undef Bool
 
@@ -54,6 +58,7 @@
 
 #include <string>
 #include <vector>
+#include <set>
 #include <map>
 #include <list>
 
@@ -69,6 +74,7 @@
 #include <iostream>
 
 #ifdef _MSC_VER
+    #include <intrin.h>
     #pragma warning (disable: 4100 4127 4189 4714)
 #endif
 

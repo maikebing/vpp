@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -51,7 +51,7 @@ public:
 
     Device (
         const PhysicalDevice& hPhysicalDevice,
-        const VkPhysicalDeviceFeatures& features );
+        const DeviceFeatures& features );
 
     Device (
         const PhysicalDevice& hPhysicalDevice,
@@ -60,7 +60,7 @@ public:
     Device (
         const PhysicalDevice& hPhysicalDevice,
         const std::vector< float >& queuePriorities,
-        const VkPhysicalDeviceFeatures& features );
+        const DeviceFeatures& features );
 
     ~Device();
 
@@ -74,6 +74,14 @@ public:
     VPP_DLLAPI CommandPool& defaultCmdPool ( EQueueType queueType = Q_GRAPHICS ) const;
     VPP_DLLAPI PipelineCache& defaultPipelineCache() const;
     
+    template< typename FeatureT >
+    bool hasFeature ( FeatureT feature ) const;
+
+    const std::set< std::string >& enabledExtensions() const;
+    const std::set< std::string >& sourceExtensions() const;
+    
+    VPP_DLLAPI bool supportsVersion ( const SVulkanVersion& ver ) const;
+
     VkResult waitForIdle() const;
 };
 
@@ -85,11 +93,11 @@ public:
     VPP_DLLAPI DeviceImpl (
         const PhysicalDevice& hPhysicalDevice,
         const std::vector< float >& queuePriorities,
-        const VkPhysicalDeviceFeatures* pFeatures );
+        const DeviceFeatures* pFeatures );
 
     VPP_DLLAPI DeviceImpl (
         const PhysicalDevice& hPhysicalDevice,
-        const VkPhysicalDeviceFeatures* pFeatures );
+        const DeviceFeatures* pFeatures );
 
     VPP_DLLAPI ~DeviceImpl();
 
@@ -100,6 +108,9 @@ public:
 
 private:
     static const std::vector< float >& getDefaultQueuePriorities();
+
+    void removePromotedExtensionNames ( const SVulkanVersion& currentVersion );
+    void removeUnsupportedExtensionNames();
 
 private:
     friend class Device;
@@ -118,6 +129,11 @@ private:
     CommandPool* d_pDefaultGraphicsCmdPool;
     CommandPool* d_pDefaultTransferCmdPool;
     PipelineCache* d_pDefaultPipelineCache;
+
+    DeviceFeatures d_enabledFeatures;
+    SVulkanVersion d_supportedVersion;
+    std::set< std::string > d_enabledExtensions;
+    std::set< std::string > d_sourceExtensions;
 
     VPP_EXTSYNC_MTX_DECLARE;
 };
@@ -142,7 +158,7 @@ VPP_INLINE Device :: Device (
 
 VPP_INLINE Device :: Device (
     const PhysicalDevice& hPhysicalDevice,
-    const VkPhysicalDeviceFeatures& features ) :
+    const DeviceFeatures& features ) :
         TSharedReference< DeviceImpl > (
             new DeviceImpl ( hPhysicalDevice, & features ) )
 {
@@ -163,7 +179,7 @@ VPP_INLINE Device :: Device (
 VPP_INLINE Device :: Device (
     const PhysicalDevice& hPhysicalDevice,
     const std::vector< float >& queuePriorities,
-    const VkPhysicalDeviceFeatures& features ) :
+    const DeviceFeatures& features ) :
         TSharedReference< DeviceImpl > (
             new DeviceImpl ( hPhysicalDevice, queuePriorities, & features ) )
 {
@@ -203,6 +219,28 @@ VPP_INLINE std::uint32_t Device :: queueCount ( EQueueType queueType ) const
 {
     return queueType == Q_TRANSFER ?
         get()->d_transferQueueCount : get()->d_graphicsQueueCount;
+}
+
+// -----------------------------------------------------------------------------
+
+template< typename FeatureT >
+VPP_INLINE bool Device :: hasFeature ( FeatureT feature ) const
+{
+    return get()->d_enabledFeatures [ feature ] && physical().features() [ feature ];
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE const std::set< std::string >& Device :: enabledExtensions() const
+{
+    return get()->d_enabledExtensions;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE const std::set< std::string >& Device :: sourceExtensions() const
+{
+    return get()->d_sourceExtensions;
 }
 
 // -----------------------------------------------------------------------------

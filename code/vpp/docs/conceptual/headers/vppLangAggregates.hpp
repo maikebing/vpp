@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -36,7 +36,6 @@ namespace vpp {
     subclass templates of the following: VertexStruct, InstanceStruct, UniformStruct,
     LocalStruct. Also the value of ETag type is passed to members of these
     structures: Attribute, UniformFld, Field.
-
 */
 
 enum ETag
@@ -126,37 +125,269 @@ public:
 
 // -----------------------------------------------------------------------------
 /**
-    \brief Declares mutable shader variable of array type.
+    \brief Declares mutable shader local variable of array type.
 
+    This allows to create local arrays of specified type (scalar, vector or
+    matrix) and the size determined at shader compilation time.
+
+    Beware that mutable local variables may degrade performance on GPU because they
+    consume general purpose registers for each local thread. Arrays obviously
+    take even more registers.
 */
 
-template< class ItemT, int SIZE >
+template< class ItemT >
 class VArray 
 {
 public:
-    VArray();
+    /** \brief Constucts local array of specified size.
+    
+        The size may come from CPU-level variable. It can not be changed after constructing
+        the array.
 
+        The lifetime of constructed array is until the end of the shader. Consider
+        reusing the array if possible in order to avoid excessive register usage.
+    */
+
+    VArray ( int s );
+
+    /**
+        \brief Allows read/write access to elements of the array.
+    */
     template< typename IndexT >
-    inline auto operator[]( IndexT index ) const;
+    auto operator[]( IndexT index ) const;
 
-    inline Int Size() const;
-    inline int size() const;
+    /**
+        \brief Returns GPU-level value equal to the size of the array.
+    */
+    Int Size() const;
+
+    /**
+        \brief Returns CPU-level value equal to the size of the array.
+    */
+    int size() const;
+};
+
+// -----------------------------------------------------------------------------
+/**
+    \brief Declares workgroup-scoped variable of array type.
+
+    This allows to create arrays of specified type (scalar, vector or
+    matrix) and the size determined at shader compilation time, shared between
+    threads within single workgroup.
+
+    This enables the following possibilities:
+    - Fast inter-thread communication within single workgroup.
+    - Group oriented paradigm of parallel programming. This involves solving single
+      problem on single workgroup (compute unit). Multiple compute units are allocated
+      to different problem instances, hence they do not require communication. Also
+      single workgroup can execute some generally sequential algorithm, but with
+      parallelizable subroutines (like sorting, searching or reducing). Shared arrays
+      are natural way to construct working space for such algorithms. VPP facilitates
+      such scenarios by providing group-scoped algorithm library in vpp::ct::group namespace.
+    - Flexible memory allocation for individual threads.
+
+    Workgroups are called also thread groups in some proprietary APIs. Also usually a single
+    workgroup maps to so-called \b warp (32 threads) or \b wavefront (64 threads)
+    on the GPU - depending on particular GPU vendor. It is not necessary though, as the
+    workgroup size is configurable.
+
+    Shared arrays consume space inside the shared memory block. On current devices, it
+    is typically 32 to 48 kB. No general purpose registers are allocated. This type of array
+    usually does not impose performance penalties, as long as all arrays fit inside the block.
+
+    Use ComputeShader::getTotalWorkgroupMemory() and ComputeShader::getFreeWorkgroupMemory()
+    functions to determine the total and still available sizes of the shared memory block.
+    Exceeding the size with too many allocations will result in exception thrown by VPP
+    during shader compilation. It is recommended to check these sizes before allocating
+    large arrays. Various devices may provide different sizes. At the moment of writing this,
+    the rule of thumb is as follows:
+    - NVIDIA GPUs: 48 kB,
+    - Radeon GPUs: 32 kB,
+    - some mobile GPUs: 16 kB (this is the minimum required by Vulkan standard).
+
+    Caution: one type of performance penalty that might occur with shared memory is the RAW
+    latency. If you write to some location and immediately read from the same location,
+    delay might occur which can impose quite large slowdown. Try to avoid such kind of
+    accesses.
+*/
+
+template< class ItemT >
+class WArray 
+{
+public:
+    /** \brief Constucts workgroup-scoped array of specified size.
+    
+        The size may come from CPU-level variable. It can not be changed after constructing
+        the array.
+
+        The lifetime of constructed array is until the end of the shader. Consider
+        reusing the array if possible in order to avoid overflow of the shared memory block.
+    */
+
+    WArray ( int s );
+
+    /**
+        \brief Allows read/write access to elements of the array.
+    */
+    template< typename IndexT >
+    auto operator[]( IndexT index ) const;
+
+    /**
+        \brief Returns GPU-level value equal to the size of the array.
+    */
+    Int Size() const;
+
+    /**
+        \brief Returns CPU-level value equal to the size of the array.
+    */
+    int size() const;
+};
+
+// -----------------------------------------------------------------------------
+/**
+    \brief Declares workgroup-scoped variable of two-dimensional array type.
+
+    This is the same as WArray, but with two dimensions instead of one.
+
+    Can be used to represent a matrix of moderate size. Total size of the
+    array should fit in shared memory block, which typically treanslates to
+    ca. 128x128 matrix or slightly less.
+    
+    Arrangement of the matrix is row-major.
+*/
+
+template< class ItemT >
+class WArray2
+{
+public:
+    /** \brief Constructs a shared 2-dimensional array with specified number of rows and columns.
+    
+        The sizes may come from CPU-level variable. They can not be changed after constructing
+        the array.
+
+        The lifetime of constructed array is until the end of the shader. Consider
+        reusing the array if possible in order to avoid overflow of the shared memory block.
+    */
+
+    WArray2 ( int nRows, int nColumns );
+
+    /**
+        \brief Allows read/write access to individual rows of the array.
+
+        The rows are presented as WArray objects, allowing to use group algorithms
+        on them.
+    */
+    template< typename IndexT >
+    WArray< ItemT > operator[]( IndexT index ) const;
+
+    /**
+        \brief Allows read/write access to elements of the array.
+    */
+    template< typename IndexT >
+    auto operator()( IndexT iRow, IndexT iCol ) const;
+
+    /**
+        \brief Returns GPU-level value equal to number of rows in the array.
+    */
+    Int Size() const;
+    
+    /**
+        \brief Returns CPU-level value equal to number of rows in the array.
+    */
+    int size() const;
+
+    /**
+        \brief Returns GPU-level value equal to number of rows in the array.
+    */
+    Int Rows() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of rows in the array.
+    */
+    int rows() const;
+
+    /**
+        \brief Returns GPU-level value equal to number of columns in the array.
+    */
+    Int Cols() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of columns in the array.
+    */
+    int cols() const;
 };
 
 // -----------------------------------------------------------------------------
 
-/**
-    \brief Convenience template for 2-dimensional local shader arrays.
-*/
+template< class ItemT >
+class WArray3
+{
+public:
+    /** \brief Constructs a shared 3-dimensional array with specified number of layers, rows and columns.
+    
+        The sizes may come from CPU-level variable. They can not be changed after constructing
+        the array.
 
-template< class ItemT, int COLS, int ROWS >
-using VArray2 = VArray< VArray< ItemT, ROWS >, COLS >;
+        The lifetime of constructed array is until the end of the shader. Consider
+        reusing the array if possible in order to avoid overflow of the shared memory block.
+    */
+    WArray3 ( int nl, int nr, int nc );
 
-/**
-    \brief Convenience template for 3-dimensional local shader arrays.
-*/
-template< class ItemT, int LAYERS, int COLS, int ROWS >
-using VArray3 = VArray< VArray< VArray< ItemT, ROWS >, COLS >, LAYERS >;
+    /**
+        \brief Allows read/write access to individual 2-dimensional layers of the array.
+
+        The rows are presented as WArray2 objects, allowing to use group algorithms
+        on them.
+    */
+    template< typename IndexT >
+    WArray2< ItemT > operator[]( const IndexT& index ) const;
+
+    /**
+        \brief Allows read/write access to elements of the array.
+    */
+    template< typename IndexT >
+    auto operator()( const IndexT& iLayer, const IndexT& iRow, const IndexT& iCol ) const;
+
+    /**
+        \brief Returns GPU-level value equal to number of layers in the array.
+    */
+    Int Size() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of layers in the array.
+    */
+    int size() const;
+
+    /**
+        \brief Returns GPU-level value equal to number of layers in the array.
+    */
+    Int Layers() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of layers in the array.
+    */
+    int layers() const;
+
+    /**
+        \brief Returns GPU-level value equal to number of rows in the array.
+    */
+    Int Rows() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of rows in the array.
+    */
+    int rows() const;
+
+    /**
+        \brief Returns GPU-level value equal to number of columns in the array.
+    */
+    Int Cols() const;
+
+    /**
+        \brief Returns CPU-level value equal to number of columns in the array.
+    */
+    int cols() const;
+};
 
 // -----------------------------------------------------------------------------
 } // namespace vpp

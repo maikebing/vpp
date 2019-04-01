@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -34,6 +34,7 @@
 #include "vppSharedObject.hpp"
 #include "vppMutex.hpp"
 #include "vppTypes.hpp"
+#include "vppInternalUtils.hpp"
 
 #include "vppExceptions.hpp"
 #include "vppGeometry.hpp"
@@ -97,6 +98,8 @@
 #include "vppLangImages.hpp"
 #include "vppLangImgFun.hpp"
 #include "vppLangInterface.hpp"
+
+#include "vppctGroupAlg.hpp"
 
 #include "vppCompiledProcedures.hpp"
 #include "vppComputationEngine.hpp"

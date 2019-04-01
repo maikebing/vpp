@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -100,6 +100,62 @@ struct matr4
 };
 
 // -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+struct ivect2 : public format< int, int >::data_type
+{
+    typedef format< int, int >::data_type base_type;
+    VPP_INLINE ivect2() {}
+    VPP_INLINE ivect2 ( int x, int y ) : base_type ( x, y ) {}
+};
+
+// -----------------------------------------------------------------------------
+
+struct ivect3 : public format< int, int, int, int >::data_type
+{
+    typedef format< int, int, int, int >::data_type base_type;
+    VPP_INLINE ivect3() {}
+    VPP_INLINE ivect3 ( int x, int y, int z ) : base_type ( x, y, z, 0 ) {}
+};
+
+// -----------------------------------------------------------------------------
+
+struct ivect4 : public format< int, int, int, int >::data_type
+{
+    typedef format< int, int, int, int >::data_type base_type;
+    VPP_INLINE ivect4() {}
+    VPP_INLINE ivect4 ( int x, int y, int z, int w ) : base_type ( x, y, z, w ) {}
+};
+
+// -----------------------------------------------------------------------------
+
+struct uvect2 : public format< unsigned int, unsigned int >::data_type
+{
+    typedef format< unsigned int, unsigned int >::data_type base_type;
+    VPP_INLINE uvect2() {}
+    VPP_INLINE uvect2 ( unsigned int x, unsigned int y ) : base_type ( x, y ) {}
+};
+
+// -----------------------------------------------------------------------------
+
+struct uvect3 : public format< unsigned int, unsigned int, unsigned int, unsigned int >::data_type
+{
+    typedef format< unsigned int, unsigned int, unsigned int, unsigned int >::data_type base_type;
+    VPP_INLINE uvect3() {}
+    VPP_INLINE uvect3 ( unsigned int x, unsigned int y, unsigned int z ) : base_type ( x, y, z, 0 ) {}
+};
+
+// -----------------------------------------------------------------------------
+
+struct uvect4 : public format< unsigned int, unsigned int, unsigned int, unsigned int >::data_type
+{
+    typedef format< unsigned int, unsigned int, unsigned int, unsigned int >::data_type base_type;
+    VPP_INLINE uvect4() {}
+    VPP_INLINE uvect4 ( unsigned int x, unsigned int y, unsigned int z, unsigned int w ) : base_type ( x, y, z, w ) {}
+};
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
 
 template<>
 struct StructMemberTraits< vect2 >
@@ -116,7 +172,7 @@ struct StructMemberTraits< vect2 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRVector< gscalar_type, 2 > rvalue_type;
-    typedef TLVector< gscalar_type, 2 > lvalue_type;
+    typedef TLVector< gscalar_type, 2, spv::StorageClassFunction > lvalue_type;
     typedef vect2 data_type;
 };
 
@@ -137,7 +193,7 @@ struct StructMemberTraits< vect3 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRVector< gscalar_type, 3 > rvalue_type;
-    typedef TLVector< gscalar_type, 3 > lvalue_type;
+    typedef TLVector< gscalar_type, 3, spv::StorageClassFunction > lvalue_type;
     typedef vect3 data_type;
 };
 
@@ -158,7 +214,7 @@ struct StructMemberTraits< vect4 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRVector< gscalar_type, 4 > rvalue_type;
-    typedef TLVector< gscalar_type, 4 > lvalue_type;
+    typedef TLVector< gscalar_type, 4, spv::StorageClassFunction > lvalue_type;
     typedef vect4 data_type;
 };
 
@@ -179,7 +235,7 @@ struct StructMemberTraits< matr2 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRMatrix< gscalar_type, 2, 2 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 2, 2 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 2, 2, spv::StorageClassFunction > lvalue_type;
     typedef matr2 data_type;
 };
 
@@ -200,7 +256,7 @@ struct StructMemberTraits< matr3 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRMatrix< gscalar_type, 3, 3 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 3, 3 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 3, 3, spv::StorageClassFunction > lvalue_type;
     typedef matr3 data_type;
 };
 
@@ -221,8 +277,135 @@ struct StructMemberTraits< matr4 >
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
     typedef TRMatrix< gscalar_type, 4, 4 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 4, 4 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 4, 4, spv::StorageClassFunction > lvalue_type;
     typedef matr4 data_type;
+};
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< ivect2 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( ivect2 );
+    static const unsigned int row_count = 2u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< int, int >::code;
+    typedef int scalar_type;
+    typedef TRValue< int > gscalar_type;
+    typedef TRVector< gscalar_type, 2 > rvalue_type;
+    typedef TLVector< gscalar_type, 2, spv::StorageClassFunction > lvalue_type;
+    typedef ivect2 data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< ivect3 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( ivect3 );
+    static const unsigned int row_count = 4u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< int, int, int, int >::code;
+    typedef int scalar_type;
+    typedef TRValue< int > gscalar_type;
+    typedef TRVector< gscalar_type, 3 > rvalue_type;
+    typedef TLVector< gscalar_type, 3, spv::StorageClassFunction > lvalue_type;
+    typedef ivect3 data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< ivect4 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( ivect4 );
+    static const unsigned int row_count = 4u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< int, int, int, int >::code;
+    typedef int scalar_type;
+    typedef TRValue< int > gscalar_type;
+    typedef TRVector< gscalar_type, 4 > rvalue_type;
+    typedef TLVector< gscalar_type, 4, spv::StorageClassFunction > lvalue_type;
+    typedef ivect4 data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< uvect2 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( uvect2 );
+    static const unsigned int row_count = 2u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< unsigned int, unsigned int >::code;
+    typedef unsigned int scalar_type;
+    typedef TRValue< unsigned int > gscalar_type;
+    typedef TRVector< gscalar_type, 2 > rvalue_type;
+    typedef TLVector< gscalar_type, 2, spv::StorageClassFunction > lvalue_type;
+    typedef uvect2 data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< uvect3 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( uvect3 );
+    static const unsigned int row_count = 4u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< unsigned int, unsigned int, unsigned int, unsigned int >::code;
+    typedef unsigned int scalar_type;
+    typedef TRValue< unsigned int > gscalar_type;
+    typedef TRVector< gscalar_type, 3 > rvalue_type;
+    typedef TLVector< gscalar_type, 3, spv::StorageClassFunction > lvalue_type;
+    typedef uvect3 data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< uvect4 >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( uvect4 );
+    static const unsigned int row_count = 4u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = format< unsigned int, unsigned int, unsigned int, unsigned int >::code;
+    typedef unsigned int scalar_type;
+    typedef TRValue< unsigned int > gscalar_type;
+    typedef TRVector< gscalar_type, 4 > rvalue_type;
+    typedef TLVector< gscalar_type, 4, spv::StorageClassFunction > lvalue_type;
+    typedef uvect4 data_type;
 };
 
 // -----------------------------------------------------------------------------

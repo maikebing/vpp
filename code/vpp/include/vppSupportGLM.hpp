@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -56,7 +56,7 @@ struct StructMemberTraits< glm::tvec2< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRVector< gscalar_type, 2 > rvalue_type;
-    typedef TLVector< gscalar_type, 2 > lvalue_type;
+    typedef TLVector< gscalar_type, 2, spv::StorageClassFunction > lvalue_type;
     typedef glm::tvec2< T, P > data_type;
 };
 
@@ -77,7 +77,7 @@ struct StructMemberTraits< glm::tvec3< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRVector< gscalar_type, 3 > rvalue_type;
-    typedef TLVector< gscalar_type, 3 > lvalue_type;
+    typedef TLVector< gscalar_type, 3, spv::StorageClassFunction > lvalue_type;
     typedef glm::tvec3< T, P > data_type;
 };
 
@@ -98,7 +98,7 @@ struct StructMemberTraits< glm::tvec4< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRVector< gscalar_type, 4 > rvalue_type;
-    typedef TLVector< gscalar_type, 4 > lvalue_type;
+    typedef TLVector< gscalar_type, 4, spv::StorageClassFunction > lvalue_type;
     typedef glm::tvec4< T, P > data_type;
 };
 
@@ -119,7 +119,7 @@ struct StructMemberTraits< glm::tmat2x2< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 2, 2 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 2, 2 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 2, 2, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat2x2< T, P > data_type;
 };
 
@@ -140,7 +140,7 @@ struct StructMemberTraits< glm::tmat3x3< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 3, 3 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 3, 3 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 3, 3, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat3x3< T, P > data_type;
 };
 
@@ -161,7 +161,7 @@ struct StructMemberTraits< glm::tmat4x4< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 4, 4 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 4, 4 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 4, 4, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat4x4< T, P > data_type;
 };
 
@@ -182,7 +182,7 @@ struct StructMemberTraits< glm::tmat2x3< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 2, 3 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 2, 3 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 2, 3, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat2x3< T, P > data_type;
 };
 
@@ -203,7 +203,7 @@ struct StructMemberTraits< glm::tmat2x4< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 2, 4 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 2, 4 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 2, 4, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat2x4< T, P > data_type;
 };
 
@@ -224,7 +224,7 @@ struct StructMemberTraits< glm::tmat3x2< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 3, 2 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 3, 2 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 3, 2, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat3x2< T, P > data_type;
 };
 
@@ -245,7 +245,7 @@ struct StructMemberTraits< glm::tmat3x4< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 3, 4 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 3, 4 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 3, 4, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat3x4< T, P > data_type;
 };
 
@@ -266,7 +266,7 @@ struct StructMemberTraits< glm::tmat4x2< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 4, 2 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 4, 2 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 4, 2, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat4x2< T, P > data_type;
 };
 
@@ -287,7 +287,7 @@ struct StructMemberTraits< glm::tmat4x3< T, P > >
     typedef T scalar_type;
     typedef TRValue< T > gscalar_type;
     typedef TRMatrix< gscalar_type, 4, 3 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 4, 3 > lvalue_type;
+    typedef TLMatrix< gscalar_type, 4, 3, spv::StorageClassFunction > lvalue_type;
     typedef glm::tmat4x3< T, P > data_type;
 };
 

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -162,26 +162,22 @@ public:
 
     VPP_DLLAPI static void cmdClearColorImage (
         const TDImg& hImage,
-        VkImageLayout imageLayout,
         const VkClearColorValue& color,
         CommandBuffer hCmdBuffer = CommandBuffer() );
     
     VPP_DLLAPI static void cmdClearColorImage (
         const TDImg& hImage,
-        VkImageLayout imageLayout,
         const VkClearColorValue& color,
         const std::vector< VkImageSubresourceRange >& regions,
         CommandBuffer hCmdBuffer = CommandBuffer() );
 
     VPP_DLLAPI static void cmdClearDepthStencilImage (
         const TDImg& hImage,
-        VkImageLayout imageLayout,
         float depth, std::uint32_t stencil,
         CommandBuffer hCmdBuffer = CommandBuffer() );
 
     VPP_DLLAPI static void cmdClearDepthStencilImage (
         const TDImg& hImage,
-        VkImageLayout imageLayout,
         float depth, std::uint32_t stencil,
         const std::vector< VkImageSubresourceRange >& regions,
         CommandBuffer hCmdBuffer = CommandBuffer() );
@@ -247,6 +243,10 @@ public:
         VkDependencyFlags dependencyFlags,
         const Barriers& barriers,
         CommandBuffer hCmdBuffer = CommandBuffer() );
+
+    VPP_DLLAPI static void cmdPipelineBarrier (
+        const BarrierList& barriers,
+        CommandBuffer hCommandBuffer = CommandBuffer() );
 
     VPP_DLLAPI static void cmdImagePipelineBarrier (
         const Img& image,

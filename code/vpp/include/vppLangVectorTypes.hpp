@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -40,7 +40,7 @@ namespace vpp {
 template< class BaseType, size_t COLS, size_t ROWS >
 class TRMatrix;
 
-template< class BaseType, size_t COLS, size_t ROWS >
+template< class BaseType, size_t COLS, size_t ROWS, spv::StorageClass SCL >
 class TLMatrix;
 
 // -----------------------------------------------------------------------------
@@ -131,6 +131,11 @@ public:
 
     static const bool external_linkage = BaseType::external_linkage;
     static const bool indexable = true;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const bool is_64bit = BaseType::is_64bit;
+    static const size_t dimensions = 1;
     static const size_t component_count = SIZE * BaseType::component_count;
     static const size_t location_count = ( component_count + 3 ) >> 2;
     static const size_t item_count = SIZE;
@@ -226,6 +231,10 @@ public:
         return KId ( KShaderTranslator::get()->createConstructor (
             KShaderTranslator::get()->getPrecision(), sourceIds, getType() ) );
     }
+
+    VPP_INLINE TRVector() :
+        KValue ( createConstant ( scalar_type() ) )
+    {}
 
     VPP_INLINE TRVector ( KId id ) :
         KValue ( id )
@@ -479,7 +488,7 @@ public:
     VPP_DEFINE_VECTOR_OPERATORS2;
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -496,7 +505,7 @@ private:
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-template< typename BaseType, size_t SIZE >
+template< typename BaseType, size_t SIZE, spv::StorageClass SCL >
 class TLVector : public KValue
 {
 public:
@@ -504,20 +513,47 @@ public:
     typedef TRVector< Bool, SIZE > comparison_type;
     typedef typename BaseType::scalar_type scalar_type;
     static const size_t item_count = SIZE;
-
+    static const bool is_variable = true;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 1;
+    
     VPP_INLINE TLVector() :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
     }
 
     VPP_INLINE TLVector ( const TRVector< BaseType, SIZE >& rhs ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
         KShaderTranslator::get()->createStore ( rhs.id(), id() );
     }
 
-    VPP_INLINE TLVector ( const TLVector< BaseType, SIZE >& rhs ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+    VPP_INLINE TLVector ( const TLVector< BaseType, SIZE, SCL >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
+    {
+        const rvalue_type value = rhs;
+        KShaderTranslator::get()->createStore ( value.id(), id() );
+    }
+
+    VPP_INLINE TLVector ( TLVector< BaseType, SIZE, SCL >&& rhs ) :
+        KValue ( rhs.id() ),
+        d_bRelease ( rhs.d_bRelease )
+    {
+        rhs.d_bRelease = false;
+    }
+
+    template< spv::StorageClass SCL2 >
+    VPP_INLINE TLVector ( const TLVector< BaseType, SIZE, SCL2 >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ) :
+        d_bRelease ( true )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
@@ -526,13 +562,15 @@ public:
     static VPP_INLINE KId createVariable ( const std::initializer_list< scalar_type >& init )
     {
         const rvalue_type rValue = init;
-        const KId id = KShaderTranslator::get()->registerLocalVariable ( getType() );
+        const KId id = KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count );
         KShaderTranslator::get()->createStore ( rValue.id(), id );
         return id;
     }
 
     VPP_INLINE TLVector ( const std::initializer_list< scalar_type >& initValue ) :
-        KValue ( createVariable ( initValue ) )
+        KValue ( createVariable ( initValue ) ),
+        d_bRelease ( true )
     {
     }
 
@@ -551,15 +589,21 @@ public:
         TLVector ( rvalue_type ( arg1, arg2, arg3, arg4 ) )
     {}
 
+    VPP_INLINE ~TLVector()
+    {
+        if ( d_bRelease )
+            KShaderTranslator::get()->releaseCachedLocalVariable ( id(), getType(), SCL );
+    }
+
     template< typename RightT >
-    VPP_INLINE const TLVector< BaseType, SIZE >& operator= ( const RightT& rhs )
+    VPP_INLINE const TLVector< BaseType, SIZE, SCL >& operator= ( const RightT& rhs )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
         return *this;
     }
 
-    VPP_INLINE const TLVector< BaseType, SIZE >& operator= ( const TLVector< BaseType, SIZE >& rhs )
+    VPP_INLINE const TLVector< BaseType, SIZE, SCL >& operator= ( const TLVector< BaseType, SIZE, SCL >& rhs )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
@@ -576,7 +620,7 @@ public:
     VPP_DEFINE_MUTATING_VECTOR_OPERATORS;
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -590,6 +634,9 @@ public:
     {
         return rvalue_type::getType();
     }
+
+private:
+    bool d_bRelease;
 };
 
 // -----------------------------------------------------------------------------
@@ -604,8 +651,8 @@ VPP_INLINE TRVector< BaseT, SIZE > operator* (
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, size_t SIZE, typename RightT >
-VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE >& lhs, const RightT& rhs )
+template< typename ScalarT, size_t SIZE, spv::StorageClass SCL, typename RightT >
+VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE, SCL >& lhs, const RightT& rhs )
 {
     const TRVector< ScalarT, SIZE > lrv = lhs;
     const VPP_RVTYPE( RightT ) rrv = rhs;
@@ -614,8 +661,8 @@ VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE >& lhs, const RightT& 
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, size_t SIZE, typename LeftT >
-VPP_INLINE auto operator* ( const LeftT& lhs, const TLVector< ScalarT, SIZE >& rhs )
+template< typename ScalarT, size_t SIZE, spv::StorageClass SCL, typename LeftT >
+VPP_INLINE auto operator* ( const LeftT& lhs, const TLVector< ScalarT, SIZE, SCL >& rhs )
 {
     const VPP_RVTYPE( LeftT ) lrv = lhs;
     const TRVector< ScalarT, SIZE > rrv = rhs;
@@ -624,8 +671,8 @@ VPP_INLINE auto operator* ( const LeftT& lhs, const TLVector< ScalarT, SIZE >& r
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, size_t SIZE, typename LeftT >
-VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE >& lhs, const TLVector< ScalarT, SIZE >& rhs )
+template< typename ScalarT, size_t SIZE, spv::StorageClass SCL1, spv::StorageClass SCL2, typename LeftT >
+VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE, SCL1 >& lhs, const TLVector< ScalarT, SIZE, SCL2 >& rhs )
 {
     const TRVector< ScalarT, SIZE > lrv = lhs;
     const TRVector< ScalarT, SIZE > rrv = rhs;
@@ -636,46 +683,64 @@ VPP_INLINE auto operator* ( const TLVector< ScalarT, SIZE >& lhs, const TLVector
 // -----------------------------------------------------------------------------
 
 typedef TRVector< Float, 2 > Vec2;
-typedef TLVector< Float, 2 > VVec2;
+typedef TLVector< Float, 2, spv::StorageClassFunction > VVec2;
+typedef TLVector< Float, 2, spv::StorageClassWorkgroup > WVec2;
 typedef TRVector< Float, 3 > Vec3;
-typedef TLVector< Float, 3 > VVec3;
+typedef TLVector< Float, 3, spv::StorageClassFunction > VVec3;
+typedef TLVector< Float, 3, spv::StorageClassWorkgroup > WVec3;
 typedef TRVector< Float, 4 > Vec4;
-typedef TLVector< Float, 4 > VVec4;
+typedef TLVector< Float, 4, spv::StorageClassFunction > VVec4;
+typedef TLVector< Float, 4, spv::StorageClassWorkgroup > WVec4;
 
 typedef TRVector< Double, 2 > DVec2;
-typedef TLVector< Double, 2 > VDVec2;
+typedef TLVector< Double, 2, spv::StorageClassFunction > VDVec2;
+typedef TLVector< Double, 2, spv::StorageClassWorkgroup > WDVec2;
 typedef TRVector< Double, 3 > DVec3;
-typedef TLVector< Double, 3 > VDVec3;
+typedef TLVector< Double, 3, spv::StorageClassFunction > VDVec3;
+typedef TLVector< Double, 3, spv::StorageClassWorkgroup > WDVec3;
 typedef TRVector< Double, 4 > DVec4;
-typedef TLVector< Double, 4 > VDVec4;
+typedef TLVector< Double, 4, spv::StorageClassFunction > VDVec4;
+typedef TLVector< Double, 4, spv::StorageClassWorkgroup > WDVec4;
 
 typedef TRVector< Half, 2 > HVec2;
-typedef TLVector< Half, 2 > VHVec2;
+typedef TLVector< Half, 2, spv::StorageClassFunction > VHVec2;
+typedef TLVector< Half, 2, spv::StorageClassWorkgroup > WHVec2;
 typedef TRVector< Half, 3 > HVec3;
-typedef TLVector< Half, 3 > VHVec3;
+typedef TLVector< Half, 3, spv::StorageClassFunction > VHVec3;
+typedef TLVector< Half, 3, spv::StorageClassWorkgroup > WHVec3;
 typedef TRVector< Half, 4 > HVec4;
-typedef TLVector< Half, 4 > VHVec4;
+typedef TLVector< Half, 4, spv::StorageClassFunction > VHVec4;
+typedef TLVector< Half, 4, spv::StorageClassWorkgroup > WHVec4;
 
 typedef TRVector< Int, 2 > IVec2;
-typedef TLVector< Int, 2 > VIVec2;
+typedef TLVector< Int, 2, spv::StorageClassFunction > VIVec2;
+typedef TLVector< Int, 2, spv::StorageClassWorkgroup > WIVec2;
 typedef TRVector< Int, 3 > IVec3;
-typedef TLVector< Int, 3 > VIVec3;
+typedef TLVector< Int, 3, spv::StorageClassFunction > VIVec3;
+typedef TLVector< Int, 3, spv::StorageClassWorkgroup > WIVec3;
 typedef TRVector< Int, 4 > IVec4;
-typedef TLVector< Int, 4 > VIVec4;
+typedef TLVector< Int, 4, spv::StorageClassFunction > VIVec4;
+typedef TLVector< Int, 4, spv::StorageClassWorkgroup > WIVec4;
 
 typedef TRVector< UInt, 2 > UVec2;
-typedef TLVector< UInt, 2 > VUVec2;
+typedef TLVector< UInt, 2, spv::StorageClassFunction > VUVec2;
+typedef TLVector< UInt, 2, spv::StorageClassWorkgroup > WUVec2;
 typedef TRVector< UInt, 3 > UVec3;
-typedef TLVector< UInt, 3 > VUVec3;
+typedef TLVector< UInt, 3, spv::StorageClassFunction > VUVec3;
+typedef TLVector< UInt, 3, spv::StorageClassWorkgroup > WUVec3;
 typedef TRVector< UInt, 4 > UVec4;
-typedef TLVector< UInt, 4 > VUVec4;
+typedef TLVector< UInt, 4, spv::StorageClassFunction > VUVec4;
+typedef TLVector< UInt, 4, spv::StorageClassWorkgroup > WUVec4;
 
 typedef TRVector< Bool, 2 > BVec2;
-typedef TLVector< Bool, 2 > VBVec2;
+typedef TLVector< Bool, 2, spv::StorageClassFunction > VBVec2;
+typedef TLVector< Bool, 2, spv::StorageClassWorkgroup > WBVec2;
 typedef TRVector< Bool, 3 > BVec3;
-typedef TLVector< Bool, 3 > VBVec3;
+typedef TLVector< Bool, 3, spv::StorageClassFunction > VBVec3;
+typedef TLVector< Bool, 3, spv::StorageClassWorkgroup > WBVec3;
 typedef TRVector< Bool, 4 > BVec4;
-typedef TLVector< Bool, 4 > VBVec4;
+typedef TLVector< Bool, 4, spv::StorageClassFunction > VBVec4;
+typedef TLVector< Bool, 4, spv::StorageClassWorkgroup > WBVec4;
 
 // -----------------------------------------------------------------------------
 // PHVec types (half-float limited vectors).
@@ -691,6 +756,10 @@ public:
 
     static const bool external_linkage = true;
     static const bool indexable = false;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 1;
     static const size_t component_count = 2;
     static const size_t location_count = 1;
     static const size_t item_count = 2;
@@ -769,6 +838,22 @@ struct shader_type< std::uint32_t >
     typedef UInt rvalue_type;
     typedef VUInt lvalue_type;
     typedef UInt scalar_type;
+};
+
+template<>
+struct shader_type< std::int64_t >
+{
+    typedef Int64 rvalue_type;
+    typedef VInt64 lvalue_type;
+    typedef Int64 scalar_type;
+};
+
+template<>
+struct shader_type< std::uint64_t >
+{
+    typedef UInt64 rvalue_type;
+    typedef VUInt64 lvalue_type;
+    typedef UInt64 scalar_type;
 };
 
 template<>
@@ -864,7 +949,7 @@ struct shader_type< format< ItemT, ItemT, no_component, no_component, no_compone
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 2u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 2u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 2u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -873,7 +958,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, no_component, no_component > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 3u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 3u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 3u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -882,7 +967,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, BGR, no_component > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 3u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 3u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 3u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -891,7 +976,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, ItemT, no_component > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 4u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 4u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 4u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -900,7 +985,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, ItemT, BGRA > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 4u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 4u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 4u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -909,7 +994,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, ItemT, ARGB > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 4u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 4u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 4u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -918,7 +1003,7 @@ struct shader_type< format< ItemT, ItemT, ItemT, ItemT, ABGR > >
 {
     typedef typename shader_type< ItemT >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 4u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 4u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 4u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< ItemT >::scalar_type scalar_type;
 };
 
@@ -943,7 +1028,7 @@ struct shader_type< format< texture_format, no_component, no_component, no_compo
 {
     typedef typename shader_type< float >::rvalue_type item_rvalue_type;
     typedef TRVector< item_rvalue_type, 4u > rvalue_type;
-    typedef TLVector< item_rvalue_type, 4u > lvalue_type;
+    typedef TLVector< item_rvalue_type, 4u, spv::StorageClassFunction > lvalue_type;
     typedef typename shader_type< float >::scalar_type scalar_type;
 };
 

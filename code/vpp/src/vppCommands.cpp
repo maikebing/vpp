@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -479,7 +479,6 @@ void NonRenderingCommands :: cmdResolveImage (
 
 void NonRenderingCommands :: cmdClearColorImage (
     const TDImg& hImage,
-    VkImageLayout imageLayout,
     const VkClearColorValue& color,
     CommandBuffer hCommandBuffer )
 {
@@ -496,16 +495,19 @@ void NonRenderingCommands :: cmdClearColorImage (
     vkImageSubresourceRange.baseMipLevel = 0;
     vkImageSubresourceRange.levelCount = imgInfo.mipLevels;
 
+    UniversalCommands::cmdPipelineBarrier ( barriers (
+        Bar::NONE, Bar::TRANSFER, hImage.imageRef()
+    ) );
+
     ::vkCmdClearColorImage (
-        hCmdBuffer, hImage.imageRef().handle(), imageLayout, & color,
-        1u, & vkImageSubresourceRange );
+        hCmdBuffer, hImage.imageRef().handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        & color, 1u, & vkImageSubresourceRange );
 }
 
 // -----------------------------------------------------------------------------
 
 void NonRenderingCommands :: cmdClearColorImage (
     const TDImg& hImage,
-    VkImageLayout imageLayout,
     const VkClearColorValue& color,
     const std::vector< VkImageSubresourceRange >& regions,
     CommandBuffer hCommandBuffer )
@@ -516,24 +518,19 @@ void NonRenderingCommands :: cmdClearColorImage (
 
     const ImageInfo& imgInfo = hImage.imageRef().info();
 
-    VkImageSubresourceRange vkImageSubresourceRange;
-    vkImageSubresourceRange.aspectMask = imgInfo.getAspect();
-    vkImageSubresourceRange.baseArrayLayer = 0;
-    vkImageSubresourceRange.layerCount = imgInfo.arrayLayers;
-    vkImageSubresourceRange.baseMipLevel = 0;
-    vkImageSubresourceRange.levelCount = imgInfo.mipLevels;
+    UniversalCommands::cmdPipelineBarrier ( barriers (
+        hImage.imageRef(), regions, Bar::NONE, Bar::TRANSFER
+    ) );
 
     ::vkCmdClearColorImage (
-        hCmdBuffer, hImage.imageRef().handle(), imageLayout, & color,
-        static_cast< std::uint32_t >( regions.size() ),
-        & regions [ 0 ] );
+        hCmdBuffer, hImage.imageRef().handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
+        & color, static_cast< std::uint32_t >( regions.size() ), & regions [ 0 ] );
 }
 
 // -----------------------------------------------------------------------------
 
 void NonRenderingCommands :: cmdClearDepthStencilImage (
     const TDImg& hImage,
-    VkImageLayout imageLayout,
     float depth, std::uint32_t stencil,
     CommandBuffer hCommandBuffer )
 {
@@ -554,8 +551,12 @@ void NonRenderingCommands :: cmdClearDepthStencilImage (
     vkClearDepthStencilValue.depth = depth;
     vkClearDepthStencilValue.stencil = stencil;
 
+    UniversalCommands::cmdPipelineBarrier ( barriers (
+        Bar::NONE, Bar::TRANSFER, hImage.imageRef()
+    ) );
+
     ::vkCmdClearDepthStencilImage (
-        hCmdBuffer, hImage.imageRef().handle(), imageLayout,
+        hCmdBuffer, hImage.imageRef().handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         & vkClearDepthStencilValue,
         1u, & vkImageSubresourceRange );
 }
@@ -564,7 +565,6 @@ void NonRenderingCommands :: cmdClearDepthStencilImage (
 
 void NonRenderingCommands :: cmdClearDepthStencilImage (
     const TDImg& hImage,
-    VkImageLayout imageLayout,
     float depth, std::uint32_t stencil,
     const std::vector< VkImageSubresourceRange >& regions,
     CommandBuffer hCommandBuffer )
@@ -575,19 +575,16 @@ void NonRenderingCommands :: cmdClearDepthStencilImage (
 
     const ImageInfo& imgInfo = hImage.imageRef().info();
 
-    VkImageSubresourceRange vkImageSubresourceRange;
-    vkImageSubresourceRange.aspectMask = imgInfo.getAspect();
-    vkImageSubresourceRange.baseArrayLayer = 0;
-    vkImageSubresourceRange.layerCount = imgInfo.arrayLayers;
-    vkImageSubresourceRange.baseMipLevel = 0;
-    vkImageSubresourceRange.levelCount = imgInfo.mipLevels;
-
     VkClearDepthStencilValue vkClearDepthStencilValue;
     vkClearDepthStencilValue.depth = depth;
     vkClearDepthStencilValue.stencil = stencil;
 
+    UniversalCommands::cmdPipelineBarrier ( barriers (
+        hImage.imageRef(), regions, Bar::NONE, Bar::TRANSFER
+    ) );
+
     ::vkCmdClearDepthStencilImage (
-        hCmdBuffer, hImage.imageRef().handle(), imageLayout,
+        hCmdBuffer, hImage.imageRef().handle(), VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
         & vkClearDepthStencilValue,
         static_cast< std::uint32_t >( regions.size() ),
         & regions [ 0 ] );
@@ -764,6 +761,15 @@ void UniversalCommands :: cmdPipelineBarrier (
         barriers.d_imageMemoryBarrierCount,
         barriers.d_pImageMemoryBarriers
     );
+}
+
+// -----------------------------------------------------------------------------
+
+void UniversalCommands :: cmdPipelineBarrier (
+    const BarrierList& barriers,
+    CommandBuffer hCommandBuffer )
+{
+    cmdPipelineBarrier ( barriers.d_sourceStage, barriers.d_targetStage, 0, barriers, hCommandBuffer );
 }
 
 // -----------------------------------------------------------------------------

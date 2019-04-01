@@ -83,7 +83,7 @@ namespace vpp {
             void setDataBuffers (
                 vpp::ShaderDataBlock* pDataBlock,
                 const vpp::UniformBufferView& frameStdInput,
-                const vpp::UniformBufferView& lightDataInput,
+                const vpp::StorageBufferView& lightDataInput,
                 const KDepthValuesView& depthValuesView,
                 const KConstU32View& lightList,
                 const KVarU8View& reducedSetOutput );
@@ -105,7 +105,7 @@ namespace vpp {
         void KPLGenReducedSet :: setDataBuffers (
             vpp::ShaderDataBlock* pDataBlock,
             const vpp::UniformBufferView& frameStdInput,
-            const vpp::UniformBufferView& lightDataInput,
+            const vpp::StorageBufferView& lightDataInput,
             const KDepthValuesView& depthValuesView,
             const KConstU32View& lightList,
             const KVarU8View& reducedSetOutput )

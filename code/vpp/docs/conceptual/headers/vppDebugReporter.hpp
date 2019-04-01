@@ -44,8 +44,8 @@ namespace vpp {
     by defining an object of respective class after your instance object and
     providing the instance reference to the constructor.
 
-    Additionally, to enable Vulkan validation you must specify vpp::Instance::VALIDATION
-    flag to the instance constructor.
+    Additionally, to enable Vulkan validation you must append <tt>.validation ( true )</tt>
+    call when creating the vpp::Instance object by vpp::createInstance().
 
     Cosntructors of debug reporters have two variants. The first one takes
     only the instance reference. The second one requires one additional argument,

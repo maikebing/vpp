@@ -780,48 +780,12 @@ void KFunctionTestPipeline :: testMatrices()
     IVec3 argIVec3 { 1, 2, 3 };
     IVec4 argIVec4 { 1, 2, 3, 4 };
 
-    IMat2 argIMat2 { 1, 2, 3, 4 };
-
-    IMat3 argIMat3
-    {
-        argInt, argInt, argInt,
-        argInt, argInt, argInt,
-        argInt, argInt, argInt
-    };
-
-    IMat4 argIMat4 { argIVec4, argIVec4, argIVec4, argIVec4 };
-
-    IMat3x2 argIMat3x2 { argIVec2, argIVec2, argIVec2 };
-    IMat4x2 argIMat4x2 { argIVec2, argIVec2, argIVec2, argIVec2 };
-    IMat2x3 argIMat2x3 { argIVec3, argIVec3 };
-    IMat4x3 argIMat4x3 { argIVec3, argIVec3, argIVec3, argIVec3 };
-    IMat2x4 argIMat2x4 { argIVec4, argIVec4 };
-    IMat3x4 argIMat3x4 { argIVec4, argIVec4, argIVec4 };
-
     // -----------------------------------------------------------------------------
 
     UInt argUInt = 5u;
     UVec2 argUVec2 { 1u, 2u };
     UVec3 argUVec3 { 1u, 2u, 3u };
     UVec4 argUVec4 { 1u, 2u, 3u, 4u };
-
-    UMat2 argUMat2 { 1u, 2u, 3u, 4u };
-
-    UMat3 argUMat3
-    {
-        argUInt, argUInt, argUInt,
-        argUInt, argUInt, argUInt,
-        argUInt, argUInt, argUInt
-    };
-
-    UMat4 argUMat4 { argUVec4, argUVec4, argUVec4, argUVec4 };
-
-    UMat3x2 argUMat3x2 { argUVec2, argUVec2, argUVec2 };
-    UMat4x2 argUMat4x2 { argUVec2, argUVec2, argUVec2, argUVec2 };
-    UMat2x3 argUMat2x3 { argUVec3, argUVec3 };
-    UMat4x3 argUMat4x3 { argUVec3, argUVec3, argUVec3, argUVec3 };
-    UMat2x4 argUMat2x4 { argUVec4, argUVec4 };
-    UMat3x4 argUMat3x4 { argUVec4, argUVec4, argUVec4 };
 
     // -------------------------------------------------------------------------
 
@@ -860,26 +824,6 @@ void KFunctionTestPipeline :: testMatrices()
     DMat3x4 dTranspose4x3 = Transpose ( argDMat4x3 );
     DMat4x2 dTranspose2x4 = Transpose ( argDMat2x4 );
     DMat4x3 dTranspose3x4 = Transpose ( argDMat3x4 );
-
-    IMat2 iTranspose2 = Transpose ( argIMat2 );
-    IMat3 iTranspose3 = Transpose ( argIMat3 );
-    IMat4 iTranspose4 = Transpose ( argIMat4 );
-    IMat2x3 iTranspose3x2 = Transpose ( argIMat3x2 );
-    IMat2x4 iTranspose4x2 = Transpose ( argIMat4x2 );
-    IMat3x2 iTranspose2x3 = Transpose ( argIMat2x3 );
-    IMat3x4 iTranspose4x3 = Transpose ( argIMat4x3 );
-    IMat4x2 iTranspose2x4 = Transpose ( argIMat2x4 );
-    IMat4x3 iTranspose3x4 = Transpose ( argIMat3x4 );
-
-    UMat2 uTranspose2 = Transpose ( argUMat2 );
-    UMat3 uTranspose3 = Transpose ( argUMat3 );
-    UMat4 uTranspose4 = Transpose ( argUMat4 );
-    UMat2x3 uTranspose3x2 = Transpose ( argUMat3x2 );
-    UMat2x4 uTranspose4x2 = Transpose ( argUMat4x2 );
-    UMat3x2 uTranspose2x3 = Transpose ( argUMat2x3 );
-    UMat3x4 uTranspose4x3 = Transpose ( argUMat4x3 );
-    UMat4x2 uTranspose2x4 = Transpose ( argUMat2x4 );
-    UMat4x3 uTranspose3x4 = Transpose ( argUMat3x4 );
 
     Mat2 fOuterProduct2 = OuterProduct ( argVec2, argVec2 );
     Mat3 fOuterProduct3 = OuterProduct ( argVec3, argVec3 );

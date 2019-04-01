@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -33,6 +33,10 @@
 #include "vppShaderModule.hpp"
 #endif
 
+#ifndef INC_VPPEXCEPTIONS_HPP
+#include "vppExceptions.hpp"
+#endif
+
 #ifndef INC_VPPSPIRVBUILDER_H
 #include "../src/spirv/SpvBuilder.h"
 #define INC_VPPSPIRVBUILDER_H
@@ -56,6 +60,21 @@ class KScope
 public:
     typedef std::map< spv::Id, spv::Id > L2RValue;
     L2RValue d_l2rValue;
+};
+
+// -----------------------------------------------------------------------------
+
+class KFunctionScope
+{
+public:
+    VPP_INLINE KFunctionScope() :
+        d_activeLocalVariables ( 0 )
+    {}
+
+    typedef std::multimap< KId, KId > Type2VariableId;
+    Type2VariableId d_cachedLocalVariables;
+
+    unsigned int d_activeLocalVariables;
 };
 
 // -----------------------------------------------------------------------------
@@ -109,35 +128,42 @@ public:
     const Device& getDevice() const;
     VkShaderStageFlagBits getStage() const;
 
+    VPP_DLLAPI void useCapability ( spv::Capability cap );
+
     VPP_DLLAPI void pushIf ( Bool bcond );
     VPP_DLLAPI void makeElse();
     VPP_DLLAPI void popIf();
 
-    void pushSwitch ( spv::Id cond );
-    void makeSwitchCase ( int value );
-    void makeSwitchDefault();
-    void popSwitch();
+    VPP_DLLAPI void pushSwitch ( spv::Id cond );
+    VPP_DLLAPI void makeSwitchCase ( int value );
+    VPP_DLLAPI void makeSwitchDefault();
+    VPP_DLLAPI void popSwitch();
     
     VPP_DLLAPI LoopBlocks& pushLoop();
     VPP_DLLAPI LoopBlocks& currentLoop();
     VPP_DLLAPI void popLoop();
 
-    void pushFor ( const KId& varId, const KId& stepId, bool bUnsigned );
-    const detail::KForRange& currentFor() const;
-    void popFor();
+    VPP_DLLAPI void pushFor ( const KId& varId, const KId& stepId, bool bUnsigned );
+    VPP_DLLAPI const detail::KForRange& currentFor() const;
+    VPP_DLLAPI void popFor();
 
-    void registerNewFunction ( detail::KFunction* pFunction, const char* pName );
-    void registerParameter ( detail::KParameter* pParameter );
-    void startFunctionCode();
-    void endFunctionCode();
+    VPP_DLLAPI void registerNewFunction ( detail::KFunction* pFunction, const char* pName );
+    VPP_DLLAPI void registerParameter ( detail::KParameter* pParameter );
+    VPP_DLLAPI void startFunctionCode();
+    VPP_DLLAPI void endFunctionCode();
     
     VPP_DLLAPI void registerInputOutputVariable ( const KId& id );
     void generateInputOutputForwards ( spv::Instruction* pEntryPoint );
 
-    VPP_DLLAPI void setTemporaryVariableStorageClass ( spv::StorageClass eClass );
-
-    VPP_DLLAPI KId registerLocalVariable ( KId type, spv::StorageClass* pClass = 0 );
+    VPP_DLLAPI KId registerLocalVariable ( KId type, spv::StorageClass eClass );
     VPP_DLLAPI KId registerUniformBuffer ( KId type, std::uint32_t set, std::uint32_t binding, spv::StorageClass eClass );
+
+    VPP_DLLAPI KId acquireCachedLocalVariable ( KId type, spv::StorageClass eClass, unsigned int nSizeInWords );
+    VPP_DLLAPI void releaseCachedLocalVariable ( KId type, KId id, spv::StorageClass eClass );
+
+    void registerSharedVariableAllocation ( unsigned int nBytes );
+    unsigned int getTotalSharedMemory() const;
+    unsigned int getFreeSharedMemory() const;
 
     VPP_DLLAPI KId registerSpecialInputVariable ( const KShaderScopedVariable* pVariable, KId type, spv::BuiltIn eVariable );
     VPP_DLLAPI KId registerSpecialOutputVariable ( const KShaderScopedVariable* pVariable, KId type, spv::BuiltIn eVariable );
@@ -249,12 +275,12 @@ public:
     template< class ScalarT >
     KId getArrayIndex ( const ScalarT& v );
 
+    VPP_DLLAPI KId getArrayIndex ( int v );
+    VPP_DLLAPI KId getArrayIndex ( unsigned int v );
+
     KId createDescriptor ( const KId& typeId, std::uint32_t set, std::uint32_t binding );
     KId createArrayedDescriptor ( const KId& typeId, std::uint32_t set, std::uint32_t binding, std::uint32_t count );
     KId loadDescriptorFromArray ( const KId& arrayId, const KId& indexId, const KId& typeId );
-
-    VPP_DLLAPI KId getArrayIndex ( int v );
-    VPP_DLLAPI KId getArrayIndex ( unsigned int v );
 
     VPP_DLLAPI SVariableInfo& getShaderScopedVariable ( const KShaderScopedVariable* pVariable );
 
@@ -271,9 +297,15 @@ public:
     VPP_DLLAPI KId getScopedRValue ( const KId& lValue );
     VPP_DLLAPI spv::ImageFormat validateImageFormat ( spv::ImageFormat fmt );
 
+    template< typename FeatureT >
+    void requireFeature ( FeatureT feature );
+
+    void requireVersion11();
+
 private:
     Device d_hDevice;
     VkShaderStageFlagBits d_stage;
+    bool d_bDeviceSupportsVulkan11;
 
     typedef std::list< If > IfStack;
     IfStack d_ifStack;
@@ -283,6 +315,9 @@ private:
 
     typedef std::list< detail::KScope > ScopeStack;
     ScopeStack d_scopeStack;
+
+    typedef std::list< detail::KFunctionScope > FunctionScopeStack;
+    FunctionScopeStack d_functionScopeStack;
 
     typedef std::list< LoopBlocks > LoopStack;
     LoopStack d_loopStack;
@@ -315,7 +350,8 @@ private:
     int d_shaderInputSize;
     int d_shaderOutputSize;
 
-    spv::StorageClass d_currentVariableStorageClass;
+    unsigned int d_maxSharedVariablesByteCount;
+    unsigned int d_sharedVariablesByteCount;
 
     static thread_local KShaderTranslator* s_pThis;
 };
@@ -353,14 +389,6 @@ VPP_INLINE spv::Decoration KShaderTranslator :: getStructDecoration() const
 VPP_INLINE KId KShaderTranslator :: getBuiltinFunctions() const
 {
     return d_builtinFunctions;
-}
-
-// -----------------------------------------------------------------------------
-
-template< class ScalarT >
-VPP_INLINE KId KShaderTranslator :: getArrayIndex ( const ScalarT& v )
-{
-    return v.id();
 }
 
 // -----------------------------------------------------------------------------
@@ -431,6 +459,44 @@ VPP_INLINE void KShaderTranslator :: setShaderOutputSize ( int s )
 VPP_INLINE int KShaderTranslator :: getShaderOutputSize() const
 {
     return d_shaderOutputSize;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE void KShaderTranslator :: registerSharedVariableAllocation ( unsigned int nBytes )
+{
+    const unsigned int newByteCount = d_sharedVariablesByteCount + nBytes;
+
+    if ( newByteCount > d_maxSharedVariablesByteCount )
+    {
+        KExceptionThrower ex;
+        ex.raiseSharedMemoryLimitExceeded ( newByteCount, d_maxSharedVariablesByteCount );
+    }
+
+    d_sharedVariablesByteCount = newByteCount;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE unsigned int KShaderTranslator :: getTotalSharedMemory() const
+{
+    return d_maxSharedVariablesByteCount;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE unsigned int KShaderTranslator :: getFreeSharedMemory() const
+{
+    return d_maxSharedVariablesByteCount - d_sharedVariablesByteCount;
+}
+
+// -----------------------------------------------------------------------------
+
+template< typename FeatureT >
+VPP_INLINE void KShaderTranslator :: requireFeature ( FeatureT feature )
+{
+    if ( ! getDevice().hasFeature ( feature ) )
+        throw XMissingFeature ( DeviceFeatures::getFeatureName ( feature ) );
 }
 
 // -----------------------------------------------------------------------------

@@ -231,7 +231,7 @@ public:
       derived class. It can be private member.
     - Supplying actual data buffer on CPU side. For that end, write a helper method in
       your derved class to bind supplied buffers to declared binding points. the method
-      should accept a UniformBufferView reference for each buffer. It should also
+      should accept a StorageBufferView reference for each buffer. It should also
       get a pointer to ShaderDataBlock, because at this stage the bindings are
       only remembered inside ShaderDataBlock. The block is later selected as a whole
       into rendering pipeline and subsequent draw commands will act on supplied data
@@ -275,8 +275,8 @@ public:
             vpp::ioBuffer m_ioBuffer2;
 
             void bindDataBuffers (
-                const vpp::UniformBufferView& buf1,
-                const vpp::UniformBufferView& buf2,
+                const vpp::StorageBufferView& buf1,
+                const vpp::StorageBufferView& buf2,
                 vpp::ShaderDataBlock* pDataBlock )
             {
                 // Note that multiple bindings may occur simultaneously.
@@ -348,9 +348,9 @@ public:
         \brief Binds a buffer to the binding point.
 
         Accepts single argument which is generic buffer abstraction represented by
-        UniformBufferView object. Usually just use \ref gvector object in that place
-        (it will be automatically cast to UniformBufferView). Alternatively,
-        any Vulkan read-write uniform buffer bound to memory may be used.
+        StorageBufferView object. Usually just use \ref gvector object in that place
+        (it will be automatically cast to StorageBufferView). Alternatively,
+        any Vulkan read-write storage buffer bound to memory may be used.
 
         Calling this operator does not bind the buffer immediately. It only
         generates an entry inside ShaderDataBlock. The operator returns an opaque
@@ -367,8 +367,8 @@ public:
                 vpp::ioBuffer m_ioBuffer2;
 
                 void bindDataBuffers (
-                    const vpp::UniformBufferView& buf1,
-                    const vpp::UniformBufferView& buf2,
+                    const vpp::StorageBufferView& buf1,
+                    const vpp::StorageBufferView& buf2,
                     vpp::ShaderDataBlock* pDataBlock )
                 {
                     // Note that multiple bindings may occur simultaneously.
@@ -452,7 +452,7 @@ class ioBufferDyn
 {
 public:
     ioBufferDyn ( std::uint32_t set = 0, int binding = -1 );
-    auto operator= ( const UniformBufferView& value );
+    auto operator= ( const StorageBufferView& value );
 };
 
 // -----------------------------------------------------------------------------
@@ -931,7 +931,9 @@ public:
 
         If you omit array size, the accessor will generate a runtime array.
         Its size will be determined automatically from the size of bound buffer.
-        You can read the dynamic size using the Size() method.
+        You can read the dynamic size using the Size() method. Caution: this
+        is available only for storage binding points, i.e. ioBuffer and
+        ioBufferDyn. For others, you must specify the size of the array explicitly.
 
         If you specify array size, the accessor will generate statically sized
         array. Its size will be fixed and can be read either by Size() method
@@ -940,11 +942,13 @@ public:
         Warning: it has been observed in practice that drivers for some GPUs
         (notably NVIDIA) have trouble with large size fixed arrays, which may
         lead to crashes or long hangs during shader code compilation. It is
-        recommended to use runtime sized arrays unless the size is very small.
+        recommended to use runtime sized arrays (with storage buffers) unless
+        the size is small.
 
         The third argument, also optional, allows to override array stride.
         It is provided just for completeness, as the accessor infers the stride
-        automatically from the structure definition.
+        automatically from the structure definition. This also enforces explicit
+        array size.
     */
     UniformArray ( BufferT& buf, int size = 0, int stride = 0 );
 
@@ -1040,7 +1044,9 @@ public:
 
         If you omit array size, the accessor will generate a runtime array.
         Its size will be determined automatically from the size of bound buffer.
-        You can read the dynamic size using the Size() method.
+        You can read the dynamic size using the Size() method. Caution: this
+        is available only for storage binding points, i.e. ioBuffer and
+        ioBufferDyn. For others, you must specify the size of the array explicitly.
 
         If you specify array size, the accessor will generate statically sized
         array. Its size will be fixed and can be read either by Size() method
@@ -1053,7 +1059,8 @@ public:
 
         The third argument, also optional, allows to override array stride.
         It is provided just for completeness, as the accessor infers the stride
-        automatically from \c HostT and StructMemberTraits.
+        automatically from \c HostT and StructMemberTraits. This also enforces
+        explicit array size.
     */
     UniformSimpleArray ( BufferT& buf, int size = 0, int stride = 0 );
 

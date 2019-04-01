@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -39,9 +39,8 @@ namespace vpp {
 
 struct SNormalizedSampler
 {
-    SNormalizedSampler ( float maxLod = 1.0f );
-
-    bool operator< ( const SNormalizedSampler& rhs ) const;
+    VPP_DLLAPI SNormalizedSampler ( float maxLod = 1.0f );
+    VPP_DLLAPI bool operator< ( const SNormalizedSampler& rhs ) const;
 
     unsigned int addressModeU : 3;
     unsigned int addressModeV : 3;
@@ -63,40 +62,6 @@ struct SNormalizedSampler
 
 // -----------------------------------------------------------------------------
 
-VPP_INLINE bool SNormalizedSampler :: operator< ( const SNormalizedSampler& rhs ) const
-{
-    if ( addressModeU != rhs.addressModeU )
-        return addressModeU < rhs.addressModeU;
-    if ( addressModeV != rhs.addressModeV )
-        return addressModeV < rhs.addressModeV;
-    if ( addressModeW != rhs.addressModeW )
-        return addressModeW < rhs.addressModeW;
-    if ( borderColor != rhs.borderColor )
-        return borderColor < rhs.borderColor;
-    if ( compareOp != rhs.compareOp )
-        return compareOp < rhs.compareOp;
-    if ( compare != rhs.compare )
-        return compare < rhs.compare;
-    if ( magFilterMode != rhs.magFilterMode )
-        return magFilterMode < rhs.magFilterMode;
-    if ( minFilterMode != rhs.minFilterMode )
-        return minFilterMode < rhs.minFilterMode;
-    if ( mipMapMode != rhs.mipMapMode )
-        return mipMapMode < rhs.mipMapMode;
-    if ( anisotropy != rhs.anisotropy )
-        return anisotropy < rhs.anisotropy;
-    if ( mipLodBias != rhs.mipLodBias )
-        return mipLodBias < rhs.mipLodBias;
-    if ( maxAnisotropy != rhs.maxAnisotropy )
-        return maxAnisotropy < rhs.maxAnisotropy;
-    if ( minLod != rhs.minLod )
-        return minLod < rhs.minLod;
-
-    return maxLod < rhs.maxLod;
-}
-
-// -----------------------------------------------------------------------------
-
 struct SUnnormalizedSampler
 {
     /*
@@ -108,9 +73,8 @@ struct SUnnormalizedSampler
         compareEnable must be VK_FALSE.
     */
 
-    SUnnormalizedSampler();
-
-    bool operator< ( const SUnnormalizedSampler& rhs ) const;
+    VPP_DLLAPI SUnnormalizedSampler();
+    VPP_DLLAPI bool operator< ( const SUnnormalizedSampler& rhs ) const;
 
     unsigned int clampToBorderU : 1;
     unsigned int clampToBorderV : 1;
@@ -119,22 +83,6 @@ struct SUnnormalizedSampler
 
     float mipLodBias;
 };
-
-// -----------------------------------------------------------------------------
-
-VPP_INLINE bool SUnnormalizedSampler :: operator< ( const SUnnormalizedSampler& rhs ) const
-{
-    if ( clampToBorderU != rhs.clampToBorderU )
-        return clampToBorderU < rhs.clampToBorderU;
-    if ( clampToBorderV != rhs.clampToBorderV )
-        return clampToBorderV < rhs.clampToBorderV;
-    if ( filterMode != rhs.filterMode )
-        return filterMode < rhs.filterMode;
-    if ( borderColor != rhs.borderColor )
-        return borderColor < rhs.borderColor;
-
-    return mipLodBias < rhs.mipLodBias;
-}
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------

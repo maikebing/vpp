@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -38,6 +38,7 @@
 #include "../src/spirv/SpvBuilder.h"
 
 #include "../include/vppBlendOperators.hpp"
+#include "../include/vppExceptions.hpp"
 
 // -----------------------------------------------------------------------------
 namespace vpp {
@@ -51,16 +52,24 @@ KShaderTranslator :: KShaderTranslator ( VkShaderStageFlagBits stage, const Devi
     Builder ( 1, this ),
     d_hDevice ( hDevice ),
     d_stage ( stage ),
+    d_bDeviceSupportsVulkan11 ( hDevice.supportsVersion ( { 1, 1, 0 } ) ),
     d_pCurrentFunction ( 0 ),
     d_pCurrentFunctionName ( 0 ),
     d_structDecoration ( spv::DecorationBlock ),
     d_builtinFunctions ( import ( "GLSL.std.450" ) ),
     d_shaderInputSize ( 1 ),
     d_shaderOutputSize ( 1 ),
-    d_currentVariableStorageClass ( spv::StorageClassFunction )
+    d_maxSharedVariablesByteCount (
+        hDevice.physical().properties().limits.maxComputeSharedMemorySize ),
+    d_sharedVariablesByteCount ( 0 )
 {
     s_pThis = this;
+
+    for ( const std::string& iExt : hDevice.sourceExtensions() )
+        addSourceExtension ( iExt.c_str() );
+
     d_scopeStack.push_back ( detail::KScope() );
+    d_functionScopeStack.push_back ( detail::KFunctionScope() );
 }
 
 // -----------------------------------------------------------------------------
@@ -68,6 +77,7 @@ KShaderTranslator :: KShaderTranslator ( VkShaderStageFlagBits stage, const Devi
 KShaderTranslator :: ~KShaderTranslator()
 {
     s_pThis = 0;
+    d_functionScopeStack.pop_back();
     d_scopeStack.pop_back();
 }
 
@@ -76,6 +86,83 @@ KShaderTranslator :: ~KShaderTranslator()
 KShaderTranslator* KShaderTranslator :: get()
 {
     return s_pThis;
+}
+
+// -----------------------------------------------------------------------------
+
+void KShaderTranslator :: useCapability ( spv::Capability cap )
+{
+    switch ( cap )
+    {
+        case spv::CapabilityMatrix:
+        case spv::CapabilityShader:
+        case spv::CapabilityInputAttachment:
+        case spv::CapabilitySampled1D:
+        case spv::CapabilityImage1D:
+        case spv::CapabilitySampledBuffer:
+        case spv::CapabilityImageBuffer:
+        case spv::CapabilityImageQuery:
+        case spv::CapabilityDerivativeControl:
+        case spv::CapabilityStorageImageExtendedFormats:
+            // Those are supported unconditionally on all Vulkan versions.
+            break;
+
+        case spv::CapabilityTessellationPointSize:
+        case spv::CapabilityGeometryPointSize:
+            requireFeature ( fShaderTessellationAndGeometryPointSize );
+            break;
+
+        case spv::CapabilityStorageImageMultisample:
+        case spv::CapabilityImageMSArray:
+            requireFeature ( fShaderStorageImageMultisample );
+            break;
+
+        case spv::CapabilityInterpolationFunction:
+        case spv::CapabilitySampleRateShading:
+            requireFeature ( fSampleRateShading );
+            break;
+
+        case spv::CapabilityGeometry: requireFeature ( fGeometryShader ); break;
+        case spv::CapabilityTessellation: requireFeature ( fTessellationShader ); break;
+        case spv::CapabilityFloat64: requireFeature ( fShaderFloat64 ); break;
+        case spv::CapabilityInt64: requireFeature ( fShaderInt64 ); break;
+        case spv::CapabilityInt16: requireFeature ( fShaderInt16 ); break;
+        case spv::CapabilityImageGatherExtended: requireFeature ( fShaderImageGatherExtended ); break;
+        case spv::CapabilityUniformBufferArrayDynamicIndexing: requireFeature ( fShaderUniformBufferArrayDynamicIndexing ); break;
+        case spv::CapabilitySampledImageArrayDynamicIndexing: requireFeature ( fShaderSampledImageArrayDynamicIndexing ); break;
+        case spv::CapabilityStorageBufferArrayDynamicIndexing: requireFeature ( fShaderStorageBufferArrayDynamicIndexing ); break;
+        case spv::CapabilityStorageImageArrayDynamicIndexing: requireFeature ( fShaderStorageImageArrayDynamicIndexing ); break;
+        case spv::CapabilityClipDistance: requireFeature ( fShaderClipDistance ); break;
+        case spv::CapabilityCullDistance: requireFeature ( fShaderCullDistance ); break;
+        case spv::CapabilityImageCubeArray: requireFeature ( fImageCubeArray ); break;
+        case spv::CapabilitySparseResidency: requireFeature ( fShaderResourceResidency ); break;
+        case spv::CapabilityMinLod: requireFeature ( fShaderResourceMinLod ); break;
+        case spv::CapabilitySampledCubeArray: requireFeature ( fImageCubeArray ); break;
+        case spv::CapabilityStorageImageReadWithoutFormat: requireFeature ( fShaderStorageImageReadWithoutFormat ); break;
+        case spv::CapabilityStorageImageWriteWithoutFormat: requireFeature ( fShaderStorageImageWriteWithoutFormat ); break;
+        case spv::CapabilityMultiViewport: requireFeature ( fMultiViewport ); break;
+
+        case spv::CapabilityMultiView:
+        case spv::CapabilityDeviceGroup:
+            requireVersion11();
+            break;
+
+        case spv::CapabilityDrawParameters:
+            requireVersion11();
+            requireFeature ( fShaderDrawParameters );
+            break;
+
+        case spv::CapabilityInt64Atomics:
+            requireVersion11();
+            requireFeature ( fShaderBufferInt64Atomics );
+            requireFeature ( fShaderSharedInt64Atomics );
+            break;
+
+        default:
+            throw XUsageError ( "Unsupported capability has been used" );
+    }
+
+    addCapability ( cap );
 }
 
 // -----------------------------------------------------------------------------
@@ -280,18 +367,28 @@ void KShaderTranslator :: startFunctionCode()
     d_pCurrentFunction->d_pFunction = pFunction;
 
     d_scopeStack.push_back ( detail::KScope() );
+    d_functionScopeStack.push_back ( detail::KFunctionScope() );
 }
 
 // -----------------------------------------------------------------------------
 
 void KShaderTranslator :: endFunctionCode()
 {
+    detail::KFunctionScope& currentScope = d_functionScopeStack.back();
+    const bool bUnreleasedVariables = ( currentScope.d_activeLocalVariables != 0 );
+
     leaveFunction();
+    d_functionScopeStack.pop_back();
     d_scopeStack.pop_back();
     setBuildPoint ( d_pCurrentFunction->d_pParentBlock );
     d_pCurrentFunction = 0;
     d_pCurrentFunctionName = 0;
     d_currentFunctionParameters.clear();
+
+    if ( bUnreleasedVariables )
+        throw XUsageError (
+            "Error: Missing {} scope between Begin() and End() in function definition"
+        );
 }
 
 // -----------------------------------------------------------------------------
@@ -311,23 +408,9 @@ void KShaderTranslator :: generateInputOutputForwards ( spv::Instruction* pEntry
 
 // -----------------------------------------------------------------------------
 
-void KShaderTranslator :: setTemporaryVariableStorageClass ( spv::StorageClass eClass )
+KId KShaderTranslator :: registerLocalVariable ( KId type, spv::StorageClass eClass )
 {
-    d_currentVariableStorageClass = eClass;
-}
-
-// -----------------------------------------------------------------------------
-
-KId KShaderTranslator :: registerLocalVariable ( KId type, spv::StorageClass* pClass )
-{
-    const spv::StorageClass storageClass = d_currentVariableStorageClass;
-
-    if ( pClass )
-        *pClass = storageClass;
-
-    d_currentVariableStorageClass = spv::StorageClassFunction;
-
-    return KId ( createVariable ( storageClass, type ) );
+    return KId ( createVariable ( eClass, type ) );
 }
 
 // -----------------------------------------------------------------------------
@@ -344,6 +427,49 @@ KId KShaderTranslator :: registerUniformBuffer (
     }
 
     return result;
+}
+
+// -----------------------------------------------------------------------------
+
+KId KShaderTranslator :: acquireCachedLocalVariable (
+    KId type, spv::StorageClass eClass, unsigned int nSizeInWords )
+{
+    if ( eClass == spv::StorageClassFunction )
+    {
+        detail::KFunctionScope& currentScope = d_functionScopeStack.back();
+
+        ++currentScope.d_activeLocalVariables;
+
+        const auto iCachedVarRange = currentScope.d_cachedLocalVariables.equal_range ( type );
+
+        if ( iCachedVarRange.first != iCachedVarRange.second )
+        {
+            const KId result = iCachedVarRange.first->second;
+            currentScope.d_cachedLocalVariables.erase ( iCachedVarRange.first );
+            return result;
+        }
+        else
+            return registerLocalVariable ( type, spv::StorageClassFunction );
+    }
+    else if ( eClass == spv::StorageClassWorkgroup )
+    {
+        registerSharedVariableAllocation ( 4*nSizeInWords );
+        return registerLocalVariable ( type, eClass );
+    }
+    else
+        return registerLocalVariable ( type, eClass );
+}
+
+// -----------------------------------------------------------------------------
+
+void KShaderTranslator :: releaseCachedLocalVariable ( KId type, KId id, spv::StorageClass eClass )
+{
+    if ( eClass == spv::StorageClassFunction )
+    {
+        detail::KFunctionScope& currentScope = d_functionScopeStack.back();
+        --currentScope.d_activeLocalVariables;
+        currentScope.d_cachedLocalVariables.insert ( std::make_pair ( type, id ) );
+    }
 }
 
 // -----------------------------------------------------------------------------
@@ -627,6 +753,15 @@ spv::ImageFormat KShaderTranslator :: validateImageFormat ( spv::ImageFormat fmt
     }
 
     return fmt;
+}
+
+// -----------------------------------------------------------------------------
+
+void KShaderTranslator :: requireVersion11()
+{
+    if ( ! d_bDeviceSupportsVulkan11 )
+        throw XUsageError (
+            "A feature has been used which requires Vulkan version not supported by the device: 1.1" );
 }
 
 // -----------------------------------------------------------------------------

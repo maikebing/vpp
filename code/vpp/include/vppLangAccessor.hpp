@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -52,8 +52,8 @@ struct TComparisonResult< TRValue< ScalarT > >
     typedef Bool type;
 };
 
-template< typename ScalarT >
-struct TComparisonResult< TLValue< ScalarT > >
+template< typename ScalarT, spv::StorageClass SCL >
+struct TComparisonResult< TLValue< ScalarT, SCL > >
 {
     typedef Bool type;
 };
@@ -64,8 +64,8 @@ struct TComparisonResult< TRVector< BaseType, SIZE > >
     typedef TRVector< Bool, SIZE > type;
 };
 
-template< class BaseType, size_t SIZE >
-struct TComparisonResult< TLVector< BaseType, SIZE > >
+template< class BaseType, size_t SIZE, spv::StorageClass SCL >
+struct TComparisonResult< TLVector< BaseType, SIZE, SCL > >
 {
     typedef TRVector< Bool, SIZE > type;
 };
@@ -607,8 +607,13 @@ public:
 
     VPP_INLINE Pointer< typename ValueT::rvalue_type > operator& () const
     {
-        return Pointer< typename ValueT::rvalue_type >(
-            getPointerId(), spv::StorageClassWorkgroup );
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        const KId pointerId = getPointerId();
+
+        const spv::StorageClass sc = pTranslator->getTypeStorageClass (
+            pTranslator->getTypeId ( pointerId ) );
+
+        return Pointer< typename ValueT::rvalue_type >( pointerId, sc );
     }
 
 private:

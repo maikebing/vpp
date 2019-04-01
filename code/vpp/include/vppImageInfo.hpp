@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -89,19 +89,19 @@ struct ImageInfo
         unsigned int _usage,
         unsigned int _flags );
     
-    ImageInfo (
+    VPP_DLLAPI ImageInfo (
         unsigned int width,
         unsigned int height,
         EImagePurpose _purpose,
         unsigned int usage,
         VkFormat fmt );
     
-    std::uint32_t getAspect() const;
-    VkImageViewType getViewType() const;
-    VkImageType getImageType() const;
-    std::uint32_t getDimensions() const;
+    VPP_DLLAPI std::uint32_t getAspect() const;
+    VPP_DLLAPI VkImageViewType getViewType() const;
+    VPP_DLLAPI VkImageType getImageType() const;
+    VPP_DLLAPI std::uint32_t getDimensions() const;
 
-    bool operator< ( const ImageInfo& rhs ) const;
+    VPP_DLLAPI bool operator< ( const ImageInfo& rhs ) const;
     bool operator== ( const ImageInfo& rhs ) const;
     bool operator!= ( const ImageInfo& rhs ) const;
 
@@ -147,7 +147,7 @@ VPP_INLINE bool ImageInfo :: operator!= ( const ImageInfo& rhs ) const
 
 struct SAttachmentDescription : public VkAttachmentDescription
 {
-    bool operator< ( const SAttachmentDescription& rhs ) const;
+    VPP_DLLAPI bool operator< ( const SAttachmentDescription& rhs ) const;
     bool operator== ( const SAttachmentDescription& rhs ) const;
     bool operator!= ( const SAttachmentDescription& rhs ) const;
 };

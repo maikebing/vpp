@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -82,7 +82,7 @@ public:
     std::uint32_t pipelineStats() const;
     std::uint32_t valueCount() const;
 
-    void cmdResetAll ( CommandBuffer hCmdBuffer );
+    void cmdResetAll ( CommandBuffer hCmdBuffer = CommandBuffer() );
 
     bool readQueryValues (
         void* pDestBuffer, std::uint32_t flags,
@@ -173,10 +173,14 @@ VPP_INLINE std::uint32_t QueryPool :: valueCount() const
 
 // -----------------------------------------------------------------------------
 
-VPP_INLINE void QueryPool :: cmdResetAll ( CommandBuffer hCmdBuffer )
+VPP_INLINE void QueryPool :: cmdResetAll ( CommandBuffer hCommandBuffer )
 {
+    const VkCommandBuffer hCmdBuffer = hCommandBuffer ?
+        hCommandBuffer.handle()
+        : RenderingCommandContext::getCommandBufferHandle();
+
     ::vkCmdResetQueryPool (
-        hCmdBuffer.handle(), get()->d_handle, 0, get()->d_count );
+        hCmdBuffer, get()->d_handle, 0, get()->d_count );
 }
 
 // -----------------------------------------------------------------------------
@@ -216,9 +220,9 @@ public:
 
     void retrieve();
 
-    void cmdResetAll ( CommandBuffer hCmdBuffer );
-    void cmdMeasureBegin ( std::uint32_t iTimer, CommandBuffer hCmdBuffer );
-    void cmdMeasureEnd ( std::uint32_t iTimer, CommandBuffer hCmdBuffer );
+    void cmdResetAll ( CommandBuffer hCmdBuffer = CommandBuffer() );
+    void cmdMeasureBegin ( std::uint32_t iTimer, CommandBuffer hCmdBuffer = CommandBuffer() );
+    void cmdMeasureEnd ( std::uint32_t iTimer, CommandBuffer hCmdBuffer = CommandBuffer() );
 
     double interval_ns ( std::uint32_t iTimer ) const;
     double interval_us ( std::uint32_t iTimer ) const;
@@ -255,24 +259,32 @@ VPP_INLINE void TimerArray :: cmdResetAll ( CommandBuffer hCmdBuffer )
 // -----------------------------------------------------------------------------
 
 VPP_INLINE void TimerArray :: cmdMeasureBegin (
-    std::uint32_t iTimer, CommandBuffer hCmdBuffer )
+    std::uint32_t iTimer, CommandBuffer hCommandBuffer )
 {
+    const VkCommandBuffer hCmdBuffer = hCommandBuffer ?
+        hCommandBuffer.handle()
+        : RenderingCommandContext::getCommandBufferHandle();
+
     const std::uint32_t iQuery = 2*iTimer;
 
     ::vkCmdWriteTimestamp (
-        hCmdBuffer.handle(), VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+        hCmdBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
         get()->d_queryPool.handle(), iQuery );
 }
 
 // -----------------------------------------------------------------------------
 
 VPP_INLINE void TimerArray :: cmdMeasureEnd (
-    std::uint32_t iTimer, CommandBuffer hCmdBuffer )
+    std::uint32_t iTimer, CommandBuffer hCommandBuffer )
 {
+    const VkCommandBuffer hCmdBuffer = hCommandBuffer ?
+        hCommandBuffer.handle()
+        : RenderingCommandContext::getCommandBufferHandle();
+
     const std::uint32_t iQuery = 2*iTimer + 1;
 
     ::vkCmdWriteTimestamp (
-        hCmdBuffer.handle(), VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
+        hCmdBuffer, VK_PIPELINE_STAGE_BOTTOM_OF_PIPE_BIT,
         get()->d_queryPool.handle(), iQuery );
 }
 

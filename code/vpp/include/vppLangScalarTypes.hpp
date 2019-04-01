@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -280,6 +280,95 @@ struct scalar_traits< float16_t >
 };
 
 // -----------------------------------------------------------------------------
+
+template<>
+struct scalar_traits< std::int64_t >
+{
+    static const size_t component_count = 2;
+    static const bool isBool = false;
+    static const bool isInteger = true;
+    static const bool isSignedInt = true;
+    static const bool isUnsignedInt = false;
+    static const bool isFloat = false;
+    static const bool is64bit = true;
+    static const bool isFlatShaded = true;
+
+    static VPP_INLINE KId makeConstant ( std::int64_t v )
+    {
+        return KId ( KShaderTranslator::get()->makeInt64Constant ( v ) );
+    }
+
+    static VPP_INLINE KId getTypeId()
+    {
+        return KId ( KShaderTranslator::get()->makeIntType ( 64 ) );
+    }
+
+    static const spv::Op opAdd = spv::OpIAdd;
+    static const spv::Op opSub = spv::OpISub;
+    static const spv::Op opMul = spv::OpIMul;
+    static const spv::Op opDiv = spv::OpSDiv;
+    static const spv::Op opMod = spv::OpSRem;
+    static const spv::Op opMod2 = spv::OpSMod;
+    static const spv::Op opShl = spv::OpShiftLeftLogical;
+    static const spv::Op opShr = spv::OpShiftRightArithmetic;
+    static const spv::Op opBitOr = spv::OpBitwiseOr;
+    static const spv::Op opBitXor = spv::OpBitwiseXor;
+    static const spv::Op opBitAnd = spv::OpBitwiseAnd;
+    static const spv::Op opNeg = spv::OpSNegate;
+    static const spv::Op opBitNot = spv::OpNot;
+    static const spv::Op opEqual = spv::OpIEqual;
+    static const spv::Op opNotEqual = spv::OpINotEqual;
+    static const spv::Op opGtr = spv::OpSGreaterThan;
+    static const spv::Op opGtrEq = spv::OpSGreaterThanEqual;
+    static const spv::Op opLss = spv::OpSLessThan;
+    static const spv::Op opLssEq = spv::OpSLessThanEqual;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct scalar_traits< std::uint64_t >
+{
+    static const size_t component_count = 2;
+    static const bool isBool = false;
+    static const bool isInteger = true;
+    static const bool isSignedInt = false;
+    static const bool isUnsignedInt = true;
+    static const bool isFloat = false;
+    static const bool is64bit = true;
+    static const bool isFlatShaded = true;
+
+    static VPP_INLINE KId makeConstant ( std::uint64_t v )
+    {
+        return KId ( KShaderTranslator::get()->makeUint64Constant ( v ) );
+    }
+
+    static VPP_INLINE KId getTypeId()
+    {
+        return KId ( KShaderTranslator::get()->makeUintType ( 64 ) );
+    }
+
+    static const spv::Op opAdd = spv::OpIAdd;
+    static const spv::Op opSub = spv::OpISub;
+    static const spv::Op opMul = spv::OpIMul;
+    static const spv::Op opDiv = spv::OpUDiv;
+    static const spv::Op opMod = spv::OpUMod;
+    static const spv::Op opMod2 = spv::OpUMod;
+    static const spv::Op opShl = spv::OpShiftLeftLogical;
+    static const spv::Op opShr = spv::OpShiftRightLogical;
+    static const spv::Op opBitOr = spv::OpBitwiseOr;
+    static const spv::Op opBitXor = spv::OpBitwiseXor;
+    static const spv::Op opBitAnd = spv::OpBitwiseAnd;
+    static const spv::Op opBitNot = spv::OpNot;
+    static const spv::Op opEqual = spv::OpIEqual;
+    static const spv::Op opNotEqual = spv::OpINotEqual;
+    static const spv::Op opGtr = spv::OpUGreaterThan;
+    static const spv::Op opGtrEq = spv::OpUGreaterThanEqual;
+    static const spv::Op opLss = spv::OpULessThan;
+    static const spv::Op opLssEq = spv::OpULessThanEqual;
+};
+
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
 #define VPP_DEFINE_SCALAR_OPERATOR1( OP ) \
@@ -391,6 +480,11 @@ public:
     typedef Bool comparison_type;
     static const bool external_linkage = false;
     static const bool indexable = false;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const bool is_64bit = false;
+    static const size_t dimensions = 0;
     static const size_t component_count = 1;
     static const size_t location_count = 1;
     static const size_t item_count = 1;
@@ -443,23 +537,64 @@ public:
 
 // -----------------------------------------------------------------------------
 
-class VBool : public KValue
+template< spv::StorageClass SCL >
+class TBoolLValue : public KValue
 {
 public:
     typedef Bool rvalue_type;
+    static const bool is_variable = true;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 0;
 
-    VPP_INLINE VBool() :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+    VPP_INLINE TBoolLValue() :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, 1u ) ),
+        d_bRelease ( true )
     {
     }
 
-    VPP_INLINE VBool ( const Bool& rvalue ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+    VPP_INLINE TBoolLValue ( const Bool& rvalue ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, 1u ) ),
+        d_bRelease ( true )
     {
         KShaderTranslator::get()->createStore ( rvalue.id(), id() );
     }
 
-    VPP_INLINE const VBool& operator= ( const Bool& rhs )
+    VPP_INLINE TBoolLValue ( const TBoolLValue< SCL >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, 1u ) ),
+        d_bRelease ( true )
+    {
+        const rvalue_type rv = rhs;
+        KShaderTranslator::get()->createStore ( rv.id(), id() );
+    }
+
+    VPP_INLINE TBoolLValue ( TBoolLValue< SCL >&& rhs ) :
+        KValue ( rhs.id() ),
+        d_bRelease ( rhs.d_bRelease )
+    {
+        rhs.d_bRelease = false;
+    }
+
+    template< spv::StorageClass SCL2 >
+    VPP_INLINE TBoolLValue ( const TBoolLValue< SCL2 >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, 1u ) ),
+        d_bRelease ( true )
+    {
+        const rvalue_type rv = rhs;
+        KShaderTranslator::get()->createStore ( rv.id(), id() );
+    }
+
+    VPP_INLINE ~TBoolLValue()
+    {
+        if ( d_bRelease )
+            KShaderTranslator::get()->releaseCachedLocalVariable ( id(), getType(), SCL );
+    }
+
+    VPP_INLINE const TBoolLValue& operator= ( const Bool& rhs )
     {
         KShaderTranslator::get()->createStore ( rhs.id(), id() );
         return *this;
@@ -504,6 +639,9 @@ public:
         rvalue_type lhs = *this;
         return lhs != rhs;
     }
+
+private:
+    bool d_bRelease;
 };
 
 // -----------------------------------------------------------------------------
@@ -513,6 +651,10 @@ class Void : public KValue
 public:
     typedef Void rvalue_type;
     static const bool indexable = false;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 0;
 
     VPP_INLINE Void ( KId id ) :
         KValue ( id )
@@ -562,7 +704,7 @@ struct TOperators
 template< class BaseType, size_t SIZE >
 class TRVector;
 
-template< class BaseType, size_t SIZE >
+template< class BaseType, size_t SIZE, spv::StorageClass SCL >
 class TLVector;
 
 // -----------------------------------------------------------------------------
@@ -579,9 +721,19 @@ public:
 
     static const bool external_linkage = true;
     static const bool indexable = false;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const bool is_64bit = scalar_traits< ScalarT >::is64bit;
+    static const size_t dimensions = 0;
     static const size_t component_count = scalar_traits< ScalarT >::component_count;
     static const size_t location_count = 1;
     static const size_t item_count = 1;
+
+    VPP_INLINE TRValue() :
+        KValue ( scalar_traits< ScalarT >::makeConstant ( ScalarT() ) )
+    {
+    }
 
     VPP_INLINE TRValue ( KId id ) :
         KValue ( id )
@@ -748,47 +900,61 @@ template<> struct TGetRV< bool > { typedef Bool type; };
 } // namespace detail
 // -----------------------------------------------------------------------------
 
+// Caution: this routine must be exactly here.
+
 template< class ScalarT >
-class Pointer : public KValue, public KExceptionThrower
+VPP_INLINE KId KShaderTranslator :: getArrayIndex ( const ScalarT& v )
+{
+    VPP_RVTYPE( ScalarT ) rvt = v;
+    return rvt.id();
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+class KPointerBase : public KExceptionThrower
+{
+protected:
+    VPP_DLLAPI KPointerBase ( spv::StorageClass storageClass );
+
+    VPP_DLLAPI spv::Scope getScope() const;
+    VPP_DLLAPI spv::MemorySemanticsMask getSemanticsMask ( spv::Op op ) const;
+
+protected:
+    spv::StorageClass d_storageClass;
+};
+
+// -----------------------------------------------------------------------------
+
+template< class ScalarT >
+class Pointer : public KValue, public KPointerBase
 {
 public:
     typedef ScalarT target_type;
+    static const bool is_variable = false;
+    static const bool is_pointer = true;
+    static const bool is_shared = false;
+    static const bool is_64bit = target_type::is_64bit;
+    static const size_t dimensions = 0;
 
     VPP_INLINE Pointer ( const KId& valueId, spv::StorageClass storageClass ) :
         KValue ( valueId ),
-        d_storageClass ( storageClass )
+        KPointerBase ( storageClass )
     {
-    }
-
-    VPP_INLINE spv::Scope getScope() const
-    {
-        switch ( d_storageClass )
-        {
-            case spv::StorageClassWorkgroup:
-                return spv::ScopeWorkgroup;
-
-            case spv::StorageClassImage:
-                return spv::ScopeDevice;
-
-            default:
-                raiseUsageError ( "Only images and shared variables can have atomic pointers" );
-                return spv::ScopeDevice;
-        }
-    }
-
-    static VPP_INLINE spv::MemorySemanticsMask getSemanticsMask()
-    {
-        return spv::MemorySemanticsAcquireReleaseMask;
+        if ( is_64bit )
+            KShaderTranslator::get()->useCapability ( spv::CapabilityInt64Atomics );
     }
 
     VPP_INLINE target_type Load() const
     {
+        static_assert ( ! is_64bit, "Load is not supported for 64-bit types." );
+
         KShaderTranslator* pTranslator = KShaderTranslator::get();
 
         std::vector< spv::Id > operands ( 3 );
         operands [ 0 ] = id();
         operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
+        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicLoad ) ) );
 
         return KId ( pTranslator->createOp (
             spv::OpAtomicLoad, target_type::getType(), operands ) );
@@ -796,12 +962,14 @@ public:
 
     VPP_INLINE void Store ( const target_type& value ) const
     {
+        static_assert ( ! is_64bit, "Store is not supported for 64-bit types." );
+
         KShaderTranslator* pTranslator = KShaderTranslator::get();
 
         std::vector< spv::Id > operands ( 4 );
         operands [ 0 ] = id();
         operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
+        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicStore ) ) );
         operands [ 3 ] = value.id();
 
         pTranslator->createNoResultOp ( spv::OpAtomicStore, operands );
@@ -814,7 +982,7 @@ public:
         std::vector< spv::Id > operands ( 4 );
         operands [ 0 ] = id();
         operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
+        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicExchange ) ) );
         operands [ 3 ] = value.id();
 
         return KId ( pTranslator->createOp (
@@ -830,69 +998,13 @@ public:
         std::vector< spv::Id > operands ( 6 );
         operands [ 0 ] = id();
         operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
-        operands [ 3 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
+        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicCompareExchange ) ) );
+        operands [ 3 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicCompareExchange ) ) );
         operands [ 4 ] = newValue.id();
         operands [ 5 ] = oldValue.id();
 
         return KId ( pTranslator->createOp (
             spv::OpAtomicCompareExchange, target_type::getType(), operands ) );
-    }
-
-    VPP_INLINE target_type CompareExchangeWeak (
-        const target_type& newValue,
-        const target_type& oldValue ) const
-    {
-        KShaderTranslator* pTranslator = KShaderTranslator::get();
-
-        std::vector< spv::Id > operands ( 6 );
-        operands [ 0 ] = id();
-        operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
-        operands [ 3 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
-        operands [ 4 ] = newValue.id();
-        operands [ 5 ] = oldValue.id();
-
-        return KId ( pTranslator->createOp (
-            spv::OpAtomicCompareExchangeWeak, target_type::getType(), operands ) );
-    }
-
-    VPP_INLINE target_type Increment() const
-    {
-        typedef typename target_type::scalar_type native_type;
-
-        static_assert (
-            scalar_traits< native_type >::isInteger,
-            "This operation requires integer type." );
-
-        KShaderTranslator* pTranslator = KShaderTranslator::get();
-
-        std::vector< spv::Id > operands ( 3 );
-        operands [ 0 ] = id();
-        operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
-
-        return KId ( pTranslator->createOp (
-            spv::OpAtomicIIncrement, target_type::getType(), operands ) );
-    }
-
-    VPP_INLINE target_type Decrement() const
-    {
-        typedef typename target_type::scalar_type native_type;
-
-        static_assert (
-            scalar_traits< native_type >::isInteger,
-            "This operation requires integer type." );
-
-        KShaderTranslator* pTranslator = KShaderTranslator::get();
-
-        std::vector< spv::Id > operands ( 3 );
-        operands [ 0 ] = id();
-        operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
-
-        return KId ( pTranslator->createOp (
-            spv::OpAtomicIDecrement, target_type::getType(), operands ) );
     }
 
     VPP_INLINE target_type Add ( const target_type& value ) const
@@ -902,6 +1014,7 @@ public:
 
     VPP_INLINE target_type Sub ( const target_type& value ) const
     {
+        static_assert ( ! is_64bit, "Sub is not supported for 64-bit types." );
         return opArithmetic ( value, spv::OpAtomicISub );
     }
 
@@ -938,6 +1051,54 @@ public:
         return opArithmetic ( value, spv::OpAtomicXor );
     }
 
+    VPP_INLINE target_type Increment() const
+    {
+        typedef typename target_type::scalar_type native_type;
+
+        static_assert (
+            scalar_traits< native_type >::isInteger,
+            "This operation requires integer type." );
+
+        if ( ! is_64bit )
+        {
+            KShaderTranslator* pTranslator = KShaderTranslator::get();
+
+            std::vector< spv::Id > operands ( 3 );
+            operands [ 0 ] = id();
+            operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
+            operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicIIncrement ) ) );
+
+            return KId ( pTranslator->createOp (
+                spv::OpAtomicIIncrement, target_type::getType(), operands ) );
+        }
+        else
+            return Add ( 1 );
+    }
+
+    VPP_INLINE target_type Decrement() const
+    {
+        typedef typename target_type::scalar_type native_type;
+
+        static_assert (
+            scalar_traits< native_type >::isInteger,
+            "This operation requires integer type." );
+
+        if ( ! is_64bit )
+        {
+            KShaderTranslator* pTranslator = KShaderTranslator::get();
+
+            std::vector< spv::Id > operands ( 3 );
+            operands [ 0 ] = id();
+            operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
+            operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( spv::OpAtomicIDecrement ) ) );
+
+            return KId ( pTranslator->createOp (
+                spv::OpAtomicIDecrement, target_type::getType(), operands ) );
+        }
+        else
+            return Add ( static_cast< native_type >( -1 ) );
+    }
+
 private:
     VPP_INLINE target_type opArithmetic ( const target_type& value, spv::Op opCode ) const
     {
@@ -952,39 +1113,44 @@ private:
         std::vector< spv::Id > operands ( 4 );
         operands [ 0 ] = id();
         operands [ 1 ] = pTranslator->getArrayIndex ( static_cast< int >( getScope() ) );
-        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask() ) );
+        operands [ 2 ] = pTranslator->getArrayIndex ( static_cast< int >( getSemanticsMask ( opCode ) ) );
         operands [ 3 ] = value.id();
 
-        return KId ( pTranslator->createOp (
-            opCode, target_type::getType(), operands ) );
+        return KId ( pTranslator->createOp ( opCode, target_type::getType(), operands ) );
     }
-
-private:
-    spv::StorageClass d_storageClass;
 };
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT >
+template< typename ScalarT, spv::StorageClass SCL >
 class TLValue : public KValue
 {
 public:
     typedef TRValue< ScalarT > rvalue_type;
     typedef Bool comparison_type;
+    static const bool is_variable = true;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 0;
 
     VPP_INLINE TLValue() :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType(), & d_storageClass ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
     }
 
     explicit VPP_INLINE TLValue ( KId id ) :
-        KValue ( id )
+        KValue ( id ),
+        d_bRelease ( false )
     {
     }
 
     VPP_INLINE TLValue ( const TRValue< ScalarT >& rvalue ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType(), & d_storageClass ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
         KShaderTranslator::get()->createStore ( rvalue.id(), id() );
     }
@@ -994,11 +1160,36 @@ public:
     {
     }
 
-    VPP_INLINE TLValue ( const TLValue< ScalarT >& rhs ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType(), & d_storageClass ) )
+    VPP_INLINE TLValue ( const TLValue< ScalarT, SCL >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
         const rvalue_type rv = rhs;
         KShaderTranslator::get()->createStore ( rv.id(), id() );
+    }
+
+    VPP_INLINE TLValue ( TLValue< ScalarT, SCL >&& rhs ) :
+        KValue ( rhs.id() ),
+        d_bRelease ( rhs.d_bRelease )
+    {
+        rhs.d_bRelease = false;
+    }
+
+    template< spv::StorageClass SCL2 >
+    VPP_INLINE TLValue ( const TLValue< ScalarT, SCL2 >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
+    {
+        const rvalue_type rv = rhs;
+        KShaderTranslator::get()->createStore ( rv.id(), id() );
+    }
+
+    VPP_INLINE ~TLValue()
+    {
+        if ( d_bRelease )
+            KShaderTranslator::get()->releaseCachedLocalVariable ( getType(), id(), SCL );
     }
 
     VPP_INLINE operator rvalue_type() const
@@ -1007,14 +1198,14 @@ public:
     }
 
     template< typename RightT >
-    VPP_INLINE const TLValue< ScalarT >& operator= ( const RightT& rhs )
+    VPP_INLINE const TLValue< ScalarT, SCL >& operator= ( const RightT& rhs )
     {
         const rvalue_type rv = rhs;
         KShaderTranslator::get()->createStore ( rv.id(), id() );
         return *this;
     }
 
-    VPP_INLINE const TLValue< ScalarT >& operator= ( const TLValue< ScalarT >& rhs )
+    VPP_INLINE const TLValue< ScalarT, SCL >& operator= ( const TLValue< ScalarT, SCL >& rhs )
     {
         const rvalue_type rv = rhs;
         KShaderTranslator::get()->createStore ( rv.id(), id() );
@@ -1059,7 +1250,7 @@ public:
 
     VPP_INLINE Pointer< rvalue_type > operator& () const
     {
-        return Pointer< rvalue_type >( id(), d_storageClass );
+        return Pointer< rvalue_type >( id(), SCL );
     }
 
     static VPP_INLINE KId getType()
@@ -1069,17 +1260,17 @@ public:
 
     VPP_INLINE spv::StorageClass getStorageClass() const
     {
-        return d_storageClass;
+        return SCL;
     }
 
 private:
-    spv::StorageClass d_storageClass;
+    bool d_bRelease;
 };
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, typename RightT >
-VPP_INLINE auto operator* ( const TLValue< ScalarT >& lhs, const RightT& rhs )
+template< typename ScalarT, spv::StorageClass SCL, typename RightT >
+VPP_INLINE auto operator* ( const TLValue< ScalarT, SCL >& lhs, const RightT& rhs )
 {
     const TRValue< ScalarT > lrv = lhs;
     const VPP_RVTYPE( RightT ) rrv = rhs;
@@ -1088,8 +1279,8 @@ VPP_INLINE auto operator* ( const TLValue< ScalarT >& lhs, const RightT& rhs )
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, typename LeftT >
-VPP_INLINE auto operator* ( const LeftT& lhs, const TLValue< ScalarT >& rhs )
+template< typename ScalarT, spv::StorageClass SCL, typename LeftT >
+VPP_INLINE auto operator* ( const LeftT& lhs, const TLValue< ScalarT, SCL >& rhs )
 {
     const VPP_RVTYPE( LeftT ) lrv = lhs;
     const TRValue< ScalarT > rrv = rhs;
@@ -1098,8 +1289,8 @@ VPP_INLINE auto operator* ( const LeftT& lhs, const TLValue< ScalarT >& rhs )
 
 // -----------------------------------------------------------------------------
 
-template< typename ScalarT, typename LeftT >
-VPP_INLINE auto operator* ( const TLValue< ScalarT >& lhs, const TLValue< ScalarT >& rhs )
+template< typename ScalarT, spv::StorageClass SCL1, spv::StorageClass SCL2, typename LeftT >
+VPP_INLINE auto operator* ( const TLValue< ScalarT, SCL1 >& lhs, const TLValue< ScalarT, SCL2 >& rhs )
 {
     const TRValue< ScalarT > lrv = lhs;
     const TRValue< ScalarT > rrv = rhs;
@@ -1109,20 +1300,36 @@ VPP_INLINE auto operator* ( const TLValue< ScalarT >& lhs, const TLValue< Scalar
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+typedef TBoolLValue< spv::StorageClassFunction > VBool;
+typedef TBoolLValue< spv::StorageClassWorkgroup > WBool;
+
 typedef TRValue< int > Int;
-typedef TLValue< int > VInt;
+typedef TLValue< int, spv::StorageClassFunction > VInt;
+typedef TLValue< int, spv::StorageClassWorkgroup > WInt;
 
 typedef TRValue< unsigned int > UInt;
-typedef TLValue< unsigned int > VUInt;
+typedef TLValue< unsigned int, spv::StorageClassFunction > VUInt;
+typedef TLValue< unsigned int, spv::StorageClassWorkgroup > WUInt;
 
 typedef TRValue< float > Float;
-typedef TLValue< float > VFloat;
+typedef TLValue< float, spv::StorageClassFunction > VFloat;
+typedef TLValue< float, spv::StorageClassWorkgroup > WFloat;
 
 typedef TRValue< double > Double;
-typedef TLValue< double > VDouble;
+typedef TLValue< double, spv::StorageClassFunction > VDouble;
+typedef TLValue< double, spv::StorageClassWorkgroup > WDouble;
 
 typedef TRValue< float16_t > Half;
-typedef TLValue< float16_t > VHalf;
+typedef TLValue< float16_t, spv::StorageClassFunction > VHalf;
+typedef TLValue< float16_t, spv::StorageClassWorkgroup > WHalf;
+
+typedef TRValue< std::int64_t > Int64;
+typedef TLValue< std::int64_t, spv::StorageClassFunction > VInt64;
+typedef TLValue< std::int64_t, spv::StorageClassWorkgroup > WInt64;
+
+typedef TRValue< std::uint64_t > UInt64;
+typedef TLValue< std::uint64_t, spv::StorageClassFunction > VUInt64;
+typedef TLValue< std::uint64_t, spv::StorageClassWorkgroup > WUInt64;
 
 // -----------------------------------------------------------------------------
 
@@ -1132,6 +1339,8 @@ VPP_DEFINE_LBASE_INT_OPERATORS ( Int, int )
 VPP_DEFINE_LBASE_INT_OPERATORS ( UInt, unsigned int )
 VPP_DEFINE_LBASE_OPERATORS ( Float, float )
 VPP_DEFINE_LBASE_OPERATORS ( Double, double )
+VPP_DEFINE_LBASE_INT_OPERATORS ( Int64, std::int64_t )
+VPP_DEFINE_LBASE_INT_OPERATORS ( UInt64, std::uint64_t )
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
@@ -1147,8 +1356,8 @@ struct StructMemberTraits< int >
     static const unsigned int row_count = 0u;
     static const unsigned int column_count = 0u;
     typedef int scalar_type;
-    typedef TRValue< int > rvalue_type;
-    typedef TLValue< int > lvalue_type;
+    typedef Int rvalue_type;
+    typedef VInt lvalue_type;
     typedef int data_type;
 };
 
@@ -1165,8 +1374,8 @@ struct StructMemberTraits< unsigned int >
     static const unsigned int row_count = 0u;
     static const unsigned int column_count = 0u;
     typedef unsigned int scalar_type;
-    typedef TRValue< unsigned int > rvalue_type;
-    typedef TLValue< unsigned int > lvalue_type;
+    typedef UInt rvalue_type;
+    typedef VUInt lvalue_type;
     typedef unsigned int data_type;
 };
 
@@ -1183,8 +1392,8 @@ struct StructMemberTraits< float >
     static const unsigned int row_count = 0u;
     static const unsigned int column_count = 0u;
     typedef float scalar_type;
-    typedef TRValue< float > rvalue_type;
-    typedef TLValue< float > lvalue_type;
+    typedef Float rvalue_type;
+    typedef VFloat lvalue_type;
     typedef float data_type;
 };
 
@@ -1201,9 +1410,45 @@ struct StructMemberTraits< double >
     static const unsigned int row_count = 0u;
     static const unsigned int column_count = 0u;
     typedef double scalar_type;
-    typedef TRValue< double > rvalue_type;
-    typedef TLValue< double > lvalue_type;
+    typedef Double rvalue_type;
+    typedef VDouble lvalue_type;
     typedef double data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< std::int64_t >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = 0;
+    static const unsigned int row_count = 0u;
+    static const unsigned int column_count = 0u;
+    typedef std::int64_t scalar_type;
+    typedef Int64 rvalue_type;
+    typedef VInt64 lvalue_type;
+    typedef std::int64_t data_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< std::uint64_t >
+{
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = 0;
+    static const unsigned int row_count = 0u;
+    static const unsigned int column_count = 0u;
+    typedef std::uint64_t scalar_type;
+    typedef UInt64 rvalue_type;
+    typedef VUInt64 lvalue_type;
+    typedef std::uint64_t data_type;
 };
 
 // -----------------------------------------------------------------------------

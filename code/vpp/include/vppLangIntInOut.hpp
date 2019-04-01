@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -69,6 +69,8 @@ public:
         const ValueT& value,
         const IVec2& coords,
         const VkExtent3D& extent );
+
+    const Device& device() const;
 
 protected:
     KShaderTranslator* d_pTranslator;
@@ -220,14 +222,28 @@ class ComputeShader : public Shader
 public:
     VPP_INLINE ComputeShader ( const SLocalGroupSize& localSize ) :
         Shader ( spv::ExecutionModelGLCompute ),
-        inWorkgroupSize ( localSize, d_pFunction )
+        inWorkgroupSize ( localSize, d_pFunction ),
+        d_localGroupSize ( localSize )
     {
         d_pTranslator->addExecutionMode (
             d_pFunction, spv::ExecutionModeLocalSize,
-            static_cast< int >( localSize.x ),
-            static_cast< int >( localSize.y ),
-            static_cast< int >( localSize.z )
+            localSize.x, localSize.y, localSize.z
         );
+    }
+
+    VPP_INLINE const SLocalGroupSize& localGroupSize() const
+    {
+        return d_localGroupSize;
+    }
+
+    VPP_INLINE unsigned int getTotalWorkgroupMemory() const
+    {
+        return d_pTranslator->getTotalSharedMemory();
+    }
+
+    VPP_INLINE unsigned int getFreeWorkgroupMemory() const
+    {
+        return d_pTranslator->getFreeSharedMemory();
     }
 
     static const EShader shader_type = SH_COMPUTE;
@@ -237,6 +253,9 @@ public:
     var::inLocalInvocationId inLocalInvocationId;
     var::inGlobalInvocationId inGlobalInvocationId;
     var::inWorkgroupSize inWorkgroupSize;
+
+private:
+    SLocalGroupSize d_localGroupSize;
 };
 
 // -----------------------------------------------------------------------------
@@ -266,6 +285,13 @@ void Shader :: DebugProbe (
     pConfig->registerDebugProbe ( hProbe );
 
     pProbe->write ( coords, value );
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE const Device& Shader :: device() const
+{
+    return KShaderTranslator::get()->getDevice();
 }
 
 // -----------------------------------------------------------------------------
@@ -484,7 +510,7 @@ public:
     }
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -562,7 +588,7 @@ public:
     }
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -1052,7 +1078,7 @@ private:
             "Interpolation functions may only be called from fragment shaders" );
 
         KShaderTranslator* pTranslator = KShaderTranslator::get();
-        pTranslator->addCapability ( spv::CapabilityInterpolationFunction );
+        pTranslator->useCapability ( spv::CapabilityInterpolationFunction );
 
         std::vector< spv::Id > args;
         args.reserve ( 2 );

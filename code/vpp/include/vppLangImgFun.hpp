@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -132,10 +132,6 @@ VPP_INLINE typename TRImage< ViewT, ScalarT >::size_type ImageSize (
     typedef TRImage< ViewT, ScalarT > image_type;
     typedef typename image_type::size_type result_type;
 
-    static_assert (
-        image_type::DIM != spv::DimCube,
-        "ImageSize does not support cube map images" );
-
     return result_type ( detail::TextureQuery ( img, spv::OpImageQuerySize ) );
 }
 
@@ -148,13 +144,14 @@ VPP_INLINE typename TRTexture< ViewT, ScalarT >::size_type ImageSize (
     typedef TRTexture< ViewT, ScalarT > image_type;
     typedef typename image_type::size_type result_type;
 
+    // 1, 2, 3, cube => MULTISAMPLED
     static_assert (
-        image_type::DIM != spv::DimCube,
-        "ImageSize does not support cube map images" );
-
-    static_assert (
-        image_type::DIM != spv::Dim3D,
-        "ImageSize does not support 3D texture images" );
+        ! ( image_type::DIM == spv::Dim1D
+            || image_type::DIM == spv::Dim2D
+            || image_type::DIM == spv::Dim3D
+            || image_type::DIM == spv::DimCube )
+        || ( image_type::MULTISAMPLED == true ),
+        "ImageSize: you must use TextureSize with 'lod' argument for this image" );
 
     return result_type ( detail::TextureQuery ( img, spv::OpImageQuerySize ) );
 }
@@ -168,13 +165,14 @@ VPP_INLINE typename TRSampledTexture< ViewT, ScalarT >::size_type ImageSize (
     typedef TRSampledTexture< ViewT, ScalarT > image_type;
     typedef typename image_type::size_type result_type;
 
+    // 1, 2, 3, cube => MULTISAMPLED
     static_assert (
-        image_type::DIM != spv::DimCube,
-        "ImageSize does not support cube map images" );
-
-    static_assert (
-        image_type::DIM != spv::Dim3D,
-        "ImageSize does not support 3D texture images" );
+        ! ( image_type::DIM == spv::Dim1D
+            || image_type::DIM == spv::Dim2D
+            || image_type::DIM == spv::Dim3D
+            || image_type::DIM == spv::DimCube )
+        || ( image_type::MULTISAMPLED == true ),
+        "ImageSize: you must use TextureSize with 'lod' argument for this image" );
 
     return result_type ( detail::TextureQuery ( img, spv::OpImageQuerySize ) );
 }
@@ -191,12 +189,15 @@ VPP_INLINE typename ImageT::size_type TextureSize (
     typedef typename image_type::size_type result_type;
 
     static_assert (
-        image_type::DIM != spv::DimBuffer,
-        "TextureSize does not support this image type" );
+        ( image_type::DIM == spv::Dim1D
+          || image_type::DIM == spv::Dim2D
+          || image_type::DIM == spv::Dim3D
+          || image_type::DIM == spv::DimCube ),
+        "TextureSize: must be image of dimensionality: 1D, 2D, 3D or Cube (Buffer and Rect are not allowed)" );
 
     static_assert (
         image_type::MULTISAMPLED == false,
-        "TextureSize does not support multisampled images" );
+        "TextureSize with 'lod' argument does not support multisampled images" );
 
     return result_type ( TextureQuery ( img, spv::OpImageQuerySizeLod, lod.id() ) );
 }
@@ -352,9 +353,6 @@ TRVector< ScalarT, 4 > SubpassLoad (
         pTranslator->makeVectorType ( pTranslator->makeIntType ( 32 ), 2 ),
         comps );
 
-    if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
-
     return TRVector< ScalarT, 4 > ( KId ( pTranslator->createOp (
         spv::OpImageRead, TRVector< ScalarT, 4 >::getType(), operands ) ) );
 }
@@ -374,9 +372,6 @@ TRVector< ScalarT, 4 > SubpassLoad (
 
     // Pitfall: these coords are relative to current pixel position,
     // according to SPIR-V spec. This is different from other image read ops.
-
-    if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     return TRVector< ScalarT, 4 > ( KId ( pTranslator->createOp (
         spv::OpImageRead, TRVector< ScalarT, 4 >::getType(), operands ) ) );
@@ -413,9 +408,6 @@ TRVector< ScalarT, 4 > SubpassLoad (
     operands [ 2 ] = spv::ImageOperandsSampleMask;
     operands [ 3 ] = nSample.id();
 
-    if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
-
     return TRVector< ScalarT, 4 > ( KId ( pTranslator->createOp (
         spv::OpImageRead, TRVector< ScalarT, 4 >::getType(), operands ) ) );
 }
@@ -440,9 +432,6 @@ TRVector< ScalarT, 4 > SubpassLoad (
     operands [ 2 ] = spv::ImageOperandsSampleMask;
     operands [ 3 ] = nSample.id();
 
-    if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
-
     return TRVector< ScalarT, 4 > ( KId ( pTranslator->createOp (
         spv::OpImageRead, TRVector< ScalarT, 4 >::getType(), operands ) ) );
 }
@@ -462,22 +451,22 @@ TRVector< ScalarT, 4 > ImageLoad (
     operands [ 1 ] = coords.id();
 
     if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
+        pTranslator->useCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     switch ( ViewT::DIM )
     {
-        case spv::Dim1D: pTranslator->addCapability ( spv::CapabilityImage1D ); break;
-        case spv::DimRect: pTranslator->addCapability ( spv::CapabilityImageRect ); break;
-        case spv::DimBuffer: pTranslator->addCapability ( spv::CapabilityImageBuffer ); break;
+        case spv::Dim1D: pTranslator->useCapability ( spv::CapabilityImage1D ); break;
+        case spv::DimRect: pTranslator->useCapability ( spv::CapabilityImageRect ); break;
+        case spv::DimBuffer: pTranslator->useCapability ( spv::CapabilityImageBuffer ); break;
 
         case spv::DimCube:
             if ( ViewT::ARRAYED )
-                pTranslator->addCapability ( spv::CapabilityImageCubeArray );
+                pTranslator->useCapability ( spv::CapabilityImageCubeArray );
             break;
 
         default:
             if ( ViewT::ARRAYED && ViewT::MULTISAMPLED )
-                pTranslator->addCapability ( spv::CapabilityImageMSArray );
+                pTranslator->useCapability ( spv::CapabilityImageMSArray );
             break;
     }
 
@@ -506,10 +495,10 @@ TRVector< ScalarT, 4 > ImageLoad (
     operands [ 3 ] = nSample.id();
 
     if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
+        pTranslator->useCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     if ( ViewT::ARRAYED )
-        pTranslator->addCapability ( spv::CapabilityImageMSArray );
+        pTranslator->useCapability ( spv::CapabilityImageMSArray );
 
     return TRVector< ScalarT, 4 > ( KId ( pTranslator->createOp (
         spv::OpImageRead, TRVector< ScalarT, 4 >::getType(), operands ) ) );
@@ -531,22 +520,22 @@ void ImageStore (
     operands [ 2 ] = value.id();
 
     if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
+        pTranslator->useCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     switch ( ViewT::DIM )
     {
-        case spv::Dim1D: pTranslator->addCapability ( spv::CapabilityImage1D ); break;
-        case spv::DimRect: pTranslator->addCapability ( spv::CapabilityImageRect ); break;
-        case spv::DimBuffer: pTranslator->addCapability ( spv::CapabilityImageBuffer ); break;
+        case spv::Dim1D: pTranslator->useCapability ( spv::CapabilityImage1D ); break;
+        case spv::DimRect: pTranslator->useCapability ( spv::CapabilityImageRect ); break;
+        case spv::DimBuffer: pTranslator->useCapability ( spv::CapabilityImageBuffer ); break;
 
         case spv::DimCube:
             if ( ViewT::ARRAYED )
-                pTranslator->addCapability ( spv::CapabilityImageCubeArray );
+                pTranslator->useCapability ( spv::CapabilityImageCubeArray );
             break;
 
         default:
             if ( ViewT::ARRAYED && ViewT::MULTISAMPLED )
-                pTranslator->addCapability ( spv::CapabilityImageMSArray );
+                pTranslator->useCapability ( spv::CapabilityImageMSArray );
             break;
     }
 
@@ -569,22 +558,22 @@ void ImageStore (
     operands [ 2 ] = value.id();
 
     if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
+        pTranslator->useCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     switch ( ViewT::DIM )
     {
-        case spv::Dim1D: pTranslator->addCapability ( spv::CapabilityImage1D ); break;
-        case spv::DimRect: pTranslator->addCapability ( spv::CapabilityImageRect ); break;
-        case spv::DimBuffer: pTranslator->addCapability ( spv::CapabilityImageBuffer ); break;
+        case spv::Dim1D: pTranslator->useCapability ( spv::CapabilityImage1D ); break;
+        case spv::DimRect: pTranslator->useCapability ( spv::CapabilityImageRect ); break;
+        case spv::DimBuffer: pTranslator->useCapability ( spv::CapabilityImageBuffer ); break;
 
         case spv::DimCube:
             if ( ViewT::ARRAYED )
-                pTranslator->addCapability ( spv::CapabilityImageCubeArray );
+                pTranslator->useCapability ( spv::CapabilityImageCubeArray );
             break;
 
         default:
             if ( ViewT::ARRAYED && ViewT::MULTISAMPLED )
-                pTranslator->addCapability ( spv::CapabilityImageMSArray );
+                pTranslator->useCapability ( spv::CapabilityImageMSArray );
             break;
     }
 
@@ -614,10 +603,10 @@ void ImageStore (
     operands [ 4 ] = nSample.id();
 
     if ( pTranslator->getImageTypeFormat ( pTranslator->getImageType ( img.id() ) ) == spv::ImageFormatUnknown )
-        pTranslator->addCapability ( spv::CapabilityStorageImageReadWithoutFormat );
+        pTranslator->useCapability ( spv::CapabilityStorageImageReadWithoutFormat );
 
     if ( ViewT::ARRAYED )
-        pTranslator->addCapability ( spv::CapabilityImageMSArray );
+        pTranslator->useCapability ( spv::CapabilityImageMSArray );
 
     pTranslator->createNoResultOp ( spv::OpImageWrite, operands );
 }

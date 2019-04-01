@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -286,54 +286,240 @@ void EndSwitch();
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+/**
+    \brief Creates shader-level function.
+
+    Vulkan allows you to define functions inside shaders. VPP has special syntax
+    for it. Note that this is different from defining a C++ function containing
+    shader code. The latter will cause the function code to be inlined into the caller
+    code. The notation described here allows to define a true function on GPU level.
+    The purpose is to avoid GPU code bloat.
+
+    Four major components of each function definition are Function and Par templates,
+    as well as Begin(), End() and Return() constructs. Function defines the function,
+    Par defines a parameter of the function, Begin() and End() delimit the function body.
+    Return() allows to return a value.
+
+    The VPP code which defines a function is meant to be executed as the shader definition
+    code, before the function is used. The Function template actually creates a callable
+    \b functor in local scope, which in turn may be called from the shader. The simplest
+    way to use function looks like this:
+
+    \code
+
+        void MyPipeline :: fComputeShader ( vpp::ComputeShader* pShader )
+        {
+            using namespace vpp;
+
+            // ...
+
+            Function< Int, Int > factorial ( "factorial" );
+                Par< Int > factX;
+            Begin();
+            {
+                VInt t = 0;
+                VInt r = 1;
+
+                For ( t, 2, factX+1 );
+                    r *= t;
+                Rof();
+
+                Return ( r );
+            }
+            End();
+
+            const Int arg = ...; // compute some arg for factorial
+            const Int fact = factorial ( arg );
+
+            // ...
+        }
+
+    \endcode
+
+    Here the shader first defines a function named \c factorial and calls it. You may call
+    the function as many times you want from anywhere in the shader, assuming the functor still exists. 
+
+    The first template argument of Function template defines the return type. Zero or more
+    types which may come later determine parameter types. These must match with Par declarations
+    that come later.
+
+    The name of the function should be passed to its constructor. This name will be emited into
+    final SPIR-V code and may be helpful during diagnostics.
+
+    The drawback of the notation shown above is leakage of \c factX paramter name to the
+    shader code scope. It might be a problem if you want to use another variable with this name.
+    To prevent this, use slighly modified version, like in the \c binomial function below:
+
+    \code
+            // ...
+
+            Function< Int, Int, Int > binomial ( "binomial" );
+            {
+                Par< Int > n;
+                Par< Int > k;
+                Begin();
+                {
+                    Return ( factorial ( n ) / ( factorial ( k )*factorial ( n-k ) ) );
+                }
+                End();
+            }
+
+            // ...
+    \endcode
+
+    Here we have entire definition enclosed in additional C++ scope which hides parameter
+    names from the outside.
+    
+    In all cases the scope between Begin() and End() is required, especially if the function
+    defines any mutable variables of its own. It is an error to omit this scope. C++ compiler
+    can't detect this error, but VPP will do and an exception will be thrown in such case during
+    shader compilation.
+
+    What if we want a reusable function definition, e.g. to be placed in some library? The solution
+    is simple - we can just convert the definition above into C++ class, like in this example:
+
+    \code
+        class GFunGCD : public vpp::Function< vpp::Int, vpp::Int, vpp::Int >
+        {
+        public:
+            GFunGCD();
+
+        private:
+            vpp::Par< vpp::Int > _n;
+            vpp::Par< vpp::Int > _k;
+        };
+
+        GFunGCD :: GFunGCD() :
+            vpp::Function< vpp::Int, vpp::Int, vpp::Int >( "gcd" )
+        {
+            using namespace vpp;
+
+            Begin();
+            {
+                VInt x = _n;
+                VInt y = _k;
+                VInt s = 0;
+                VInt t = 0;
+
+                If ( x < y );
+                    t = x;
+                    x = y;
+                    y = t;
+                Fi();
+
+                Do(); While ( ( ( x & 1 ) | ( y & 1 ) ) == 0 );
+                    x >>= 1u;
+                    y >>= 1u;
+                    ++s;
+                Od();
+
+                Do(); While ( x != 0 );
+                {
+                    Do(); While ( ( x & 1 ) == 0 );
+                        x >>= 1u;
+                    Od();
+
+                    Do(); While ( ( y & 1 ) == 0 );
+                        y >>= 1u;
+                    Od();
+
+                    If ( x >= y );
+                        x = ( x - y ) >> 1u;
+                    Else();
+                        y = ( y - x ) >> 1u;
+                    Fi();
+                }
+                Od();
+
+                Return ( y << s );
+            }
+            End();
+        }
+
+        void MyPipeline :: fComputeShader ( vpp::ComputeShader* pShader )
+        {
+            using namespace vpp;
+
+            // ...
+
+            GFunGCD gcd;
+
+            const Int x = gcd ( 17*19, 17*23 );
+
+            // ...
+        }
+
+    \endcode
+
+    The rules are now as follows:
+    - Inherit the class from Function template.
+    - Specify parameters as private fields in the class.
+    - In the constructor initialization list, provide the function name.
+    - In the constructor body define the function. Usual Begin() and End() rules apply
+        here as well.
+    - Create object instance (like \c gcd above) in the calling shader to "import" the
+        function. This operation will trigger generation function code to SPIR-V.
+    - Call the functor to make a function call.
+
+    Also it should be noted that you can pass additional parameters on the CPU
+    level to the function object in order to parameterize the function. It can also be
+    a C++ template, use virtual functions and generally utilise any C++ programming technique.
+*/
+
 template< class ReturnType, typename... Args >
 struct Function : public detail::KFunction
 {
+    /** \brief Starts the definition of shader-level function.
+    
+        Specify the function name as the parameter. The name will be visible
+        in generated code.
+    */
+
     Function ( const char* pName = "unnamedFunction" );
+
+    /**
+        \brief Calls the defined function from inside shader code on the GPU.
+    */
 
     ReturnType operator()( typename Args::rvalue_type ... args );
 };
 
+/**
+    \brief Defines a function parameter.
+*/
+
 template< class ParamType >
 struct Par
 {
-    Par();
-
-    inline operator rvalue_type() const
-    {
-        ParamType par ( d_variableId );
-        return rvalue_type ( par );
-    }
-
-    template< typename IndexT >
-    inline auto operator[]( const IndexT& idx ) const
-    {
-        const rvalue_type rValue = *this;
-        return rValue [ idx ];
-    }
-
-    inline int size() const
-    {
-        const rvalue_type rValue = *this;
-        return rValue.size();
-    }
-
-    inline int Size() const
-    {
-        const rvalue_type rValue = *this;
-        return rValue.Size();
-    }
-
-    VPP_DEFINE_PARAM_OPERATORS
 };
 
-// -----------------------------------------------------------------------------
+/**
+    \brief Marks the start of function body.
+
+    Caution: C++ scope is required between Begin() and End().
+*/
 
 void Begin();
 
+/**
+    \brief Marks the end of function body.
+
+    Caution: C++ scope is required between Begin() and End().
+*/
+
 void End();
 
+/**
+    \brief Immediately returns from the function.
+
+    Use when the erturn type is Void.
+*/
+
 void Return();
+
+/**
+    \brief Returns the value from the function.
+*/
 
 template< typename ValueT >
 void Return ( const ValueT& value );
@@ -368,41 +554,22 @@ auto Select ( const CondT& cond, const Arg1T& argIfTrue, const Arg2T& argIfFalse
 
 // -----------------------------------------------------------------------------
 
-/**
-    \brief Tags the next declared variable to be allocated in shared memory.
-
-*/
-
-void Shared();
-
-/**
-    \brief Tags the next declared variable to be visible across functions.
-
-*/
-
-void Static();
-
-// -----------------------------------------------------------------------------
-
 enum EMemorySemantics
 {
     MSM_NONE,
     MSM_ACQ,
     MSM_REL,
     MSM_ACQREL,
-    MSM_SEQCONS,
     MSM_UNIFORM,
     MSM_SUBGROUP,
     MSM_WORKGROUP,
-    MSM_CROSSWG,
-    MSM_ATOMIC,
     MSM_IMAGE
 };
 
 // -----------------------------------------------------------------------------
 
 /**
-    \brief Creates control and memory barrier affecting threads in workgroup.
+    \brief Creates control and memory barrier affecting threads in a workgroup.
 */
 
 void WorkgroupBarrier (
@@ -410,10 +577,11 @@ void WorkgroupBarrier (
     EMemorySemantics msSem = MSM_ACQREL );
 
 /**
-    \brief Creates control and memory barrier affecting threads in all workgroups.
+    \brief Creates control and memory barrier affecting threads in a subgroup.
 */
-void DeviceBarrier ( 
-    EMemorySemantics msClass = MSM_CROSSWG,
+
+void SubgroupBarrier (
+    EMemorySemantics msClass = MSM_SUBGROUP,
     EMemorySemantics msSem = MSM_ACQREL );
 
 // -----------------------------------------------------------------------------

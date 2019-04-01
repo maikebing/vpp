@@ -54,6 +54,25 @@ namespace vpp {
 
     The CommandBufferRecorder should be temporary, created on stack.
     Do not store it.
+
+    You must finalize the recorder (by ensured the destructor is called) before the buffer is
+    submitted to a queue. For example:
+
+    \code
+        // Create the buffer.
+        CommandBuffer cmdBuffer = m_device.defaultCmdPool().createBuffer();
+
+        {
+            // Initialize the recorder, perform rendering, finalize recorder (by destructor).
+            CommandBufferRecorder recorder ( cmdBuffer );
+            recorder.render ( m_pass, m_frameBuffer );
+        }
+
+        // Submit the buffer.
+        Queue q ( m_device, Q_GRAPHICS );
+        q.submit ( cmdBuffer );
+
+    \endcode
 */
 
 class CommandBufferRecorder

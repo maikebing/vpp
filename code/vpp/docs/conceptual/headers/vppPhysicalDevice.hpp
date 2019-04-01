@@ -31,8 +31,34 @@ namespace vpp {
 /**
     \brief Optional device feature enumeration.
 
+    VPP offers unified interface to deal with both device features and known
+    device extensions. Thus, extensions are listed as features in this enumeration
+    and are being enabled in the same fashion. VPP automatically handles dependencies
+    between features and extensions. For example, if you enable the 
+    \c fShaderSharedInt64Atomics feature (e.g. to use Int64 in a shader),
+    VPP will automatically enable \c fExtShaderAtomicInt64 extension.
+
+    Extensions correspond to values with \c fExt prefix. Other values are for features.
+
     See section 30.1 in the official Vulkan docs for complete description of
-    these features.
+    base features. For extension-specific features, you can find separate edition
+    of Vulkan spec document augmented with a description of each extension.
+
+    Caution: values of this type listed below are intended to be used only
+    as arguments to methods accepting EFeature type. Do not declare your
+    own EFeature variables nor use the values in other contexts, as you will
+    likely encounter C++ errors if you do so.
+
+    Extensions which are listed in the enumeration below are being referred to
+    as <b>known extensions</b>. Those are mostly Khronos and multivendor extensions.
+    Some of these extensions are also integrated into VPP API, but not all.
+    Integration of extensions is a work in progress. Currently the following ones
+    have explicit support in the VPP API:
+    - fExtShaderAtomicInt64
+
+    Vendor-specific extensions are currently unsupported. Subsequent versions of
+    VPP will make possible to enable them and use though mixing of VPP and core
+    Vulkan API.
 */
 
 enum EFeature
@@ -91,7 +117,125 @@ enum EFeature
     fSparseResidency16Samples,
     fSparseResidencyAliased,
     fVariableMultisampleRate,
-    fInheritedQueries
+    fInheritedQueries,
+    fMultiview,
+    fMultiviewGeometryShader,
+    fMultiviewTessellationShader,
+    fVariablePointersStorageBuffer,
+    fVariablePointers,
+    fStorageBuffer8BitAccess,
+    fUniformAndStorageBuffer8BitAccess,
+    fStoragePushConstant8,
+    fShaderBufferInt64Atomics,
+    fShaderSharedInt64Atomics,
+    fStorageBuffer16BitAccess,
+    fUniformAndStorageBuffer16BitAccess,
+    fStoragePushConstant16,
+    fStorageInputOutput16,
+    fShaderFloat16,
+    fShaderInt8,
+    fSamplerYcbcrConversion,
+    fProtectedMemory,
+    fAdvancedBlendCoherentOperations,
+    fConditionalRendering,
+    fInheritedConditionalRendering,
+    fShaderDrawParameters,
+    fShaderInputAttachmentArrayDynamicIndexing,
+    fShaderUniformTexelBufferArrayDynamicIndexing,
+    fShaderStorageTexelBufferArrayDynamicIndexing,
+    fShaderUniformBufferArrayNonUniformIndexing,
+    fShaderSampledImageArrayNonUniformIndexing,
+    fShaderStorageBufferArrayNonUniformIndexing,
+    fShaderStorageImageArrayNonUniformIndexing,
+    fShaderInputAttachmentArrayNonUniformIndexing,
+    fShaderUniformTexelBufferArrayNonUniformIndexing,
+    fShaderStorageTexelBufferArrayNonUniformIndexing,
+    fDescriptorBindingUniformBufferUpdateAfterBind,
+    fDescriptorBindingSampledImageUpdateAfterBind,
+    fDescriptorBindingStorageImageUpdateAfterBind,
+    fDescriptorBindingStorageBufferUpdateAfterBind,
+    fDescriptorBindingUniformTexelBufferUpdateAfterBind,
+    fDescriptorBindingStorageTexelBufferUpdateAfterBind,
+    fDescriptorBindingUpdateUnusedWhilePending,
+    fDescriptorBindingPartiallyBound,
+    fDescriptorBindingVariableDescriptorCount,
+    fRuntimeDescriptorArray,
+    fDecodeModeSharedExponent,
+    fVertexAttributeInstanceRateDivisor,
+    fVertexAttributeInstanceRateZeroDivisor,
+    fTransformFeedback,
+    fGeometryStreams,
+    fVulkanMemoryModel,
+    fVulkanMemoryModelDeviceScope,
+    fVulkanMemoryModelAvailabilityVisibilityChains,
+    fInlineUniformBlock,
+    fDescriptorBindingInlineUniformBlockUpdateAfterBind,
+    fFragmentDensityMap,
+    fFragmentDensityMapDynamic,
+    fFragmentDensityMapNonSubsampledImages,
+    fScalarBlockLayout,
+    fDepthClipEnable,
+    fMemoryPriority,
+    fBufferDeviceAddress,
+    fBufferDeviceAddressCaptureReplay,
+    fBufferDeviceAddressMultiDevice,
+    fExtBlendOperationAdvanced,
+    fExtConditionalRendering,
+    fExtConservativeRasterization,
+    fExtDepthRangeUnrestricted,
+    fExtDescriptorIndexing,
+    fExtDiscardRectangles,
+    fExtExternalMemoryHost,
+    fExtHdrMetadata,
+    fExtInlineUniformBlock,
+    fExtPostDepthCoverage,
+    fExtSampleLocations,
+    fExtSamplerFilterMinmax,
+    fExtScalarBlockLayout,
+    fExtShaderSubgroupBallot,
+    fExtShaderSubgroupVote,
+    fExtShaderViewportIndexLayer,
+    fExtTransformFeedback,
+    fExtVertexAttributeDivisor,
+    fExtStorage16bit,
+    fExtStorage8bit,
+    fExtBindMemory2,
+    fExtCreateRenderpass2,
+    fExtDedicatedAllocation,
+    fExtDepthStencilResolve,
+    fExtDescriptorUpdateTemplate,
+    fExtDeviceGroup,
+    fExtDrawIndirectCount,
+    fExtDriverProperties,
+    fExtExternalFence,
+    fExtExternalFenceWin32,
+    fExtExternalMemory,
+    fExtExternalMemoryWin32,
+    fExtExternalSemaphore,
+    fExtExternalSemaphoreWin32,
+    fExtGetMemoryRequirements2,
+    fExtImageFormatList,
+    fExtMultiview,
+    fExtPushDescriptor,
+    fExtRelaxedBlockLayout,
+    fExtSamplerMirrorClampToEdge,
+    fExtSamplerYcbcrConversion,
+    fExtShaderAtomicInt64,
+    fExtShaderDrawParameters,
+    fExtShaderFloat16Int8,
+    fExtShaderFloatControls,
+    fExtStorageBufferStorageClass,
+    fExtSwapchain,
+    fExtSwapchainMutableFormat,
+    fExtVariablePointers,
+    fExtVulkanMemoryModel,
+    fExtWin32KeyedMutex,
+    fExtFragmentDensityMap,
+    fExtAstcDecodeMode,
+    fExtDepthClipEnable,
+    fExtMemoryPriority,
+    fExtBufferDeviceAddress
+
 };
 
 // -----------------------------------------------------------------------------
@@ -127,7 +271,10 @@ public:
     VkPhysicalDevice handle() const;
 
     /** \brief Retrieves device properties. */
-    VkPhysicalDeviceProperties getPhysicalDeviceProperties() const;
+    const VkPhysicalDeviceProperties& properties() const;
+
+    /** \brief Retrieves features and extensions supported by the device. */
+    const DeviceFeatures& features() const;
 
     /** \brief Retrieves memory properties for this device. */
     VkPhysicalDeviceMemoryProperties getMemoryProperties() const;
@@ -140,9 +287,6 @@ public:
 
     /** \brief Checks whether a queue family of this device supports presentation to a given surface. */
     bool supportsSurface ( const Surface& surface, size_t iFamily ) const;
-
-    /** \brief Checks whether this device supports given feature. */
-    bool supportsFeature ( EFeature feature ) const;
 
     /** \brief Gets textual representation of limits section in device properties. Useful for diagnostic logs.*/
     void getLimitValuesAsText ( std::ostream& sst ) const;
@@ -185,6 +329,9 @@ public:
 
     /** \brief Checks whether this device supports specified depth/stencil format. */
     bool supportsDepthStencilFormat ( VkFormat fmt ) const;
+
+    /** \brief Gets a list of available Vulkan extensions for this device. */
+    VkResult enumerateExtensions ( ExtensionProperties* pResult );
 };
 
 // -----------------------------------------------------------------------------
@@ -199,32 +346,65 @@ typedef std::vector< PhysicalDevice > PhysicalDevices;
 // -----------------------------------------------------------------------------
 
 /**
-    \brief Utility class for dealing with device feature lists.
+    \brief Utility class for dealing with device features and known extensions.
 
-    Certain device features must be explicitly enabled to be used.
-    DeviceFeatures class manages such features. All features are
-    disabled by default, and you can enable them selectively using
-    the enableIfSupported() method.
+    Certain device features and extensions must be explicitly enabled
+    in order to make their functionality available. DeviceFeatures class manages
+    such features and extensions known by VPP. All features and most extensions
+    are disabled by default, and you can enable them selectively calling the
+    enableIfSupported() method.
 
     Next, you should specify the DeviceFeatures object to the Device
     constructor. DeviceFeatures is only a container of flags,
-    it is the Device object that will actually enable the features.
+    it is the Device object that will actually enable the features and extensions.
 */
 
-class DeviceFeatures : public VkPhysicalDeviceFeatures
+class DeviceFeatures
 {
 public:
-    /** \brief Constructs the feature list for specified device. */
-    DeviceFeatures ( const PhysicalDevice& hPhysDevice );
-
-    /** \brief Enables specified feature, if supported by the device.
+    /** \brief Constructs the empty feature list.
     
-        Returns whether feaure is supported and has been enabled.
+        Everything is disabled except certain extensions enabled by default (like
+        the swapchain) and extensions incorporated into core Vulkan API.
     */
-    bool enableIfSupported ( EFeature feature );
+    DeviceFeatures();
 
-    /** \brief Checks whether the device supports given feature. */
-    bool isSupported ( EFeature feature ) const;
+    /** \brief Constructs a copy of specified feature list. */
+    DeviceFeatures ( const DeviceFeatures& rhs );
+
+    /** \brief Makes a copy of specified feature list. */
+    const DeviceFeatures& operator= ( const DeviceFeatures& rhs );
+
+    /** \brief Reads supported features and known extensions from specified device.
+    
+        Note: this retrieves supported features and known extensions from Vulkan
+        each time. For a cached version, refer to PhysicalDevice::features()
+        method.
+    */
+    void readSupported ( const PhysicalDevice& hDevice );
+
+    /** \overload */
+    void readSupported ( VkPhysicalDevice hDevice );
+
+    /** \brief Reads the status of specified feature or known extension.
+    
+        Value of \c true means that specific feature or extension is marked as enabled
+        in this particular feature set.
+    */
+    bool operator[] ( EFeature feature ) const;
+    
+    /** \brief Enables specified feature or known extension if supported by the device.
+    
+        Returns whether enabling was successful.
+    */
+    bool enableIfSupported ( EFeature feature, const PhysicalDevice& hDevice );
+
+    /** \brief Retrieves the name of specified feature or known extension.
+    
+        For extensions, this will return the canonical extension name, e.g.
+        \c VK_KHR_shader_atomic_int64.
+    */
+    const char* getFeatureName ( EFeature feature );
 };
 
 // -----------------------------------------------------------------------------

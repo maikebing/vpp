@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -248,6 +248,17 @@ void TPipelineLayoutImpl< DefinitionT > :: initialize ( const Device& hDevice )
         d_descriptorPoolSizes [ iRes.descriptorType ].type = iRes.descriptorType;
         d_descriptorPoolSizes [ iRes.descriptorType ].descriptorCount += iRes.descriptorCount;
     }
+
+    d_descriptorPoolSizes.erase (
+        std::remove_if (
+            d_descriptorPoolSizes.begin(), d_descriptorPoolSizes.end(),
+            []( const VkDescriptorPoolSize& ps )
+            {
+                return ps.descriptorCount == 0;
+            }
+        ),
+        d_descriptorPoolSizes.end()
+    );
     
     VkPipelineLayoutCreateInfo pipelineLayoutCreateInfo;
     pipelineLayoutCreateInfo.sType = VK_STRUCTURE_TYPE_PIPELINE_LAYOUT_CREATE_INFO;

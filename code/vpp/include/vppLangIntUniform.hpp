@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -166,15 +166,15 @@ public:
 // -----------------------------------------------------------------------------
 
 class ioBuffer : public detail::TDescriptorType<
-    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, UniformBufferView >
+    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, StorageBufferView >
 {
 public:
     typedef detail::TDescriptorType<
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, UniformBufferView > descriptor_type;
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, StorageBufferView > descriptor_type;
 
     typedef detail::TDescriptorAssigner<
         VK_DESCRIPTOR_TYPE_STORAGE_BUFFER,
-        UniformBufferView, UniformBufferView > assigner_type;
+        StorageBufferView, StorageBufferView > assigner_type;
 
     typedef void rvalue_type;
 
@@ -192,7 +192,7 @@ public:
         descriptor_type ( set, binding, count )
     {}
 
-    VPP_INLINE assigner_type operator= ( const UniformBufferView& value )
+    VPP_INLINE assigner_type operator= ( const StorageBufferView& value )
     {
         return assigner_type ( d_id, d_set, d_binding, value );
     }
@@ -248,15 +248,15 @@ public:
 // -----------------------------------------------------------------------------
 
 class ioBufferDyn : public detail::TDescriptorType<
-    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, UniformBufferView >
+    VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, StorageBufferView >
 {
 public:
     typedef detail::TDescriptorType<
-        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, UniformBufferView > descriptor_type;
+        VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, StorageBufferView > descriptor_type;
 
     typedef detail::TDescriptorAssigner<
         VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC,
-        UniformBufferView, UniformBufferView > assigner_type;
+        StorageBufferView, StorageBufferView > assigner_type;
 
     typedef void rvalue_type;
 
@@ -274,7 +274,7 @@ public:
         descriptor_type ( set, binding, count )
     {}
 
-    VPP_INLINE assigner_type operator= ( const UniformBufferView& value )
+    VPP_INLINE assigner_type operator= ( const StorageBufferView& value )
     {
         return assigner_type ( d_id, d_set, d_binding, value );
     }
@@ -369,7 +369,7 @@ public:
 
     VPP_INLINE void verify ( const Device& hDevice ) const
     {
-        const auto& properties = hDevice.physical().getPhysicalDeviceProperties();
+        const auto& properties = hDevice.physical().properties();
 
         if ( sizeof ( DataBlock ) > properties.limits.maxPushConstantsSize )
         {
@@ -820,7 +820,7 @@ public:
     static const bool isReadOnly = BufferT::isReadOnly;
     typedef StructAccessor< GDefinition, true, ! isReadOnly > item_type;
 
-    VPP_INLINE UniformArray ( BufferT& buf, int size = 0, int stride = 0 ) :
+    VPP_INLINE UniformArray ( BufferT& buf, int size, int stride = 0 ) :
         detail::KUniformAccess ( BufferT::decoration ),
         d_id ( 0 ),
         d_typeId ( 0 ),
@@ -833,6 +833,14 @@ public:
             d_size, ( stride ? stride : sizeof ( Definition ) ) );
         d_id = ids.first;
         d_typeId = ids.second;
+    }
+
+    VPP_INLINE UniformArray ( BufferT& buf ) :
+        UniformArray ( buf, 0, 0 )
+    {
+        static_assert (
+            BufferT::decoration == spv::DecorationBufferBlock,
+            "Dynamically-sized arrays are allowed only for storage buffers (ioBuffer)" );
     }
 
     VPP_INLINE KId id() const
@@ -911,7 +919,7 @@ public:
     static const bool isReadOnly = BufferT::isReadOnly;
     static const bool indexable = true;
 
-    VPP_INLINE UniformSimpleArray ( BufferT& buf, int size = 0, int stride = 0 ) :
+    VPP_INLINE UniformSimpleArray ( BufferT& buf, int size, int stride = 0 ) :
         detail::KUniformAccess ( BufferT::decoration ),
         d_id ( 0 ),
         d_typeId ( 0 ),
@@ -927,6 +935,14 @@ public:
             d_size, ( stride ? stride : defaultStride ) );
         d_id = ids.first;
         d_typeId = ids.second;
+    }
+
+    VPP_INLINE UniformSimpleArray ( BufferT& buf ) :
+        UniformSimpleArray ( buf, 0, 0 )
+    {
+        static_assert (
+            BufferT::decoration == spv::DecorationBufferBlock,
+            "Dynamically-sized arrays are allowed only for storage buffers (ioBuffer)" );
     }
 
     VPP_INLINE KId id() const

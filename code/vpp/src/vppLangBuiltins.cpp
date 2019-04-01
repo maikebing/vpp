@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -90,7 +90,7 @@ KId KVertexDataBlockBase :: getSingleType() const
         structMembers [ iMember++ ] = pTranslator->makeArrayType ( 
             floatType, pTranslator->makeIntConstant ( d_clipPlanes ), 0 );
 
-        pTranslator->addCapability ( spv::CapabilityClipDistance );
+        pTranslator->useCapability ( spv::CapabilityClipDistance );
     }
 
     if ( d_cullPlanes != 0 )
@@ -98,7 +98,7 @@ KId KVertexDataBlockBase :: getSingleType() const
         structMembers [ iMember++ ] = pTranslator->makeArrayType ( 
             floatType, pTranslator->makeIntConstant ( d_cullPlanes ), 0 );
 
-        pTranslator->addCapability ( spv::CapabilityCullDistance );
+        pTranslator->useCapability ( spv::CapabilityCullDistance );
     }
 
     const spv::Id structType =

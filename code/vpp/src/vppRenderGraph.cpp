@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -359,17 +359,24 @@ void RenderGraph :: addProcessInputNode (
 {
     RenderGraphImpl* pImpl = get();
 
+    const bool bAutoLayout = ( nodeImageLayout == VK_IMAGE_LAYOUT_UNDEFINED );
+
     auto& inputNodes = pImpl->d_processNodes [ processIndex ]->d_inputNodes;
     auto& descriptions = pImpl->d_subpassDescriptions [ processIndex ];
+
+    if ( bAutoLayout )
+        nodeImageLayout = VK_IMAGE_LAYOUT_GENERAL;
 
     inputNodes.push_back ( VkAttachmentReference { nodeIndex, nodeImageLayout } );
     ++descriptions.inputAttachmentCount;
     descriptions.pInputAttachments = & inputNodes [ 0 ];
 
+    VkAttachmentReference& attReference = inputNodes.back();
+
     ImageInfo& imageInfo = pImpl->d_attachmentConfig.getInfo ( nodeIndex );
     imageInfo.usage |= VK_IMAGE_USAGE_INPUT_ATTACHMENT_BIT;
 
-    if ( bAddDependency )
+    if ( bAddDependency || bAutoLayout )
     {
         for ( const auto& iProcess : pImpl->d_processNodes )
         {
@@ -378,53 +385,74 @@ void RenderGraph :: addProcessInputNode (
             for ( const auto& iColorOutput : pImpl->d_processNodes [ pi ]->d_outputColorNodes )
                 if ( iColorOutput.attachment == nodeIndex )
             {
-                VkSubpassDependency newDependency;
-                std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
-                newDependency.srcSubpass = pi;
-                newDependency.dstSubpass = processIndex;
-                newDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-                newDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                if ( bAddDependency )
+                {
+                    VkSubpassDependency newDependency;
+                    std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
+                    newDependency.srcSubpass = pi;
+                    newDependency.dstSubpass = processIndex;
+                    newDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                    newDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                    newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                    newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                
-                addProcessDependency ( pi, processIndex, & newDependency );
+                    addProcessDependency ( pi, processIndex, & newDependency );
+                }
+
+                if ( bAutoLayout && pi != processIndex )
+                    attReference.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
                 break;
             }
 
             for ( const auto& iResolveOutput : pImpl->d_processNodes [ pi ]->d_outputResolveNodes )
                 if ( iResolveOutput.attachment == nodeIndex )
             {
-                VkSubpassDependency newDependency;
-                std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
-                newDependency.srcSubpass = pi;
-                newDependency.dstSubpass = processIndex;
-                newDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
-                newDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
-                newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                if ( bAddDependency )
+                {
+                    VkSubpassDependency newDependency;
+                    std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
+                    newDependency.srcSubpass = pi;
+                    newDependency.dstSubpass = processIndex;
+                    newDependency.srcStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+                    newDependency.srcAccessMask = VK_ACCESS_COLOR_ATTACHMENT_WRITE_BIT;
+                    newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                    newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                
-                addProcessDependency ( pi, processIndex, & newDependency );
+                    addProcessDependency ( pi, processIndex, & newDependency );
+                }
+
+                if ( bAutoLayout && pi != processIndex )
+                    attReference.layout = VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL;
+
                 break;
             }
 
             for ( const auto& iDepthOutput : pImpl->d_processNodes [ pi ]->d_outputDepthNodes )
                 if ( iDepthOutput.attachment == nodeIndex )
             {
-                VkSubpassDependency newDependency;
-                std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
-                newDependency.srcSubpass = pi;
-                newDependency.dstSubpass = processIndex;
-                newDependency.srcStageMask =
-                    VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
-                    | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
-                newDependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
-                newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
-                newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
-                newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
+                if ( bAddDependency )
+                {
+                    VkSubpassDependency newDependency;
+                    std::memset ( & newDependency, 0, sizeof ( VkSubpassDependency ) );
+                    newDependency.srcSubpass = pi;
+                    newDependency.dstSubpass = processIndex;
+                    newDependency.srcStageMask =
+                        VK_PIPELINE_STAGE_EARLY_FRAGMENT_TESTS_BIT
+                        | VK_PIPELINE_STAGE_LATE_FRAGMENT_TESTS_BIT;
+                    newDependency.srcAccessMask = VK_ACCESS_DEPTH_STENCIL_ATTACHMENT_WRITE_BIT;
+                    newDependency.dstStageMask = VK_PIPELINE_STAGE_FRAGMENT_SHADER_BIT;
+                    newDependency.dstAccessMask = VK_ACCESS_SHADER_READ_BIT;
+                    newDependency.dependencyFlags = VK_DEPENDENCY_BY_REGION_BIT;
                
-                addProcessDependency ( pi, processIndex, & newDependency );
+                    addProcessDependency ( pi, processIndex, & newDependency );
+                }
+
+                if ( bAutoLayout && pi != processIndex )
+                    attReference.layout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_READ_ONLY_OPTIMAL;
+
                 break;
             }
         }
@@ -535,7 +563,7 @@ void RenderGraph :: addProcessOutputColorAndResolveNode (
     descriptionC.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     descriptionC.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     descriptionC.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    descriptionC.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    descriptionC.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     descriptionC.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     VkAttachmentDescription& descriptionR =
@@ -545,7 +573,7 @@ void RenderGraph :: addProcessOutputColorAndResolveNode (
     descriptionR.storeOp = VK_ATTACHMENT_STORE_OP_STORE;
     descriptionR.stencilLoadOp = VK_ATTACHMENT_LOAD_OP_DONT_CARE;
     descriptionR.stencilStoreOp = VK_ATTACHMENT_STORE_OP_DONT_CARE;
-    descriptionR.initialLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+    descriptionR.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     descriptionR.finalLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
 
     pImpl->d_clearValues [ colorNodeIndex ] = clearValue;
@@ -595,7 +623,7 @@ void RenderGraph :: addProcessOutputDepthNode (
     description.stencilStoreOp = ( bPreserve && bHasStencil ?
         VK_ATTACHMENT_STORE_OP_STORE : VK_ATTACHMENT_STORE_OP_DONT_CARE );
 
-    description.initialLayout = VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL;
+    description.initialLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     
     description.finalLayout = ( bPreserve ?
         preserveInLayout : VK_IMAGE_LAYOUT_DEPTH_STENCIL_ATTACHMENT_OPTIMAL );

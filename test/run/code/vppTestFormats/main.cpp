@@ -6,10 +6,20 @@
 namespace vpptest {
 // -----------------------------------------------------------------------------
 
+unsigned int s_passedChecks = 0;
+unsigned int s_failedChecks = 0;
+
+// -----------------------------------------------------------------------------
+
 void check ( bool bCondition )
 {
     if ( ! bCondition )
+    {
+        ++s_failedChecks;
         std::cerr << "Check failed" << std::endl;
+    }
+    else
+        ++s_passedChecks;
 }
 
 // -----------------------------------------------------------------------------
@@ -134,6 +144,19 @@ void testPackedFormats()
 }
 
 // -----------------------------------------------------------------------------
+
+void printResults()
+{
+    std::cout << "VPP Formats test results:" << std::endl;
+
+    if ( s_failedChecks == 0 )
+        std::cout << "All tests passed !" << std::endl;
+
+    std::cout << "Passed checks: " << s_passedChecks << std::endl;
+    std::cout << "Failed checks: " << s_failedChecks << std::endl;
+}
+
+// -----------------------------------------------------------------------------
 } // namespace vpptest
 // -----------------------------------------------------------------------------
 
@@ -142,6 +165,9 @@ int main()
     using namespace vpptest;
     testBasicTypes();
     testPackedFormats();
+
+    printResults();
+
     return 0;
 }
 

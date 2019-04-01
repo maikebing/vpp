@@ -174,6 +174,12 @@
     <ClCompile Include="..\..\src\vppComputationEngine.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\vppInternalUtils.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\vppLangScalarTypes.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="../../src/ph.hpp">
@@ -432,6 +438,12 @@
       <Filter>Header Files %28Interface%29</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\vppGLSLstd450.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppInternalUtils.hpp">
+      <Filter>Header Files %28Interface%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\vppctGroupAlg.hpp">
       <Filter>Header Files %28Interface%29</Filter>
     </ClInclude>
   </ItemGroup>

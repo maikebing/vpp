@@ -551,9 +551,9 @@ private:
 
 private:
     //#ifdef _DEBUG
-        static const unsigned int INSTANCE_FLAGS = vpp::Instance::VALIDATION;
+        //static const bool VALIDATION = true;
     //#else
-    //    static const unsigned int INSTANCE_FLAGS = 0u;
+        static const bool VALIDATION = true;
     //#endif
 
     std::ostringstream m_validationLog;
@@ -598,7 +598,7 @@ public:
 
 VppExGears :: VppExGears ( const vpp::SurfaceInfo& si ) :
     vppex::ExampleApp ( "vppExGears", "vppExGears", si ),
-    m_instance ( INSTANCE_FLAGS ),
+    m_instance ( vpp::createInstance().validation ( VALIDATION ) ),
     m_debugReporter ( m_validationLog, m_instance ),
     m_physical ( getPhysicalDevice() ),
     m_device ( vpp::Device ( m_physical ) ),

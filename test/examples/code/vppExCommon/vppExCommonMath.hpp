@@ -582,8 +582,8 @@ struct StructMemberTraits< vppex::Vector4 >
     static const VkFormat format_code = format< float, float, float, float >::code;
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
-    typedef TRVector< gscalar_type, 4 > rvalue_type;
-    typedef TLVector< gscalar_type, 4 > lvalue_type;
+    typedef Vec4 rvalue_type;
+    typedef VVec4 lvalue_type;
     typedef vppex::Vector4 data_type;
 };
 
@@ -603,8 +603,8 @@ struct StructMemberTraits< vppex::Matrix4 >
     static const VkFormat format_code = format< float, float, float, float >::code;
     typedef float scalar_type;
     typedef TRValue< float > gscalar_type;
-    typedef TRMatrix< gscalar_type, 4, 4 > rvalue_type;
-    typedef TLMatrix< gscalar_type, 4, 4 > lvalue_type;
+    typedef Mat4 rvalue_type;
+    typedef VMat4 lvalue_type;
     typedef vppex::Matrix4 data_type;
 };
 

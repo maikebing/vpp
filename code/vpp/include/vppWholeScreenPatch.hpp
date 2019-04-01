@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -44,14 +44,14 @@ namespace vpp {
 class WholeScreenPatchPipelineConfig : public vpp::PipelineConfig
 {
 public:
-    WholeScreenPatchPipelineConfig (
+    VPP_DLLAPI WholeScreenPatchPipelineConfig (
         Process hProcess, Device hDevice );
 
-    void configureRenderingOptions (
+    VPP_DLLAPI void configureRenderingOptions (
         std::uint32_t width, std::uint32_t height,
         RenderingOptions* pOptions ) const;
 
-    void cmdDrawWholeScreenPatch();
+    VPP_DLLAPI void cmdDrawWholeScreenPatch();
 
 private:
     void vertexShader ( vpp::VertexShader* pShader );

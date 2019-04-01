@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -79,6 +79,12 @@ public:
     typedef TRMatrix< Bool, COLS, ROWS > comparison_type;
     static const bool external_linkage = BaseType::external_linkage;
     static const bool indexable = true;
+    static const bool is_variable = false;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const bool is_64bit = BaseType::is_64bit;
+    static const size_t dimensions = 2;
+    static const size_t component_count = COLS * TRVector< BaseType, ROWS >::component_count;
     static const size_t location_count = COLS * TRVector< BaseType, ROWS >::location_count;
     static const size_t item_count = COLS;
 
@@ -382,7 +388,7 @@ public:
     }
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -405,43 +411,76 @@ public:
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-template< class BaseType, size_t COLS, size_t ROWS >
+template< class BaseType, size_t COLS, size_t ROWS, spv::StorageClass SCL >
 class TLMatrix : public KValue
 {
 public:
     typedef TRMatrix< BaseType, COLS, ROWS > rvalue_type;
+    static const bool is_variable = true;
+    static const bool is_pointer = false;
+    static const bool is_shared = false;
+    static const size_t dimensions = 2;
 
     VPP_INLINE TLMatrix() :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
     }
 
     VPP_INLINE TLMatrix ( const TRMatrix< BaseType, COLS, ROWS >& rhs ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
         KShaderTranslator::get()->createStore ( rhs.id(), id() );
     }
 
-    VPP_INLINE TLMatrix ( const TLMatrix< BaseType, COLS, ROWS >& rhs ) :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+    VPP_INLINE TLMatrix ( const TLMatrix< BaseType, COLS, ROWS, SCL >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
+    {
+        const rvalue_type value = rhs;
+        KShaderTranslator::get()->createStore ( value.id(), id() );
+    }
+
+    VPP_INLINE TLMatrix ( TLMatrix< BaseType, COLS, ROWS, SCL >&& rhs ) :
+        KValue ( rhs.id() ),
+        d_bRelease ( rhs.d_bRelease )
+    {
+        rhs.d_bRelease = false;
+    }
+
+    template< spv::StorageClass SCL2 >
+    VPP_INLINE TLMatrix ( const TLMatrix< BaseType, COLS, ROWS, SCL2 >& rhs ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType(), SCL, rvalue_type::component_count ) ),
+        d_bRelease ( true )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
     }
 
     template< typename RightT >
-    VPP_INLINE const TLMatrix< BaseType, COLS, ROWS >& operator= ( const RightT& rhs )
+    VPP_INLINE const TLMatrix< BaseType, COLS, ROWS, SCL >& operator= ( const RightT& rhs )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
         return *this;
     }
 
-    VPP_INLINE const TLMatrix< BaseType, COLS, ROWS >& operator= ( const TLMatrix< BaseType, COLS, ROWS >& rhs )
+    VPP_INLINE const TLMatrix< BaseType, COLS, ROWS, SCL >& operator= ( const TLMatrix< BaseType, COLS, ROWS, SCL >& rhs )
     {
         const rvalue_type value = rhs;
         KShaderTranslator::get()->createStore ( value.id(), id() );
         return *this;
+    }
+
+    VPP_INLINE ~TLMatrix()
+    {
+        if ( d_bRelease )
+            KShaderTranslator::get()->releaseCachedLocalVariable ( id(), getType(), SCL );
     }
 
     VPP_INLINE operator rvalue_type() const
@@ -456,8 +495,8 @@ public:
         return lhs * rhs;
     }
 
-    template< size_t RCOLS >
-    VPP_INLINE TRMatrix< BaseType, RCOLS, ROWS > operator* ( const TLMatrix< BaseType, RCOLS, COLS >& rhs ) const
+    template< size_t RCOLS, spv::StorageClass SCL2 >
+    VPP_INLINE TRMatrix< BaseType, RCOLS, ROWS > operator* ( const TLMatrix< BaseType, RCOLS, COLS, SCL2 >& rhs ) const
     {
         const rvalue_type lhs = *this;
         const TRMatrix< BaseType, RCOLS, COLS > rrhs = rhs;
@@ -479,7 +518,7 @@ public:
     VPP_DEFINE_MATRIX_OPERATORS;
 
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
@@ -493,86 +532,69 @@ public:
     {
         return rvalue_type::getType();
     }
+
+private:
+    bool d_bRelease;
 };
 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-typedef TRMatrix< Int, 2, 2 > IMat2;
-typedef TLMatrix< Int, 2, 2 > VIMat2;
-typedef TRMatrix< Int, 3, 3 > IMat3;
-typedef TLMatrix< Int, 3, 3 > VIMat3;
-typedef TRMatrix< Int, 4, 4 > IMat4;
-typedef TLMatrix< Int, 4, 4 > VIMat4;
-typedef TRMatrix< Int, 2, 3 > IMat2x3;
-typedef TLMatrix< Int, 2, 3 > VIMat2x3;
-typedef TRMatrix< Int, 2, 4 > IMat2x4;
-typedef TLMatrix< Int, 2, 4 > VIMat2x4;
-typedef TRMatrix< Int, 3, 2 > IMat3x2;
-typedef TLMatrix< Int, 3, 2 > VIMat3x2;
-typedef TRMatrix< Int, 3, 4 > IMat3x4;
-typedef TLMatrix< Int, 3, 4 > VIMat3x4;
-typedef TRMatrix< Int, 4, 2 > IMat4x2;
-typedef TLMatrix< Int, 4, 2 > VIMat4x2;
-typedef TRMatrix< Int, 4, 3 > IMat4x3;
-typedef TLMatrix< Int, 4, 3 > VIMat4x3;
-
-typedef TRMatrix< UInt, 2, 2 > UMat2;
-typedef TLMatrix< UInt, 2, 2 > VUMat2;
-typedef TRMatrix< UInt, 3, 3 > UMat3;
-typedef TLMatrix< UInt, 3, 3 > VUMat3;
-typedef TRMatrix< UInt, 4, 4 > UMat4;
-typedef TLMatrix< UInt, 4, 4 > VUMat4;
-typedef TRMatrix< UInt, 2, 3 > UMat2x3;
-typedef TLMatrix< UInt, 2, 3 > VUMat2x3;
-typedef TRMatrix< UInt, 2, 4 > UMat2x4;
-typedef TLMatrix< UInt, 2, 4 > VUMat2x4;
-typedef TRMatrix< UInt, 3, 2 > UMat3x2;
-typedef TLMatrix< UInt, 3, 2 > VUMat3x2;
-typedef TRMatrix< UInt, 3, 4 > UMat3x4;
-typedef TLMatrix< UInt, 3, 4 > VUMat3x4;
-typedef TRMatrix< UInt, 4, 2 > UMat4x2;
-typedef TLMatrix< UInt, 4, 2 > VUMat4x2;
-typedef TRMatrix< UInt, 4, 3 > UMat4x3;
-typedef TLMatrix< UInt, 4, 3 > VUMat4x3;
-
 typedef TRMatrix< Float, 2, 2 > Mat2;
-typedef TLMatrix< Float, 2, 2 > VMat2;
+typedef TLMatrix< Float, 2, 2, spv::StorageClassFunction > VMat2;
+typedef TLMatrix< Float, 2, 2, spv::StorageClassWorkgroup > WMat2;
 typedef TRMatrix< Float, 3, 3 > Mat3;
-typedef TLMatrix< Float, 3, 3 > VMat3;
+typedef TLMatrix< Float, 3, 3, spv::StorageClassFunction > VMat3;
+typedef TLMatrix< Float, 3, 3, spv::StorageClassWorkgroup > WMat3;
 typedef TRMatrix< Float, 4, 4 > Mat4;
-typedef TLMatrix< Float, 4, 4 > VMat4;
+typedef TLMatrix< Float, 4, 4, spv::StorageClassFunction > VMat4;
+typedef TLMatrix< Float, 4, 4, spv::StorageClassWorkgroup > WMat4;
 typedef TRMatrix< Float, 2, 3 > Mat2x3;
-typedef TLMatrix< Float, 2, 3 > VMat2x3;
+typedef TLMatrix< Float, 2, 3, spv::StorageClassFunction > VMat2x3;
+typedef TLMatrix< Float, 2, 3, spv::StorageClassWorkgroup > WMat2x3;
 typedef TRMatrix< Float, 2, 4 > Mat2x4;
-typedef TLMatrix< Float, 2, 4 > VMat2x4;
+typedef TLMatrix< Float, 2, 4, spv::StorageClassFunction > VMat2x4;
+typedef TLMatrix< Float, 2, 4, spv::StorageClassWorkgroup > WMat2x4;
 typedef TRMatrix< Float, 3, 2 > Mat3x2;
-typedef TLMatrix< Float, 3, 2 > VMat3x2;
+typedef TLMatrix< Float, 3, 2, spv::StorageClassFunction > VMat3x2;
+typedef TLMatrix< Float, 3, 2, spv::StorageClassWorkgroup > WMat3x2;
 typedef TRMatrix< Float, 3, 4 > Mat3x4;
-typedef TLMatrix< Float, 3, 4 > VMat3x4;
+typedef TLMatrix< Float, 3, 4, spv::StorageClassFunction > VMat3x4;
+typedef TLMatrix< Float, 3, 4, spv::StorageClassWorkgroup > WMat3x4;
 typedef TRMatrix< Float, 4, 2 > Mat4x2;
-typedef TLMatrix< Float, 4, 2 > VMat4x2;
+typedef TLMatrix< Float, 4, 2, spv::StorageClassFunction > VMat4x2;
+typedef TLMatrix< Float, 4, 2, spv::StorageClassWorkgroup > WMat4x2;
 typedef TRMatrix< Float, 4, 3 > Mat4x3;
-typedef TLMatrix< Float, 4, 3 > VMat4x3;
+typedef TLMatrix< Float, 4, 3, spv::StorageClassFunction > VMat4x3;
+typedef TLMatrix< Float, 4, 3, spv::StorageClassWorkgroup > WMat4x3;
 
 typedef TRMatrix< Double, 2, 2 > DMat2;
-typedef TLMatrix< Double, 2, 2 > VDMat2;
+typedef TLMatrix< Double, 2, 2, spv::StorageClassFunction > VDMat2;
+typedef TLMatrix< Double, 2, 2, spv::StorageClassWorkgroup > WDMat2;
 typedef TRMatrix< Double, 3, 3 > DMat3;
-typedef TLMatrix< Double, 3, 3 > VDMat3;
+typedef TLMatrix< Double, 3, 3, spv::StorageClassFunction > VDMat3;
+typedef TLMatrix< Double, 3, 3, spv::StorageClassWorkgroup > WDMat3;
 typedef TRMatrix< Double, 4, 4 > DMat4;
-typedef TLMatrix< Double, 4, 4 > VDMat4;
+typedef TLMatrix< Double, 4, 4, spv::StorageClassFunction > VDMat4;
+typedef TLMatrix< Double, 4, 4, spv::StorageClassWorkgroup > WDMat4;
 typedef TRMatrix< Double, 2, 3 > DMat2x3;
-typedef TLMatrix< Double, 2, 3 > VDMat2x3;
+typedef TLMatrix< Double, 2, 3, spv::StorageClassFunction > VDMat2x3;
+typedef TLMatrix< Double, 2, 3, spv::StorageClassWorkgroup > WDMat2x3;
 typedef TRMatrix< Double, 2, 4 > DMat2x4;
-typedef TLMatrix< Double, 2, 4 > VDMat2x4;
+typedef TLMatrix< Double, 2, 4, spv::StorageClassFunction > VDMat2x4;
+typedef TLMatrix< Double, 2, 4, spv::StorageClassWorkgroup > WDMat2x4;
 typedef TRMatrix< Double, 3, 2 > DMat3x2;
-typedef TLMatrix< Double, 3, 2 > VDMat3x2;
+typedef TLMatrix< Double, 3, 2, spv::StorageClassFunction > VDMat3x2;
+typedef TLMatrix< Double, 3, 2, spv::StorageClassWorkgroup > WDMat3x2;
 typedef TRMatrix< Double, 3, 4 > DMat3x4;
-typedef TLMatrix< Double, 3, 4 > VDMat3x4;
+typedef TLMatrix< Double, 3, 4, spv::StorageClassFunction > VDMat3x4;
+typedef TLMatrix< Double, 3, 4, spv::StorageClassWorkgroup > WDMat3x4;
 typedef TRMatrix< Double, 4, 2 > DMat4x2;
-typedef TLMatrix< Double, 4, 2 > VDMat4x2;
+typedef TLMatrix< Double, 4, 2, spv::StorageClassFunction > VDMat4x2;
+typedef TLMatrix< Double, 4, 2, spv::StorageClassWorkgroup > WDMat4x2;
 typedef TRMatrix< Double, 4, 3 > DMat4x3;
-typedef TLMatrix< Double, 4, 3 > VDMat4x3;
+typedef TLMatrix< Double, 4, 3, spv::StorageClassFunction > VDMat4x3;
+typedef TLMatrix< Double, 4, 3, spv::StorageClassWorkgroup > WDMat4x3;
 
 // -----------------------------------------------------------------------------
 } // namespace vpp

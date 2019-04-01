@@ -159,6 +159,27 @@ public:
 
 // -----------------------------------------------------------------------------
 
+class StorageBufferView
+{
+public:
+    /** \brief Constructs null reference. */
+    StorageBufferView();
+
+    template< class BufferT, class MemoryT >
+    StorageBufferView (
+        const MemoryBinding< BufferT, MemoryT >& binding,
+        VkDeviceSize offset = 0,
+        VkDeviceSize length = 0 );
+
+    /** \brief Retrieves a reference to the buffer. */
+    const Buf& buffer() const;
+
+    VkDeviceSize offset() const;
+    VkDeviceSize size() const;
+};
+
+// -----------------------------------------------------------------------------
+
 class IndirectBufferView
 {
 public:

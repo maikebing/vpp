@@ -350,6 +350,22 @@ class IMat3x4 {};
 
     Beware that mutable variables can degrade performance on GPU, therefore
     Mat4 is preferable, unless you really want a mutable variable.
+
+    The lifetime of all local mutable variables (including VMat4)
+    spans from the declaration to the end of current C++ block. This is
+    the same as for ordinary C++ variable. However, each mutable variable
+    allocates a variable slot (GPU register) which exists for entire time
+    of shader execution (or shader-level function execution). VPP tries
+    to optimize variable slot usage by reusing slots that were freed because
+    their variables went out of scope. For that reuse to take place, the
+    type of new variable must be identical to the type of some free slot.
+
+    Therefore you can safely create a lot of mutable variables as long as they
+    are in separate C++ blocks and have the same type.
+
+    The VMat4 type has also a workgroup-scoped counterpart called WMat4.
+    Caution: the reusing semantics does not apply to workgroup-scoped variables
+    (they are permanent).
 */
 
 class VMat4

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -449,39 +449,21 @@ VPP_INLINE auto Select ( const CondT& cond, const Arg1T& argIfTrue, const Arg2T&
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
-VPP_INLINE void Shared()
-{
-    KShaderTranslator* pTranslator = KShaderTranslator::get();
-    pTranslator->setTemporaryVariableStorageClass ( spv::StorageClassWorkgroup );
-}
-
-VPP_INLINE void Static()
-{
-    KShaderTranslator* pTranslator = KShaderTranslator::get();
-    pTranslator->setTemporaryVariableStorageClass ( spv::StorageClassPrivate );
-}
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-
 typedef spv::MemorySemanticsMask EMemorySemantics;
 static const spv::MemorySemanticsMask MSM_NONE = spv::MemorySemanticsMaskNone;
 static const spv::MemorySemanticsMask MSM_ACQ = spv::MemorySemanticsAcquireMask;
 static const spv::MemorySemanticsMask MSM_REL = spv::MemorySemanticsReleaseMask;
 static const spv::MemorySemanticsMask MSM_ACQREL = spv::MemorySemanticsAcquireReleaseMask;
-static const spv::MemorySemanticsMask MSM_SEQCONS = spv::MemorySemanticsSequentiallyConsistentMask;
 static const spv::MemorySemanticsMask MSM_UNIFORM = spv::MemorySemanticsUniformMemoryMask;
 static const spv::MemorySemanticsMask MSM_SUBGROUP = spv::MemorySemanticsSubgroupMemoryMask;
 static const spv::MemorySemanticsMask MSM_WORKGROUP = spv::MemorySemanticsWorkgroupMemoryMask;
-static const spv::MemorySemanticsMask MSM_CROSSWG = spv::MemorySemanticsCrossWorkgroupMemoryMask;
-static const spv::MemorySemanticsMask MSM_ATOMIC = spv::MemorySemanticsAtomicCounterMemoryMask;
 static const spv::MemorySemanticsMask MSM_IMAGE = spv::MemorySemanticsImageMemoryMask;
 
 // -----------------------------------------------------------------------------
 
 VPP_INLINE void WorkgroupBarrier ( 
-    spv::MemorySemanticsMask memoryClass = spv::MemorySemanticsWorkgroupMemoryMask,
-    spv::MemorySemanticsMask memorySem = spv::MemorySemanticsAcquireReleaseMask )
+    unsigned int memoryClass = spv::MemorySemanticsWorkgroupMemoryMask,
+    unsigned int memorySem = spv::MemorySemanticsAcquireReleaseMask )
 {
     KShaderTranslator* pTranslator = KShaderTranslator::get();
 
@@ -492,14 +474,14 @@ VPP_INLINE void WorkgroupBarrier (
 
 // -----------------------------------------------------------------------------
 
-VPP_INLINE void DeviceBarrier ( 
-    spv::MemorySemanticsMask memoryClass = spv::MemorySemanticsCrossWorkgroupMemoryMask,
-    spv::MemorySemanticsMask memorySem = spv::MemorySemanticsAcquireReleaseMask )
+VPP_INLINE void SubgroupBarrier ( 
+    unsigned int memoryClass = spv::MemorySemanticsSubgroupMemoryMask,
+    unsigned int memorySem = spv::MemorySemanticsAcquireReleaseMask )
 {
     KShaderTranslator* pTranslator = KShaderTranslator::get();
 
     pTranslator->createControlBarrier (
-        spv::ScopeDevice, spv::ScopeDevice,
+        spv::ScopeSubgroup, spv::ScopeSubgroup,
         static_cast< spv::MemorySemanticsMask >( memoryClass | memorySem ) );
 }
 

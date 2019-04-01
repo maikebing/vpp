@@ -10,10 +10,20 @@ namespace vpptest {
 namespace {
 // -----------------------------------------------------------------------------
 
+unsigned int s_passedChecks = 0;
+unsigned int s_failedChecks = 0;
+
+// -----------------------------------------------------------------------------
+
 void check ( bool bCondition )
 {
     if ( ! bCondition )
+    {
+        ++s_failedChecks;
         std::cerr << "Check failed" << std::endl;
+    }
+    else
+        ++s_passedChecks;
 }
 
 // -----------------------------------------------------------------------------
@@ -327,9 +337,11 @@ void AttTest :: operator()()
     using namespace vpp;
 
     CommandBuffer cmdBuffer = d_device.defaultCmdPool().createBuffer();
-    CommandBufferRecorder recorder ( cmdBuffer );
 
-    recorder.render ( d_pass, d_frameBuffer );
+    {
+        CommandBufferRecorder recorder ( cmdBuffer );
+        recorder.render ( d_pass, d_frameBuffer );
+    }
 
     Queue q ( d_device, Q_GRAPHICS );
     q.submit ( cmdBuffer );
@@ -541,7 +553,7 @@ void SampTestPipeline :: fFragmentShader ( vpp::FragmentShader* pShader )
     const Vec4 pixValue1 = Texture ( unnormSampledTexture, coords );
     d_output1 = pixValue1;
 
-    const Vec2 is = StaticCast< Vec2 >( ImageSize ( d_texture ) );
+    const Vec2 is = StaticCast< Vec2 >( TextureSize ( d_texture, 0 ) );
     const Vec2 scaledCoords = coords / is;
 
     const Vec4 pixValue2 = Texture ( normSampledTexture, scaledCoords );
@@ -693,9 +705,11 @@ void SampTest :: operator()()
     using namespace vpp;
 
     CommandBuffer cmdBuffer = d_device.defaultCmdPool().createBuffer();
-    CommandBufferRecorder recorder ( cmdBuffer );
 
-    recorder.render ( d_pass, d_frameBuffer );
+    {
+        CommandBufferRecorder recorder ( cmdBuffer );
+        recorder.render ( d_pass, d_frameBuffer );
+    }
 
     Queue q ( d_device, Q_GRAPHICS );
     q.submit ( cmdBuffer );
@@ -781,6 +795,19 @@ void KRenderingTests :: runTests()
 }
 
 // -----------------------------------------------------------------------------
+
+void printResults()
+{
+    std::cout << "VPP Rendering test results:" << std::endl;
+
+    if ( s_failedChecks == 0 )
+        std::cout << "All tests passed !" << std::endl;
+
+    std::cout << "Passed checks: " << s_passedChecks << std::endl;
+    std::cout << "Failed checks: " << s_failedChecks << std::endl;
+}
+
+// -----------------------------------------------------------------------------
 } // namespace vpptest
 // -----------------------------------------------------------------------------
 
@@ -791,9 +818,8 @@ int main()
 
     std::ostringstream validationLog;
 
-    Instance inst ( Instance::VALIDATION );
-    //Instance inst;
-    vpp::StreamDebugReporter m_debugReporter ( validationLog, inst, vpp::DebugReporter::SHADERS );
+    Instance inst = createInstance().validation ( true );
+    vpp::StreamDebugReporter m_debugReporter ( validationLog, inst );
 
     PhysicalDevices physicalDevices;
 
@@ -808,6 +834,8 @@ int main()
 
     KRenderingTests tests ( dev );
     tests.runTests();
+
+    printResults();
 
     return 0;
 }

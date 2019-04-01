@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -1262,6 +1262,51 @@ UInt BitReverse ( const UInt& value );    /**< \overload */
 UVec2 BitReverse ( const UVec2& value );    /**< \overload */
 UVec3 BitReverse ( const UVec3& value );    /**< \overload */
 UVec4 BitReverse ( const UVec4& value );    /**< \overload */
+
+// -----------------------------------------------------------------------------
+/**
+    \brief Declares image binding point as used in the shader.
+
+    In general, image binding points do not require to be declared before accessing
+    them. There is one exception, though: if the first access to the image binding
+    point is inside conditional block, then it must be declared earlier in the code
+    to prevent SPIR-V error. The error is caused by the fact that image can't be
+    introduced conditionally. 
+
+    An example:
+
+    \code
+        void MyPipeline :: fComputeShader ( vpp::ComputeShader* pShader )
+        {
+            using namespace vpp;
+
+            // ...
+
+            UseImage ( m_myImage );  // <---- add this to declare image unconditionally
+
+            If ( ... condition ... );
+                ImageStore ( m_myImage, IVec2 { x, y }, value );  // first access is conditional
+            Fi();
+
+            // ...
+        }
+    \endcode
+*/
+
+template< class ImageT >
+void UseImage ( const ImageT& img );
+
+// -----------------------------------------------------------------------------
+/**
+    \brief Computes the expression given as argument and ignores the result.
+
+    This is useful to suppress validation warnings about unused
+    objects (e.g. buffer accessors). Can be handy if you temporarily comment out
+    some code to pinpoint a bug.
+*/
+
+template< class ValueT >
+void Ignore ( const ValueT& value );
 
 // -----------------------------------------------------------------------------
 } // namespace vpp

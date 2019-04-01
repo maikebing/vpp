@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -37,17 +37,7 @@ void FillImageSolid :: init()
 {
     execute << [ this ]()
     {
-        cmdChangeImageLayout (
-            d_targetImage,
-            VK_IMAGE_LAYOUT_UNDEFINED, 
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL
-        );
-
-        cmdClearColorImage (
-            d_targetImage,
-            VK_IMAGE_LAYOUT_TRANSFER_DST_OPTIMAL,
-            d_color
-        );
+        cmdClearColorImage ( d_targetImage, d_color );
 
         cmdChangeImageLayout (
             d_targetImage,

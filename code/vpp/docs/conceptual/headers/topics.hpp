@@ -182,7 +182,7 @@
       provides a lot of support classes to GPU-level coding. These are, among
       others:
       - GPU data types (e.g. vpp::Float, vpp::Int, vpp::Vec3, etc.) and arrays of
-        these (vpp::VArray, vpp::VArray2, vpp::VArray3).
+        these (vpp::VArray, vpp::WArray, vpp::WArray2).
       - Computational functions (e.g. vpp::Sin(), vpp::Cos(), vpp::Floor(),
         vpp::Determinant(), etc.),
       - Accessors for built-in shader variables (e.g. vpp::VertexShader,
@@ -1329,10 +1329,13 @@
       Can be temporary. Can define a start offset (in bytes) of the viewed slice (which
       extends to the end of the buffer).
 
-    - vpp::UniformBufferView: a view for vpp::Buf::UNIFORM and vpp::Buf::STORAGE buffers,
-      to be used with vpp::inUniformBuffer, vpp::inUniformBufferDyn, vpp::ioBuffer,
-      vpp::ioBufferDyn binding points. Can be temporary. Can define a start offset
-      and length (in bytes) of the viewed slice.
+    - vpp::UniformBufferView: a view for vpp::Buf::UNIFORM buffers,
+      to be used with vpp::inUniformBuffer, vpp::inUniformBufferDyn binding points.
+      Can be temporary. Can define a start offset and length (in bytes) of the viewed slice.
+
+    - vpp::StorageBufferView: a view for vpp::Buf::STORAGE buffers,
+      to be used with vpp::ioBuffer, vpp::ioBufferDyn binding points. Can be temporary.
+      Can define a start offset and length (in bytes) of the viewed slice.
 
     - vpp::IndirectBufferView: a view for vpp::Buf::INDIRECT buffers,
       to be used with implicit binding point for indirect draws
@@ -3176,17 +3179,21 @@
     will slow down your shader 10 times.
 
     Therefore use immutable variables by default. Declare mutable ones only if
-    needed. Reuse them throughout your shader. Note that C++ optimizing compiler will not
+    really needed. Reuse them throughout your shader or limit their scope by C++ blocks.
+    VPP will automatically reuse registers occupied by variables that went out
+    of scope, as long as new variable has the same type. Apart from that, no
+    other optimization is performed. C++ optimizing compiler also will not
     be able to optimize usage of these variables, so you must do it yourself.
 
     You can also declare mutable arrays of fixed size. This is done by means of vpp::VArray
-    template. Specify item type as the first parameter and size as the second. All remarks
-    about efficiency concern arrays as well - so declare only small arrays.
+    template. Specify item type as the first parameter and size as the argument to the
+    constructor. All remarks about efficiency concern arrays as well - so declare only
+    small arrays.
 
     Some trivial examples:
 
     \code
-        VArray< Float, 6 > v;
+        VArray< Float > v ( 6 );
         VInt i = 0;
         VInt j = 0;
 
@@ -3219,12 +3226,14 @@
     - The variable is visible across all threads inside the group and can be used
       for communication.
 
-    To declare a variable as shared inside shader code, use the vpp::Shared()
-    function. Place it before the declaration, like this:
+    To declare a variable as shared inside shader code, use the appropriate VPP 
+    data type starting usually with 'W' letter instead of 'V'. For example:
 
     \code
-        Shared(); VInt vi;
-        Shared(); VArray< Vec3, 256 > lightPositions;
+        WInt vi;
+        WArray< Vec3 > lightPositions ( 256 );
+        WArray2< Float > bigMatrix ( 10, 10 );
+        WArray3< Float > array3d ( 8, 8, 8 );
     \endcode
 
     Shared arrays are also possible and they are much less performance-sensitive.
@@ -3234,7 +3243,38 @@
     variables, described in next section).
 
     \subsubsection ssAtomicVars Atomic variables
+
+    Atomic variables are also shared between threads, either within a single workgroup,
+    or over the entire device. They are not declared explicitly, but rather accessed
+    through pointers. You can take a pointer to the following types of location:
+    - workgroup-scoped variable,
+    - scalar element of workgroup-scoped array of 1, 2 or 3 dimensions,
+    - scalar element of storage buffer,
+    - scalar texel of a storage image.
+
+    For the first three types, VPP offers <tt>operator &</tt> which can be used
+    on expression denoting the location. For image texels, there is special
+    vpp::ioImage::GetPointer() method for that purpose.
+
+    Pointers are declared by using vpp::Pointer template (specify scalar type like
+    vpp::Int as the argument). For convenience you may use e.g. C++ \c auto
+    keyword. Pointer variables are immutable. Currently there is no mutable equivalent,
+    although some future version of VPP might support it, as Vulkan defines an extension
+    allowing mutable pointers.
+
+    Atomic operations are performed by calling methods on vpp::Pointer object itself.
+
     \code
+        UniformSimpleArray< int, decltype ( m_uniformBuffer ) > uniBuffer ( m_uniformBuffer );
+        UseImage ( m_image );
+        WInt atomicVar = 0;
+
+        // ...
+
+        const Int v1 = ( & atomicVar ).Increment();
+        const Pointer< Int > p = & uniBuffer [ 0 ];
+        const Int v2 = p.Decrement();
+        const Int v3 = m_image.GetPointer ( IVec2 { 0, 0 } ).Add ( 2 );
     \endcode
 
     \subsection subBuiltinVars Accessing built-in variables
@@ -3311,7 +3351,7 @@
     \code
         VInt vi;
         Int i = 1;
-        VArray< Float, 6 > v;
+        VArray< Float > v ( 6 );
 
         v [ vi ] = v [ i ];
         v [ i + 1 ] = v [ 0 ];
@@ -3790,7 +3830,7 @@
     together and close the block with vpp::Od().
 
     \code
-        VArray< Float, 6 > v;
+        VArray< Float > v ( 6 );
         VInt i = 0;
         VInt j = 0;
 
@@ -4186,8 +4226,8 @@
     \subsection secValidation Vulkan validation support
 
     VPP provides support for Vulkan validation layer. In order to turn on
-    the validation, supply \c Instance::VALIDATION flag to the constructor
-    of vpp::Instance object.
+    the validation, append <tt>.validation ( true )</tt> call when creating the
+    vpp::Instance object by vpp::createInstance().
 
     This however does not suffice, as we did not specify where the validation
     warnings should go. vpp::StreamDebugReporter class allows simple redirection
@@ -4204,9 +4244,9 @@
         {
             private:
                 #ifdef _DEBUG
-                    static const unsigned int INSTANCE_FLAGS = vpp::Instance::VALIDATION;
+                    static const bool VALIDATION = true;
                 #else
-                    static const unsigned int INSTANCE_FLAGS = 0u;
+                    static const bool VALIDATION = false;
                 #endif
 
                 std::ostringstream m_validationLog;
@@ -4217,7 +4257,7 @@
 
             public:
                 MyRenderingEngine :: MyRenderingEngine() :
-                    m_instance ( INSTANCE_FLAGS ),
+                    m_instance ( createInstance().validation ( VALIDATION ) ),
                     m_debugReporter ( m_validationLog, m_instance ),
                     // ...
                 {
@@ -4410,6 +4450,169 @@
     Including \c vppSupportGLM.hpp enables usage of GLM vector and matrix types
     as template arguments of vpp::Attribute (with vpp::ext helper) and vpp::UniformFld
     declarations.
+*/
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+/** \page pageValidationErrors Validation errors troubleshooting
+
+    \section secValidationErrors Validation errors troubleshooting
+
+    \code
+        Invalid usage flag for Buffer 0x.. used by vkCmdCopyBuffer(). In this case, Buffer
+        should have VK_BUFFER_USAGE_TRANSFER_DST_BIT set during creation. 
+    \endcode
+
+    Possible causes:
+    - You forgot to include Buf::TARGET usage flag on some buffer which is then being
+      used as copy target.
+    - You forgot to include Buf::SOURCE (sic!) on a \c gvector with \c DEVICE_STATIC
+      memory, and then called one of \c load methods. The problematic buffer in this
+      case is hidden staging buffer that receives the data from the device. VPP uses
+      the following heuristics: if the whole vector can be Buf::SOURCE, then Buf::TARGET
+      is imposed on the intermediate buffer (otherwise it is not).
+
+    How to fix:
+    - Add missing Buf::TARGET or Buf::SOURCE flags.
+
+    \code
+        vkCreatePipelineLayout: value of pCreateInfo->pPushConstantRanges[0].stageFlags
+        must not be 0. The spec valid usage text states 'stageFlags must not be 0'.
+    \endcode
+
+    Possible causes:
+    - An \c inPushConstant< ... > binding point has been declared in a pipeline
+      configuration class, but is not really used in any shader.
+
+    How to fix:
+    - Remove unused push constant binding points.
+
+    \code
+
+    Shader requires VkPhysicalDeviceFeatures::shaderStorageImageExtendedFormats but
+    is not enabled on the device.
+
+    \endcode
+
+    Possible causes:
+    - Some image formats require enabling additional feature on the device when used
+      with Img::STORAGE flag.
+
+    How to fix:
+    - Enable the feature while creating the device, like in the example below. Caution: some
+      mobile GPUs do not support this feature. If you target such a device, avoid
+      using particular image format which triggers this warning for storage images.
+
+    \code
+        using namespace vpp;
+
+        PhysicalDevice phd = ...;
+        DeviceFeatures feat ( phd );
+        feat.enableIfSupported ( fShaderStorageImageExtendedFormats );
+
+        Device dev ( phd, feat );
+
+    \endcode
+
+    \code
+    Cannot use image 0x.. with specific layout VK_IMAGE_LAYOUT_GENERAL that doesn't
+    match the actual current layout VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL.
+    \endcode
+
+    Possible causes:
+    - A storage image is being used with \ioImage binding point, but the image is in
+      VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL layout when executing the shader. This
+      is wrong, because storage images must be in VK_IMAGE_LAYOUT_GENERAL layout
+      even if they are only being read.
+
+    How to fix:
+    - Find the place in your code which sets VK_IMAGE_LAYOUT_SHADER_READ_ONLY_OPTIMAL
+      layoput for that particular image and change it to VK_IMAGE_LAYOUT_GENERAL.
+
+    \code
+    SPIR-V module not valid: ID .. defined in block .. does not dominate its use in block ..
+    \endcode
+
+    Possible causes:
+    - The first use of image binding point in shader (e.g. through image function) 
+      is inside conditional block.
+
+    How To fix:
+    - Add \c UseImage directive before the conditional block, like in the example below.
+      Consider declaring all used images this way (it does not cost any resources).
+
+    \code
+        void MyPipeline :: fComputeShader ( vpp::ComputeShader* pShader )
+        {
+            using namespace vpp;
+
+            // ...
+
+            UseImage ( m_myImage );  // <---- add this to declare image unconditionally
+
+            If ( ... condition ... );
+                ImageStore ( m_myImage, IVec2 { x, y }, value );
+            Fi();
+
+            // ...
+        }
+    \endcode
+
+    \code
+    Shader requires VkPhysicalDeviceFeatures::shaderFloat64 but is not enabled on the device.
+    \endcode
+
+    Possible causes:
+    - Shader uses double precision floating point types, but his feature is not enabled on the device.
+
+    How to fix:
+    - Enable the feature while creating the device, like in the example below. Caution: some
+      mobile GPUs do not support this feature. If you target such a device, do not use double
+      precision types, or use emulation (on two 32-bit floats) instead.
+
+    \code
+        using namespace vpp;
+
+        PhysicalDevice phd = ...;
+        DeviceFeatures feat ( phd );
+        feat.enableIfSupported ( fShaderFloat64 );
+
+        Device dev ( phd, feat );
+
+    \endcode
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+/** \page pageReleaseNotes Release notes
+
+    \section secReleaseNotes Release notes
+
+    Release 0.7.1
+    - First public release (alpha).
+
+    Release 0.8.1
+    - Vulkan 1.1 support.
+    - Ability to target specific Vulkan version.
+    - Added a library of workgroup-scoped algorithms for compute shaders:
+      Fill, Generate, Transform, Copy, Load, Store, Reduce,
+      InclusiveScan, ExclusiveScan, Sort, LowerBound, UpperBound.
+    - Improved API for specifying barriers. Added BarrierList class.
+    - Improved API for declaring shared variables. Replaced Shared()
+      specifier with separate shared variable types.
+    - Improved API for declaring arrays. Array sizes are now runtime C++
+      variables instead of template arguments.
+    - Shared arrays can be now 1, 2 or 3-dimensional.
+    - Local variables and arrays are now scope-limited and automatically reused.
+    - Better control of allocation in shared memory block.
+    - Added support for 64-bit integer types (signed and unsigned).
+    - Added new system for selection of device features and extensions.
+    - New, more flexible instance creation API.
+    - Incorporated extension for 64-bit atomic operations into the API.
+    - More tests.
+    - Many bug fixes.
+
 */
 
 // -----------------------------------------------------------------------------

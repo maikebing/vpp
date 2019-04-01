@@ -140,6 +140,15 @@ public:
         \endcode
     */
     PipelineCache& defaultPipelineCache() const;
+
+    /** \brief Checks whether the device supports specified feature and has enabled it. */
+    bool hasFeature ( EFeature feature ) const;
+
+    /** \brief Retrieves the names of enabled device extensions. */
+    const std::set< std::string >& enabledExtensions() const;
+
+    /** \brief Checks whether the device (and instance) supports specified Vulkan version. */
+    bool supportsVersion ( const SVulkanVersion& ver ) const;
     
     /** \brief Waits until all operations performed by this device are finished. */
     VkResult waitForIdle();

@@ -256,7 +256,7 @@ void TextureLoader::Impl :: loadTexture (
         pTexture->m_mipLevels );
 
     CopyImageToDevice copyImg ( stagingBuffer, loadedImage, bufferCopyRegions );
-    copyImg.execute();
+    copyImg.execute ( NO_TIMEOUT );
 	
     SNormalizedSampler samplerInfo;
     samplerInfo.addressModeU = VK_SAMPLER_ADDRESS_MODE_REPEAT;

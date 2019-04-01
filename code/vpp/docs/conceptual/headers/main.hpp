@@ -19,6 +19,8 @@ Vulkan programming easier and more intuitive. VPP provides the following feature
 - Support for multithreading and automatic host synchronization of objects where Vulkan requires it.
 - Compile-time detection of some Vulkan usage errors.
 - Integration with third party libraries (currently GLM).
+- Easier management of Vulkan extensions with automatic dependency resolving for common extensions.
+- Selected extension functionality seamlessly built-in into VPP API (e.g. 64-bit atomic variables).
 
 This document describes VPP classes, functions and data types grouped by their purpose.
 For some introductory texts explaining various topics, click the <b>Related Pages</b> button
@@ -110,6 +112,11 @@ Synchronization mechanisms for parallel execution.
         - Semaphore
         - Fence
         - Event
+        - Barriers
+        - MemoryBarrier
+        - BufferMemoryBarrier
+        - ImageMemoryBarrier
+        - BarrierList
 
 \section renderOptions Rendering configuration classes
 Configuring various parameters.
@@ -172,6 +179,7 @@ There are the following binding point classes and templates:
         - VertexBufferView
         - VertexIndexBufferView
         - UniformBufferView
+        - StorageBufferView
         - IndirectBufferView
         - TexelBufferView
         - ImageView
@@ -213,31 +221,43 @@ Those are simple types which you can use in shader code. By convention,
 their names start with capital letters, to distinguish them from native
 C++ types. 
 
-There are two kinds of simple types: constants (r-values) and mutable
-(l-values). Constants are preferable, as they guarantee optimal performance.
-Mutable variables can degrade performance, as they consume GPU registers
+There are three kinds of simple types: constants (r-values), mutable
+variables (l-values) and group-scoped mutable variables.
+
+Constants are preferable, as they guarantee optimal performance.
+
+Regular mutable variables can degrade performance, as they consume GPU registers
 which are usually limited. When registers run out, the shader compiler will
 start to allocate GPU memory, which is much slower than registers. Therefore
 use constants if possible. Mutable type names by convention start with capital
 V letter.
 
+Group-scoped mutable variables are allocated within special memory block on
+GPU computation unit. This block typically has 32-48 kB of fast memory, shared
+between local threads. This is intended as a way to communicate between
+threads in single workgroup. These variables do not consume registers and have
+low performance overhead. Group-scoped type names by convention start with capital
+W letter.
+
 Simple types cover scalar, vector and matrix types.
-        - Int, UInt, Float, Double, Bool
-        - VInt, VUInt, VFloat, VDouble, VBool
+        - Int, UInt, Float, Double, Bool, Int64, UInt64
+        - VInt, VUInt, VFloat, VDouble, VBool, VInt64, VUInt64
+        - WInt, WUInt, WFloat, WDouble, WBool, WInt64, WUInt64
         - IVec2, UVec2, Vec2, DVec2, BVec2,
         - VIVec2, VUVec2, VVec2, VDVec2, VBVec2,
+        - WIVec2, WUVec2, WVec2, WDVec2, WBVec2,
         - IVec3, UVec3, Vec3, DVec3, BVec3,
         - VIVec3, VUVec3, VVec3, VDVec3, VBVec3,
+        - WIVec3, WUVec3, WVec3, WDVec3, WBVec3,
         - IVec4, UVec4, Vec4, DVec4, BVec4,
         - VIVec4, VUVec4, VVec4, VDVec4, VBVec4,
+        - WIVec4, WUVec4, WVec4, WDVec4, WBVec4,
         - Mat2 Mat3 Mat4 Mat3x2 Mat4x2 Mat2x3 Mat4x3 Mat2x4 Mat3x4
         - VMat2 VMat3 VMat4 VMat4x2 VMat2x3 VMat4x3 VMat2x4 VMat3x4
+        - WMat2 WMat3 WMat4 WMat4x2 WMat2x3 WMat4x3 WMat2x4 WMat3x4
         - DMat2 DMat3 DMat4 DMat4x2 DMat2x3 DMat4x3 DMat2x4 DMat3x4
         - VDMat2 VDMat3 VDMat4 VDMat4x2 VDMat2x3 VDMat4x3 VDMat2x4 VDMat3x4
-        - IMat2 IMat3 IMat4 IMat4x2 IMat2x3 IMat4x3 IMat2x4 IMat3x4
-        - VIMat2 VIMat3 VIMat4 VIMat4x2 VIMat2x3 VIMat4x3 VIMat2x4 VIMat3x4
-        - UMat2 UMat3 UMat4 UMat3x2 UMat4x2 UMat2x3 UMat4x3 UMat2x4 UMat3x4
-        - VUMat2 VUMat3 VUMat4 VUMat3x2 VUMat4x2 VUMat2x3 VUMat4x3 VUMat2x4 VUMat3x4
+        - WDMat2 WDMat3 WDMat4 WDMat4x2 WDMat2x3 WDMat4x3 WDMat2x4 WDMat3x4
 
 \section shCompoundTypes Shader language compound data types
 
@@ -245,7 +265,7 @@ Compound types also come in two kinds, but different than scalar types. There
 are array and structural compound types.
 
 Array types always denote local mutable variables. There are no constant arrays.
-Also, array types are not used for non-local variables, like uniform buffers.
+Also, array types are NOT used for non-local variables, like uniform buffers.
 Those object have their own means to access the data items (binding point
 accessors), which resemble array syntax but are not arrays described here.
 
@@ -254,7 +274,8 @@ CPU side. Those of them which are shared with CPU side, require for each field
 either CPU data type which maps to GPU type (UniformStruct), or Vulkan format
 specification (VertexStruct, InstanceStruct). LocalStruct types are local
 and require only GPU field types to be specified.
-        - VArray, VArray2, VArray3 - local arrays of 1, 2 and 3 dimensions.
+        - VArray - local arrays, accessible to single GPU thread.
+        - WArray, WArray2, WArray3 - shared (workgroup-scoped) arrays of 1, 2 and 3 dimensions.
         - VertexStruct - defines GPU data structure for a vertex.
         - InstanceStruct - defines GPU data structure for an instance.
         - UniformStruct - defines GPU data structure to be contained inside uniform buffer (also storage or push constant).
@@ -263,6 +284,9 @@ and require only GPU field types to be specified.
         - Field - defines a member of LocalStruct.
         - UniformFld - defines a member of UniformStruct.
 
+\section shSpecialTypes Shader language special data types
+        - Pointer
+
 \section shLangConstructs Shader language constructs
         - If(), Else(), Fi()
         - Do(), While(), Od()
@@ -270,10 +294,9 @@ and require only GPU field types to be specified.
         - Switch(), Case(), Default(), Break(), EndSwitch()
         - Function, Par, Begin(), End(), Return()
         - Select()
-        - Shared(), Static()
         - StaticCast(), ReinterpretCast()
         - Ignore(),
-        - WorkgroupBarrier(), DeviceBarrier()
+        - WorkgroupBarrier()
 
 \section shLangFunctions Shader language functions
         - Round(), RoundEven(), Trunc(), Abs(), Sign(), Floor(), Ceil(), Fract()
@@ -293,6 +316,7 @@ and require only GPU field types to be specified.
         - IsNaN(), IsInf(), IsAnyComponentTrue(), IsAllComponentsTrue()
 
 \section shLangImgFunctions Shader language functions for accessing textures and images
+        - UseImage(),
         - MakeSampledTexture(), ExtractSampledTexture()
         - ImageSize(), TextureSize()
         - ImageQuerySamples(), ImageQueryLevels(), TextureQueryLod()
@@ -307,6 +331,13 @@ and require only GPU field types to be specified.
         - StreamDebugReporter
         - DebugReporter
         - Shader
-*/
 
+\section shLangGroupAlgs Group computation algorithms
+        - ct::group::GroupInvocation
+        - ct::group::Apply(), ct::group::Fill(), ct::group::Generate(), ct::group::Transform()
+        - ct::group::Copy(), ct::group::Load(), ct::group::Store(),
+        - ct::group::Reduce(), ct::group::InclusiveScan, ct::group::ExclusiveScan
+        - ct::group::Sort(),
+        - ct::group::LowerBound(), ct::group::UpperBound
+*/
 }

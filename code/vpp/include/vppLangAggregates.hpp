@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -35,6 +35,10 @@
 
 #ifndef INC_VPPPIPELINECONFIG_HPP
 #include "vppPipelineConfig.hpp"
+#endif
+
+#ifndef INC_VPPLANGCONSTRUCTS_HPP
+#include "vppLangConstructs.hpp"
 #endif
 
 // -----------------------------------------------------------------------------
@@ -162,200 +166,480 @@ private:
 };
 
 // -----------------------------------------------------------------------------
-
-template< class StructT, int SIZE, int STRIDE = 0 >
-class StructArray
-{
-public:
-    typedef StructArrayItem< StructT > item_type;
-    typedef typename StructT::definition_type definition_type;
-
-    //template< std::uint32_t COUNT >
-    //VPP_INLINE StructArray ( const inUniformBuffer< COUNT >& buf ) :
-    //    d_id ( 0 )
-    //{
-    //    init ( spv::DecorationBlock, buf.set(), buf.binding() );
-    //}
-
-    //template< std::uint32_t COUNT >
-    //VPP_INLINE StructArray ( const ioBuffer< COUNT >& buf ) :
-    //    d_id ( 0 )
-    //{
-    //    init ( spv::DecorationBufferBlock, buf.set(), buf.binding() );
-    //}
-
-    //template< std::uint32_t COUNT >
-    //VPP_INLINE StructArray ( const inUniformBufferDyn< COUNT >& buf ) :
-    //    d_id ( 0 )
-    //{
-    //    init ( spv::DecorationBlock, buf.set(), buf.binding() );
-    //}
-
-    //template< std::uint32_t COUNT >
-    //VPP_INLINE StructArray ( const ioBufferDyn< COUNT >& buf ) :
-    //    d_id ( 0 )
-    //{
-    //    init ( spv::DecorationBufferBlock, buf.set(), buf.binding() );
-    //}
-
-    VPP_INLINE const StructArray< StructT, SIZE, STRIDE >& operator= (
-        const StructArray< StructT, SIZE, STRIDE >& rhs )
-    {
-        KShaderTranslator::get()->createStore ( rhs.id(), d_id );
-        return *this;
-    }
-
-    VPP_INLINE KId id() const
-    {
-        return d_id;
-    }
-    
-    template< typename IndexT >
-    VPP_INLINE item_type getItem ( const IndexT& index )
-    {
-        KShaderTranslator* pTranslator = KShaderTranslator::get();
-        pTranslator->clearAccessChain();
-        pTranslator->setAccessChainLValue ( id() );
-        return item_type (
-            pTranslator->getArrayIndex ( index ),
-            & d_struct,
-            pTranslator->getAccessChain() );
-    }
-
-    VPP_INLINE item_type operator[]( const Int& index ) { return getItem ( index ); }
-    VPP_INLINE item_type operator[]( const UInt& index ) { return getItem ( index ); }
-    VPP_INLINE item_type operator[]( int index ) { return getItem ( index ); }
-    VPP_INLINE item_type operator[]( unsigned int index ) { return getItem ( index ); }
-
-    VPP_INLINE Int Size() const
-    {
-        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( SIZE ) ) );
-    }
-
-    VPP_INLINE int size() const
-    {
-        return SIZE;
-    }
-
-    static VPP_INLINE KId getType()
-    {
-        KShaderTranslator* pTranslator = KShaderTranslator::get();
-        const std::type_index index ( typeid ( definition_type ) );
-
-        const KShaderTranslator::SStructInfo* pStructInfo = 
-            pTranslator->findStructType ( index, spv::DecorationLocation );
-
-        if ( pStructInfo )
-        {
-            return KId (
-                pTranslator->makeArrayType ( 
-                    pStructInfo->d_typeId,
-                    pTranslator->makeIntConstant ( SIZE ),
-                    STRIDE 
-            ) );
-        }
-        else
-            return KId ( 0 );
-    }
-
-private:
-    void init (
-        spv::Decoration decoration,
-        std::uint32_t set,
-        std::uint32_t binding );
-
-private:
-    StructT d_struct;
-    KId d_id;
-};
-
 // -----------------------------------------------------------------------------
 
-template< class StructT, int SIZE, int STRIDE >
-void StructArray< StructT, SIZE, STRIDE > :: init (
-    spv::Decoration decoration,
-    std::uint32_t set,
-    std::uint32_t binding )
-{
-    KShaderTranslator* pTranslator = KShaderTranslator::get();
-    KShaderTranslator::SStructInfo& structInfo = pTranslator->currentStructType();
-    const bool bAddDecorations = ! structInfo.d_bDefined;
-
-    pTranslator->popStructType();
-
-    const KId arrayType = getType();
-
-    if ( bAddDecorations )
-    {
-        pTranslator->addDecoration ( structInfo.d_typeId, decoration );
-
-        pTranslator->addDecoration (
-            arrayType,
-            spv::DecorationArrayStride,
-            STRIDE ? STRIDE : structInfo.d_currentMember );
-    }
-
-    d_id = pTranslator->registerUniformBuffer ( arrayType, set, binding, spv::StorageClassUniform );
-}
-
-// -----------------------------------------------------------------------------
-// -----------------------------------------------------------------------------
-
-template< class ItemT, int SIZE >
+template< class ItemT >
 class VArray : public KValue
 {
 public:
     typedef ItemT item_type;
-    typedef VArray< ItemT, SIZE > rvalue_type;
+    typedef VArray< ItemT > rvalue_type;
     static const bool external_linkage = ItemT::external_linkage;
     static const bool indexable = true;
-    static const size_t location_count = SIZE * ItemT::location_count;
 
-    VPP_INLINE VArray() :
-        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType() ) )
+    VPP_INLINE VArray ( int s ) :
+        KValue ( KShaderTranslator::get()->acquireCachedLocalVariable (
+            getType ( s ), spv::StorageClassFunction, ItemT::component_count ) ),
+        d_size ( s ),
+        d_bRelease ( true )
     {}
 
+    VArray ( const VArray< ItemT >& rhs ) = delete;
+
+    VPP_INLINE VArray ( VArray< ItemT >&& rhs ) :
+        KValue ( rhs.id() ),
+        d_size ( rhs.d_size ),
+        d_bRelease ( rhs.d_bRelease )
+    {
+        rhs.d_bRelease = false;
+    }
+
+    VPP_INLINE ~VArray()
+    {
+        if ( d_bRelease )
+            KShaderTranslator::get()->releaseCachedLocalVariable ( id(), getType(), spv::StorageClassFunction );
+    }
+
+    const VArray& operator= ( const VArray< ItemT >& rhs ) = delete;
+
     template< typename IndexT >
-    VPP_INLINE auto operator[]( IndexT index ) const
+    VPP_INLINE auto operator[]( const IndexT& index ) const
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
         pTranslator->clearAccessChain();
         pTranslator->setAccessChainLValue ( id() );
 
-        Accessor< VArray, true, true > accessor ( pTranslator->getAccessChain() );
+        Accessor< VArray< ItemT >, true, true > accessor ( pTranslator->getAccessChain() );
         return accessor [ index ];
     }
 
     VPP_INLINE Int Size() const
     {
-        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( SIZE ) ) );
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_size ) ) );
     }
 
     VPP_INLINE int size() const
     {
-        return SIZE;
+        return d_size;
     }
 
-    static VPP_INLINE KId getType()
+    VPP_INLINE KId getType ( int s )
     {
         KShaderTranslator* pTranslator = KShaderTranslator::get();
 
         return KId (
             pTranslator->makeArrayType ( 
                 ItemT::getType(),
-                pTranslator->makeIntConstant ( SIZE ),
+                pTranslator->makeIntConstant ( s ),
                 0 
         ) );
     }
+
+    VPP_INLINE KId getType()
+    {
+        return getType ( d_size );
+    }
+
+private:
+    int d_size;
+    bool d_bRelease;
+};
+
+// -----------------------------------------------------------------------------
+namespace detail {
+// -----------------------------------------------------------------------------
+
+class KSharedVariableBase
+{
+public:
+    KSharedVariableBase();
+    KSharedVariableBase ( unsigned int nWords );
 };
 
 // -----------------------------------------------------------------------------
 
-template< class ItemT, int COLS, int ROWS >
-using VArray2 = VArray< VArray< ItemT, ROWS >, COLS >;
+VPP_INLINE KSharedVariableBase :: KSharedVariableBase()
+{
+}
 
-template< class ItemT, int LAYERS, int COLS, int ROWS >
-using VArray3 = VArray< VArray< VArray< ItemT, ROWS >, COLS >, LAYERS >;
+// -----------------------------------------------------------------------------
+
+VPP_INLINE KSharedVariableBase :: KSharedVariableBase ( unsigned int nWords )
+{
+    KShaderTranslator* pTranslator = KShaderTranslator::get();
+    pTranslator->registerSharedVariableAllocation ( 4 * nWords );
+}
+
+// -----------------------------------------------------------------------------
+} // namespace detail
+// -----------------------------------------------------------------------------
+
+template< class ValueT, bool ENABLE_READ = true, bool ENABLE_WRITE = true >
+class DynamicAccessor
+{
+public:
+    typedef ValueT lvalue_type;
+    typedef typename ValueT::item_type item_type;
+    typedef Accessor< item_type, ENABLE_READ, ENABLE_WRITE > return_type;
+
+    VPP_INLINE DynamicAccessor ( const spv::Builder::AccessChain& ac, int s ):
+        d_accessChain ( ac ),
+        d_size ( s )
+    {}
+
+    VPP_INLINE operator lvalue_type() const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->setAccessChain ( d_accessChain );
+        return lvalue_type ( KId ( pTranslator->accessChainGetLValue() ), d_size );
+    }
+
+    template< typename IndexT >
+    VPP_INLINE return_type getItem ( const IndexT& index ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->setAccessChain ( d_accessChain );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( index ) );
+        return return_type ( pTranslator->getAccessChain() );
+    }
+
+    VPP_INLINE return_type operator[]( const Int& index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( const UInt& index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( int index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( unsigned int index ) const { return getItem ( index ); }
+
+private:
+    spv::Builder::AccessChain d_accessChain;
+    int d_size;
+};
+
+// -----------------------------------------------------------------------------
+
+template< class ValueT, bool ENABLE_READ = true, bool ENABLE_WRITE = true >
+class DynamicAccessor2
+{
+public:
+    typedef ValueT lvalue_type;
+    typedef typename ValueT::item_type item_type;
+    typedef DynamicAccessor< item_type, ENABLE_READ, ENABLE_WRITE > return_type;
+
+    VPP_INLINE DynamicAccessor2 ( const spv::Builder::AccessChain& ac, int r, int c ):
+        d_accessChain ( ac ),
+        d_rows ( r ),
+        d_cols ( c )
+    {}
+
+    VPP_INLINE operator lvalue_type() const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->setAccessChain ( d_accessChain );
+        return lvalue_type ( KId ( pTranslator->accessChainGetLValue() ), r, c );
+    }
+
+    template< typename IndexT >
+    VPP_INLINE return_type getItem ( const IndexT& index ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->setAccessChain ( d_accessChain );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( index ) );
+        return return_type ( pTranslator->getAccessChain(), d_rows );
+    }
+
+    VPP_INLINE return_type operator[]( const Int& index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( const UInt& index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( int index ) const { return getItem ( index ); }
+    VPP_INLINE return_type operator[]( unsigned int index ) const { return getItem ( index ); }
+
+private:
+    spv::Builder::AccessChain d_accessChain;
+    int d_rows;
+    int d_cols;
+};
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+template< class ItemT >
+class WArray :
+    public detail::KSharedVariableBase,
+    public KValue
+{
+public:
+    typedef ItemT base_type;
+    typedef Accessor< ItemT, true, true > item_type;
+    typedef WArray< ItemT > rvalue_type;
+    typedef WArray< ItemT > lvalue_type;
+    static const bool indexable = true;
+    static const size_t dimensions = 1;
+
+    VPP_INLINE explicit WArray ( int s ) :
+        detail::KSharedVariableBase ( static_cast< unsigned int >( s ) * ItemT::component_count ),
+        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType ( s ), spv::StorageClassWorkgroup ) ),
+        d_size ( s )
+    {}
+
+    VPP_INLINE WArray ( const KId& id, int s ) :
+        detail::KSharedVariableBase(),
+        KValue ( id ),
+        d_size ( s )
+    {}
+
+    template< typename IndexT >
+    VPP_INLINE auto operator[]( const IndexT& index ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->clearAccessChain();
+        pTranslator->setAccessChainLValue ( id() );
+
+        Accessor< WArray< ItemT >, true, true > accessor ( pTranslator->getAccessChain() );
+        return accessor [ index ];
+    }
+
+    VPP_INLINE Int Size() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_size ) ) );
+    }
+
+    VPP_INLINE int size() const
+    {
+        return d_size;
+    }
+
+    VPP_INLINE KId getType ( int s )
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+
+        return KId (
+            pTranslator->makeArrayType ( 
+                ItemT::getType(),
+                pTranslator->makeIntConstant ( s ),
+                0 
+        ) );
+    }
+
+    VPP_INLINE KId getType()
+    {
+        return getType ( int d_size );
+    }
+
+private:
+    int d_size;
+};
+
+// -----------------------------------------------------------------------------
+
+template< class ItemT >
+class WArray2 :
+    public detail::KSharedVariableBase,
+    public KValue
+{
+public:
+    typedef ItemT base_type;
+    typedef DynamicAccessor< WArray< ItemT > > item_type;
+    typedef WArray2< ItemT > rvalue_type;
+    typedef WArray2< ItemT > lvalue_type;
+
+    static const bool indexable = true;
+    static const size_t dimensions = 2;
+
+    VPP_INLINE WArray2 ( int nr, int nc ) :
+        detail::KSharedVariableBase ( static_cast< unsigned int >( nr * nc ) * ItemT::component_count ),
+        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType ( nr, nc ), spv::StorageClassWorkgroup ) ),
+        d_rows ( nr ),
+        d_cols ( nc )
+    {}
+
+    VPP_INLINE WArray2 ( const KId& id, int nr, int nc ) :
+        detail::KSharedVariableBase(),
+        KValue ( id ),
+        d_rows ( nr ),
+        d_cols ( nc )
+    {}
+
+    template< typename IndexT >
+    VPP_INLINE item_type operator[]( const IndexT& index ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->clearAccessChain();
+        pTranslator->setAccessChainLValue ( id() );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( index ) );
+        return item_type ( pTranslator->getAccessChain(), d_cols );
+    }
+
+    template< typename Index1T, typename Index2T >
+    VPP_INLINE auto operator()( const Index1T& iRow, const Index2T& iCol ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->clearAccessChain();
+        pTranslator->setAccessChainLValue ( id() );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( iRow ) );
+
+        Accessor< WArray< ItemT >, true, true > accessor ( pTranslator->getAccessChain() );
+        return accessor [ iCol ];
+    }
+
+    VPP_INLINE Int Size() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_rows ) ) );
+    }
+
+    VPP_INLINE int size() const
+    {
+        return d_rows;
+    }
+
+    VPP_INLINE Int Rows() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_rows ) ) );
+    }
+
+    VPP_INLINE int rows() const
+    {
+        return d_rows;
+    }
+
+    VPP_INLINE Int Cols() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_cols ) ) );
+    }
+
+    VPP_INLINE int cols() const
+    {
+        return d_cols;
+    }
+
+    VPP_INLINE KId getType ( int nr, int nc ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+
+        const KId innerType = KId ( pTranslator->makeArrayType ( 
+            ItemT::getType(), pTranslator->makeIntConstant ( nc ), 0 ) );
+
+        return KId ( pTranslator->makeArrayType ( 
+            innerType, pTranslator->makeIntConstant ( nr ), 0  ) );
+    }
+
+    VPP_INLINE KId getType() const
+    {
+        return getType ( d_rows, d_cols );
+    }
+
+private:
+    int d_rows;
+    int d_cols;
+};
+
+// -----------------------------------------------------------------------------
+
+template< class ItemT >
+class WArray3 :
+    public detail::KSharedVariableBase,
+    public KValue
+{
+public:
+    typedef ItemT base_type;
+    typedef DynamicAccessor2< WArray2< ItemT > > item_type;
+    typedef WArray3< ItemT > rvalue_type;
+    typedef WArray3< ItemT > lvalue_type;
+
+    static const bool indexable = true;
+    static const size_t dimensions = 3;
+
+    VPP_INLINE WArray3 ( int nl, int nr, int nc ) :
+        detail::KSharedVariableBase ( static_cast< unsigned int >( nl * nr * nc ) * ItemT::component_count ),
+        KValue ( KShaderTranslator::get()->registerLocalVariable ( getType ( nl, nr, nc ), spv::StorageClassWorkgroup ) ),
+        d_layers ( nl ),
+        d_rows ( nr ),
+        d_cols ( nc )
+    {}
+
+    template< typename IndexT >
+    VPP_INLINE item_type operator[]( const IndexT& index ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->clearAccessChain();
+        pTranslator->setAccessChainLValue ( id() );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( index ) );
+        return item_type ( pTranslator->getAccessChain(), d_rows, d_cols );
+    }
+
+    template< typename IndexT >
+    VPP_INLINE auto operator()( const IndexT& iLayer, const IndexT& iRow, const IndexT& iCol ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+        pTranslator->clearAccessChain();
+        pTranslator->setAccessChainLValue ( id() );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( iLayer ) );
+        pTranslator->accessChainPush ( pTranslator->getArrayIndex ( iRow ) );
+
+        Accessor< WArray< ItemT >, true, true > accessor ( pTranslator->getAccessChain() );
+        return accessor [ iCol ];
+    }
+
+    VPP_INLINE Int Size() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_layers ) ) );
+    }
+
+    VPP_INLINE int size() const
+    {
+        return d_layers;
+    }
+
+    VPP_INLINE Int Layers() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_layers ) ) );
+    }
+
+    VPP_INLINE int layers() const
+    {
+        return d_layers;
+    }
+
+    VPP_INLINE Int Rows() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_rows ) ) );
+    }
+
+    VPP_INLINE int rows() const
+    {
+        return d_rows;
+    }
+
+    VPP_INLINE Int Cols() const
+    {
+        return Int ( KId ( KShaderTranslator::get()->makeIntConstant ( d_cols ) ) );
+    }
+
+    VPP_INLINE int cols() const
+    {
+        return d_cols;
+    }
+
+    VPP_INLINE KId getType ( int nl, int nr, int nc ) const
+    {
+        KShaderTranslator* pTranslator = KShaderTranslator::get();
+
+        const KId innermostType = KId ( pTranslator->makeArrayType ( 
+            ItemT::getType(), pTranslator->makeIntConstant ( nc ), 0 ) );
+
+        const KId innerType = KId ( pTranslator->makeArrayType ( 
+            innermostType, pTranslator->makeIntConstant ( nr ), 0 ) );
+
+        return KId ( pTranslator->makeArrayType ( 
+            innerType, pTranslator->makeIntConstant ( nl ), 0  ) );
+    }
+
+    VPP_INLINE KId getType() const
+    {
+        return getType ( d_layers, d_rows, d_cols );
+    }
+
+private:
+    int d_layers;
+    int d_rows;
+    int d_cols;
+};
 
 // -----------------------------------------------------------------------------
 } // namespace vpp

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -89,7 +89,7 @@ public:
 
     static_assert (
         ( USAGE & ( Buf::UNITEX | Buf::STORTEX ) ) != 0,
-        "This buffer view must have texel buffer usage enabled" );
+        "This buffer view must have Buf::UNITEX or Buf::STORTEX usage enabled" );
 };
 
 // -----------------------------------------------------------------------------
@@ -194,12 +194,12 @@ VPP_INLINE TexelBufferView< FormatT, USAGE > :: TexelBufferView (
 {
     static_assert (
         ( ! ( USAGE & Buf::UNITEX ) ) || ( US & Buf::UNITEX ),
-        "Source buffer view must have uniform texel usage enabled."
+        "Source buffer view must have Buf::UNITEX usage enabled."
     );
 
     static_assert (
         ( ! ( USAGE & Buf::STORTEX ) ) || ( US & Buf::STORTEX ),
-        "Source buffer view must have storage texel usage enabled."
+        "Source buffer view must have Buf::STORTEX usage enabled."
     );
 }
 
@@ -264,7 +264,7 @@ VPP_INLINE VertexBufferView :: VertexBufferView (
 
     static_assert (
         ( usage & Buf::VERTEX ) != 0,
-        "This buffer must have vertex usage enabled" );
+        "This buffer must have Buf::VERTEX usage enabled" );
 }
 
 // -----------------------------------------------------------------------------
@@ -355,7 +355,7 @@ VPP_INLINE VertexIndexBufferView :: VertexIndexBufferView (
 
     static_assert (
         ( usage & Buf::INDEX ) != 0,
-        "This buffer must have index usage enabled" );
+        "This buffer must have Buf::INDEX usage enabled" );
 }
 
 // -----------------------------------------------------------------------------
@@ -457,8 +457,8 @@ VPP_INLINE UniformBufferView :: UniformBufferView (
     static const unsigned int usage = BufferT::usage;
 
     static_assert (
-        ( ( usage & ( Buf::UNIFORM | Buf::STORAGE ) ) != 0 ),
-        "This buffer must have uniform or storage usage enabled"
+        ( ( usage & Buf::UNIFORM ) != 0 ),
+        "This buffer must have Buf::UNIFORM usage enabled"
     );
 }
 
@@ -514,6 +514,110 @@ VPP_INLINE bool UniformBufferView :: operator< ( const UniformBufferView& rhs ) 
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+class StorageBufferView
+{
+public:
+    StorageBufferView();
+
+    template< class BufferT, class MemoryT >
+    StorageBufferView (
+        const MemoryBinding< BufferT, MemoryT >& binding,
+        VkDeviceSize offset = 0,
+        VkDeviceSize length = 0 );
+
+    const Buf& buffer() const;
+    VkDeviceSize offset() const;
+    VkDeviceSize size() const;
+
+    bool operator== ( const StorageBufferView& rhs ) const;
+    bool operator!= ( const StorageBufferView& rhs ) const;
+    bool operator< ( const StorageBufferView& rhs ) const;
+
+private:
+    Buf d_hBuffer;
+    VkDeviceSize d_offset;
+    VkDeviceSize d_size;
+};
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE StorageBufferView :: StorageBufferView() :
+    d_offset ( 0 ),
+    d_size ( 0 )
+{
+}
+
+// -----------------------------------------------------------------------------
+
+template< class BufferT, class MemoryT >
+VPP_INLINE StorageBufferView :: StorageBufferView (
+    const MemoryBinding< BufferT, MemoryT >& binding,
+    VkDeviceSize offset,
+    VkDeviceSize length ) :
+        d_hBuffer ( binding.resource() ),
+        d_offset ( offset ),
+        d_size ( length ? length : d_hBuffer.size() )
+{
+    static const unsigned int usage = BufferT::usage;
+
+    static_assert (
+        ( ( usage & Buf::STORAGE ) != 0 ),
+        "This buffer must have Buf::STORAGE usage enabled"
+    );
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE const Buf& StorageBufferView :: buffer() const
+{
+    return d_hBuffer;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE VkDeviceSize StorageBufferView :: offset() const
+{
+    return d_offset;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE VkDeviceSize StorageBufferView :: size() const
+{
+    return d_size;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool StorageBufferView :: operator== ( const StorageBufferView& rhs ) const
+{
+    return
+        d_hBuffer == rhs.d_hBuffer
+        && d_offset == rhs.d_offset
+        && d_size == rhs.d_size;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool StorageBufferView :: operator!= ( const StorageBufferView& rhs ) const
+{
+    return ! operator== ( rhs );
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool StorageBufferView :: operator< ( const StorageBufferView& rhs ) const
+{
+    if ( d_hBuffer != rhs.d_hBuffer )
+        return d_hBuffer < rhs.d_hBuffer;
+    if ( d_offset != rhs.d_offset )
+        return d_offset < rhs.d_offset;
+    return d_size < rhs.d_size;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 class IndirectBufferView
 {
 public:
@@ -550,7 +654,7 @@ VPP_INLINE IndirectBufferView :: IndirectBufferView (
 
     static_assert (
         ( usage & Buf::INDIRECT ) != 0,
-        "This buffer must have indirect usage enabled"
+        "This buffer must have Buf::INDIRECT usage enabled"
     );
 }
 

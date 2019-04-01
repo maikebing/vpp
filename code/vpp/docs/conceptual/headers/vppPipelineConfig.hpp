@@ -501,7 +501,7 @@ public:
             void setDataBuffers (
                 vpp::ShaderDataBlock* pDataBlock,
                 const vpp::UniformBufferView& dataInput,
-                const vpp::UniformBufferView& dataOutput )
+                const vpp::StorageBufferView& dataOutput )
             {
                 pDataBlock->update ( (
                     m_dataInput = dataInput,

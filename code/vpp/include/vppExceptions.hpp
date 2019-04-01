@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -149,6 +149,47 @@ VPP_INLINE XPushConstantTooBig :: XPushConstantTooBig() :
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+class XSharedMemoryLimitExceeded : public XRuntimeError
+{
+public:
+    XSharedMemoryLimitExceeded ( unsigned int r, unsigned int l );
+
+    unsigned int requested() const;
+    unsigned int limit() const;
+
+private:
+    unsigned int d_requested;
+    unsigned int d_limit;
+};
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE XSharedMemoryLimitExceeded :: XSharedMemoryLimitExceeded (
+    unsigned int r, unsigned int l ) :
+        XRuntimeError (
+            "Requested workgroup-scoped variables and arrays exceed maximum size supported by the device" ),
+        d_requested ( r ),
+        d_limit ( l )
+{
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE unsigned int XSharedMemoryLimitExceeded :: requested() const
+{
+    return d_requested;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE unsigned int XSharedMemoryLimitExceeded :: limit() const
+{
+    return d_limit;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 class XImageNotBound : public XRuntimeError
 {
 public:
@@ -181,6 +222,50 @@ VPP_INLINE XInvalidImage :: XInvalidImage() :
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
+class XInvalidBarrier : public XRuntimeError
+{
+public:
+    XInvalidBarrier ( const std::string& msg );
+};
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE XInvalidBarrier :: XInvalidBarrier ( const std::string& msg ) :
+    XRuntimeError ( msg.c_str() )
+{
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+class XMissingFeature : public XRuntimeError
+{
+public:
+    XMissingFeature ( const std::string& featureName );
+
+private:
+    static std::string getMessageText ( const std::string& featureName );
+};
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE XMissingFeature :: XMissingFeature ( const std::string& featureName ) :
+    XRuntimeError ( getMessageText ( featureName ).c_str() )
+{
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE std::string XMissingFeature :: getMessageText ( const std::string& featureName )
+{
+    static const std::string s_msgpart1 ( "Feature '" );
+    static const std::string s_msgpart2 ( "' is required but has not been enabled on the device." );
+    return s_msgpart1 + featureName + s_msgpart2;
+}
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
 class KExceptionThrower
 {
 public:
@@ -192,6 +277,11 @@ public:
     VPP_INLINE void raisePushConstantTooBig() const
     {
         throw XPushConstantTooBig();
+    }
+
+    VPP_INLINE void raiseSharedMemoryLimitExceeded ( unsigned int r, unsigned int l ) const
+    {
+        throw XSharedMemoryLimitExceeded ( r, l );
     }
 
     VPP_INLINE void raiseImageNotBound() const

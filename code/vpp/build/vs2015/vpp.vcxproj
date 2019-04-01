@@ -138,6 +138,8 @@
     </ClCompile>
     <ClCompile Include="..\..\src\vppBarriers.cpp" />
     <ClCompile Include="..\..\src\vppComputationEngine.cpp" />
+    <ClCompile Include="..\..\src\vppInternalUtils.cpp" />
+    <ClCompile Include="..\..\src\vppLangScalarTypes.cpp" />
     <ClCompile Include="..\..\src\vppLangVectorTypes.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -225,6 +227,8 @@
     <ClInclude Include="..\..\include\vppComputationEngine.hpp" />
     <ClInclude Include="..\..\include\vppDefines.hpp" />
     <ClInclude Include="..\..\include\vppGLSLstd450.hpp" />
+    <ClInclude Include="..\..\include\vppInternalUtils.hpp" />
+    <ClInclude Include="..\..\include\vppctGroupAlg.hpp" />
     <ClInclude Include="..\..\include\vppSupportMath.hpp" />
     <ClInclude Include="..\..\include\vppUsageChecks.hpp" />
   </ItemGroup>

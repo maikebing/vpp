@@ -394,9 +394,9 @@ class computeShader
 public:
     struct SLocalSize
     {
-        unsigned int x;
-        unsigned int y;
-        unsigned int z;
+        int x;
+        int y;
+        int z;
     };
 
     /**

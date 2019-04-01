@@ -206,9 +206,9 @@ private:
 
 private:
     //#ifdef _DEBUG
-        //static const unsigned int INSTANCE_FLAGS = vpp::Instance::VALIDATION;
+        //static const bool VALIDATION = true;
     //#else
-        static const unsigned int INSTANCE_FLAGS = 0u;
+        static const bool VALIDATION = true;
     //#endif
 
     std::ostringstream m_validationLog;
@@ -246,7 +246,7 @@ public:
 
 VppExTriangle :: VppExTriangle ( const vpp::SurfaceInfo& si ) :
     vppex::ExampleApp ( "vppExTriangle", "vppExTriangle", si ),
-    m_instance ( INSTANCE_FLAGS ),
+    m_instance ( vpp::createInstance().validation ( VALIDATION ) ),
     m_debugReporter ( m_validationLog, m_instance ),
     m_physical ( getPhysicalDevice() ),
     m_device ( vpp::Device ( m_physical ) ),
@@ -367,7 +367,7 @@ int APIENTRY WinMain (
     vppex::VppExTriangle exTriangle ( surfaceInfo );
     exTriangle.run();
 
-    return 0;                                                                                        \
+    return 0;
 }                                                                                                    
 
 // -----------------------------------------------------------------------------

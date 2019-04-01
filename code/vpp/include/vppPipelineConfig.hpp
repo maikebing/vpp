@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -568,7 +568,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER, UniformBufferVi
 // -----------------------------------------------------------------------------
 
 template<>
-struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, UniformBufferView >
+struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, StorageBufferView >
 {
     static const bool HAS_IMAGE_INFO = false;
     static const bool HAS_BUFFER_INFO = true;
@@ -577,7 +577,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, UniformBufferVi
     typedef VkDescriptorBufferInfo update_dest_type;
 
     static VPP_INLINE void update (
-        VkDescriptorBufferInfo* pDest, const UniformBufferView& value )
+        VkDescriptorBufferInfo* pDest, const StorageBufferView& value )
     {
         pDest->buffer = value.buffer().handle();
         pDest->offset = value.offset();
@@ -586,7 +586,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER, UniformBufferVi
 
     static VPP_INLINE void update (
         VkDescriptorBufferInfo* pDest,
-        const TUpdateMultipleDescriptors< UniformBufferView >& values )
+        const TUpdateMultipleDescriptors< StorageBufferView >& values )
     {
         for ( size_t i = 0; i != values.size(); ++i )
         {
@@ -632,7 +632,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_UNIFORM_BUFFER_DYNAMIC, Uniform
 // -----------------------------------------------------------------------------
 
 template<>
-struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, UniformBufferView >
+struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, StorageBufferView >
 {
     static const bool HAS_IMAGE_INFO = false;
     static const bool HAS_BUFFER_INFO = true;
@@ -641,7 +641,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, Uniform
     typedef VkDescriptorBufferInfo update_dest_type;
 
     static VPP_INLINE void update (
-        VkDescriptorBufferInfo* pDest, const UniformBufferView& value )
+        VkDescriptorBufferInfo* pDest, const StorageBufferView& value )
     {
         pDest->buffer = value.buffer().handle();
         pDest->offset = value.offset();
@@ -650,7 +650,7 @@ struct TDescriptorTypeTraits< VK_DESCRIPTOR_TYPE_STORAGE_BUFFER_DYNAMIC, Uniform
 
     static VPP_INLINE void update (
         VkDescriptorBufferInfo* pDest,
-        const TUpdateMultipleDescriptors< UniformBufferView >& values )
+        const TUpdateMultipleDescriptors< StorageBufferView >& values )
     {
         for ( size_t i = 0; i != values.size(); ++i )
         {
@@ -801,6 +801,10 @@ public:
     {}
 
     VPP_INLINE KDescriptorItemHolder ( const UniformBufferView& value ) :
+        d_buffer ( value.buffer() )
+    {}
+
+    VPP_INLINE KDescriptorItemHolder ( const StorageBufferView& value ) :
         d_buffer ( value.buffer() )
     {}
 

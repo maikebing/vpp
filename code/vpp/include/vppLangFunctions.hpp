@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -160,7 +160,7 @@ VPP_INLINE std::pair< Value1T, Value2T > callBuiltinFunctionP ( const Value1T& v
 
     std::vector< spv::Id > args ( 2 );
     args [ 0 ] = value1.id();
-    args [ 1 ] = pTranslator->registerLocalVariable ( Value2T::getType() );
+    args [ 1 ] = pTranslator->registerLocalVariable ( Value2T::getType(), spv::StorageClassFunction );
 
     const KId resultId (
         pTranslator->createBuiltinCall (
@@ -181,7 +181,7 @@ VPP_INLINE ReturnT callNumericPredicate (
     KShaderTranslator* pTranslator = KShaderTranslator::get();
 
     if ( cap != spv::CapabilityShader )
-        pTranslator->addCapability ( cap );
+        pTranslator->useCapability ( cap );
 
     return ReturnT ( KId ( pTranslator->createUnaryOp (
         OP, ReturnT::getType(), value.id() ) ) );
@@ -198,7 +198,7 @@ VPP_INLINE ReturnT callNumericPredicate2 (
     KShaderTranslator* pTranslator = KShaderTranslator::get();
 
     if ( cap != spv::CapabilityShader )
-        pTranslator->addCapability ( cap );
+        pTranslator->useCapability ( cap );
 
     return ReturnT ( KId ( pTranslator->createBinOp (
         OP, ReturnT::getType(), value1.id(), value2.id() ) ) );

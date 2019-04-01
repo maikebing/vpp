@@ -246,7 +246,6 @@ public:
     */
     static void cmdClearColorImage (
         const Img& hImage,
-        VkImageLayout imageLayout,
         const VkClearColorValue& color,
         CommandBuffer hCmdBuffer = CommandBuffer() );
     
@@ -255,7 +254,6 @@ public:
     */
     static void cmdClearColorImage (
         const Img& hImage,
-        VkImageLayout imageLayout,
         const VkClearColorValue& color,
         const std::vector< VkImageSubresourceRange >& regions,
         CommandBuffer hCmdBuffer = CommandBuffer() );

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -178,7 +178,7 @@ public:
     template< class FormatT >
     void addInput (
         const Attachment< FormatT >& d,
-        VkImageLayout nodeImageLayout = VK_IMAGE_LAYOUT_GENERAL,
+        VkImageLayout nodeImageLayout = VK_IMAGE_LAYOUT_UNDEFINED,
         bool bAddDependency = true );
 
     // Adds color output node to be produced from scratch. Any previous

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -38,6 +38,39 @@ namespace vpp {
 // -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 namespace detail {
+// -----------------------------------------------------------------------------
+
+VPP_INLINE spv::Id extendIntegerTypeTo64 ( spv::Id type, bool bSigned )
+{
+    KShaderTranslator* pTranslator = KShaderTranslator::get();
+    const spv::Id componentType = pTranslator->makeIntegerType ( 64, bSigned );
+
+    if ( pTranslator->isVectorType ( type ) )
+    {
+        const int nComponents = pTranslator->getNumTypeComponents ( type );
+        return pTranslator->makeVectorType ( componentType, nComponents );
+    }
+    else
+        return componentType;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE spv::Id reduceIntegerTypeTo32 ( spv::Id type, bool bSigned )
+{
+    KShaderTranslator* pTranslator = KShaderTranslator::get();
+    const spv::Id componentType = pTranslator->makeIntegerType ( 32, bSigned );
+
+    if ( pTranslator->isVectorType ( type ) )
+    {
+        const int nComponents = pTranslator->getNumTypeComponents ( type );
+        return pTranslator->makeVectorType ( componentType, nComponents );
+    }
+    else
+        return componentType;
+}
+
+// -----------------------------------------------------------------------------
 // -----------------------------------------------------------------------------
 
 template< class TargetT, class SourceT, typename TargetScalarT, typename SourceScalarT >
@@ -256,6 +289,98 @@ struct TConvertBaseTypes< TargetT, SourceT, std::int32_t, std::int64_t >
     {
         return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
             spv::OpSConvert, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::int64_t, std::uint64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::uint64_t, std::int64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::uint64_t, std::int32_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        const spv::Id idTypeConvertedToInt64 = extendIntegerTypeTo64 ( SourceT::getType(), true );
+
+        const spv::Id idConvertedToInt64 = KShaderTranslator::get()->createUnaryOp (
+            spv::OpSConvert, idTypeConvertedToInt64, source.id() );
+
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), idConvertedToInt64 ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::int64_t, std::uint32_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        const spv::Id idTypeConvertedToInt64 = extendIntegerTypeTo64 ( SourceT::getType(), false );
+
+        const spv::Id idConvertedToInt64 = KShaderTranslator::get()->createUnaryOp (
+            spv::OpUConvert, idTypeConvertedToInt64, source.id() );
+
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), idConvertedToInt64 ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::uint32_t, std::int64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        const spv::Id idTypeConvertedToInt32 = reduceIntegerTypeTo32 ( SourceT::getType(), true );
+
+        const spv::Id idConvertedToInt32 = KShaderTranslator::get()->createUnaryOp (
+            spv::OpSConvert, idTypeConvertedToInt32, source.id() );
+
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), idConvertedToInt32 ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TConvertBaseTypes< TargetT, SourceT, std::int32_t, std::uint64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        const spv::Id idTypeConvertedToInt32 = reduceIntegerTypeTo32 ( SourceT::getType(), false );
+
+        const spv::Id idConvertedToInt32 = KShaderTranslator::get()->createUnaryOp (
+            spv::OpUConvert, idTypeConvertedToInt32, source.id() );
+
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), idConvertedToInt32 ) ) );
     }
 };
 
@@ -556,6 +681,78 @@ struct TCastBaseTypes< TargetT, SourceT, int, unsigned int >
 
 template< class TargetT, class SourceT >
 struct TCastBaseTypes< TargetT, SourceT, unsigned int, int >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, std::uint64_t, std::int64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, std::int64_t, std::uint64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, double, std::int64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, std::int64_t, double >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, double, std::uint64_t >
+{
+    VPP_INLINE TargetT operator()( const SourceT& source ) const
+    {
+        return TargetT ( KId ( KShaderTranslator::get()->createUnaryOp (
+            spv::OpBitcast, TargetT::getType(), source.id() ) ) );
+    }
+};
+
+// -----------------------------------------------------------------------------
+
+template< class TargetT, class SourceT >
+struct TCastBaseTypes< TargetT, SourceT, std::uint64_t, double >
 {
     VPP_INLINE TargetT operator()( const SourceT& source ) const
     {

@@ -75,7 +75,6 @@ public:
     Id import ( const char* );
 
     void setMemoryModel ( spv::AddressingModel addr, spv::MemoryModel mem );
-    void addCapability ( spv::Capability cap );
     
     Id getUniqueId();
     Id getUniqueIds ( int numIds );
@@ -105,7 +104,7 @@ public:
     Op getTypeClass ( Id typeId ) const;
     Op getMostBasicTypeClass ( Id typeId ) const;
     int getNumComponents ( Id resultId ) const;
-    int getNumTypeConstituents ( Id typeId ) const;
+    VPP_DLLAPI int getNumTypeConstituents ( Id typeId ) const;
     VPP_DLLAPI int getNumTypeBits ( Id typeId ) const;
     int getNumTypeComponents ( Id typeId ) const;
     VPP_DLLAPI Id getScalarTypeId ( Id typeId ) const;
@@ -227,7 +226,7 @@ public:
 
     // Create a return. An 'implicit' return is one not appearing in the source
     // code.  In the case of an implicit return, no post-return block is inserted.
-    void makeReturn(bool implicit, Id retVal = 0);
+    VPP_DLLAPI void makeReturn(bool implicit, Id retVal = 0);
 
     // Generate all the code needed to finish up a function.
     void leaveFunction();
@@ -431,7 +430,7 @@ public:
                     std::vector<Block*>& segmentBB);  // return argument
 
     // Add a branch to the innermost switch's merge block.
-    void addSwitchBreak();
+    VPP_DLLAPI void addSwitchBreak();
 
     // Move to the next code segment, passing in the return argument in makeSwitch()
     void nextSwitchSegment(std::vector<Block*>& segmentBB, int segment);
@@ -561,7 +560,7 @@ public:
     VPP_DLLAPI Id accessChainLoad(Decoration precision, Id ResultType);
 
     // get the direct pointer for an l-value
-    Id accessChainGetLValue();
+    VPP_DLLAPI Id accessChainGetLValue();
 
     // Get the inferred SPIR-V type of the result of the current access chain,
     // based on the type of the base and the chain of dereferences.
@@ -584,6 +583,8 @@ public:
     bool isInSpecConstCodeGenMode() { return generatingOpCodeForSpecConst; }
 
  protected:
+    void addCapability ( spv::Capability cap );
+
     VPP_DLLAPI Id makeIntConstant(Id typeId, unsigned value, bool specConstant);
     VPP_DLLAPI Id makeInt64Constant(Id typeId, unsigned long long value, bool specConstant);
     Id findScalarConstant(Op typeClass, Op opcode, Id typeId, unsigned value) const;
@@ -596,6 +597,7 @@ public:
     void createSelectionMerge(Block* mergeBlock, unsigned int control);
     void dumpInstructions(std::vector<unsigned int>&, const std::vector<std::unique_ptr<Instruction> >&) const;
 
+protected:
     SourceLanguage source;
     int sourceVersion;
     std::vector<const char*> extensions;

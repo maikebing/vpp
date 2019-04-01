@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -70,7 +70,30 @@ struct StructMemberTraits< format< C1, C2, C3, C4, C5 > >
     typedef typename format< C1, C2, C3, C4, C5 >::scalar_type scalar_type;
     typedef TRValue< scalar_type > gscalar_type;
     typedef TRVector< gscalar_type, row_count > rvalue_type;
-    typedef TLVector< gscalar_type, row_count > lvalue_type;
+    typedef TLVector< gscalar_type, row_count, spv::StorageClassFunction > lvalue_type;
+};
+
+// -----------------------------------------------------------------------------
+
+template<>
+struct StructMemberTraits< format< float16_t, float16_t, float16_t, float16_t > >
+{
+    typedef format< float16_t, float16_t, float16_t, float16_t > fmt_type;
+    typedef typename fmt_type::data_type data_type;
+
+    static const bool has_member_info = true;
+    static const bool is_unknown = false;
+    static const bool is_matrix = false;
+    static const bool is_col_major = false;
+    static const unsigned int matrix_stride = sizeof ( data_type );
+    static const unsigned int row_count = 4u;
+    static const unsigned int column_count = 1u;
+    static const unsigned int attrib_count = 1u;
+    static const VkFormat format_code = fmt_type::code;
+    typedef typename fmt_type::scalar_type scalar_type;
+    typedef Float gscalar_type;
+    typedef PHVec4 rvalue_type;
+    //typedef TLVector< gscalar_type, row_count > lvalue_type;
 };
 
 // -----------------------------------------------------------------------------

@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -61,6 +61,7 @@ class Instance;
 class PhysicalDevice;
 class Device;
 class DebugReporter;
+struct SVulkanVersion;
 
 class Surface;
 
@@ -268,9 +269,9 @@ enum EQueueType
 
 struct SLocalGroupSize
 {
-    unsigned int x;
-    unsigned int y;
-    unsigned int z;
+    int x;
+    int y;
+    int z;
 };
 
 // -----------------------------------------------------------------------------
@@ -279,6 +280,82 @@ static const VkPresentModeKHR QM_IMMEDIATE = VK_PRESENT_MODE_IMMEDIATE_KHR;
 static const VkPresentModeKHR QM_MAILBOX = VK_PRESENT_MODE_MAILBOX_KHR;
 static const VkPresentModeKHR QM_FIFO = VK_PRESENT_MODE_FIFO_KHR;
 static const VkPresentModeKHR QM_FIFO_RELAXED = VK_PRESENT_MODE_FIFO_RELAXED_KHR;
+
+// -----------------------------------------------------------------------------
+// -----------------------------------------------------------------------------
+
+struct SVulkanVersion
+{
+    std::string toString() const;
+    unsigned int id() const;
+
+    bool operator== ( const SVulkanVersion& rhs ) const;
+    bool operator!= ( const SVulkanVersion& rhs ) const;
+    bool operator< ( const SVulkanVersion& rhs ) const;
+
+    static SVulkanVersion fromId ( unsigned int id );
+
+    unsigned int major;
+    unsigned int minor;
+    unsigned int patch;
+};
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE std::string SVulkanVersion :: toString() const
+{
+    std::string result;
+    result.reserve ( 10 );
+    result.append ( std::to_string ( major ) );
+    result.push_back ( '.' );
+    result.append ( std::to_string ( minor ) );
+    result.push_back ( '.' );
+    result.append ( std::to_string ( patch ) );
+    return result;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE unsigned int SVulkanVersion :: id() const
+{
+    return VK_MAKE_VERSION( major, minor, patch );
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool SVulkanVersion :: operator== ( const SVulkanVersion& rhs ) const
+{
+    return major == rhs.major && minor == rhs.minor && patch == rhs.patch;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool SVulkanVersion :: operator!= ( const SVulkanVersion& rhs ) const
+{
+    return ! operator== ( rhs );
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE bool SVulkanVersion :: operator< ( const SVulkanVersion& rhs ) const
+{
+    if ( major < rhs.major )
+        return true;
+    if ( rhs.major < rhs.major )
+        return false;
+    if ( minor < rhs.minor )
+        return true;
+    if ( rhs.minor < rhs.minor )
+        return false;
+    return patch < rhs.patch;
+}
+
+// -----------------------------------------------------------------------------
+
+VPP_INLINE SVulkanVersion SVulkanVersion :: fromId ( unsigned int id )
+{
+    return SVulkanVersion { VK_VERSION_MAJOR(id), VK_VERSION_MINOR(id), VK_VERSION_PATCH(id) };
+}
 
 // -----------------------------------------------------------------------------
 } // namespace vpp

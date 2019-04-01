@@ -9,10 +9,10 @@
 int testInstance()
 {
     {
-        vpp::Instance myInstance ( vpp::Instance::VALIDATION );
+        vpp::Instance myInstance ( vpp::createInstance().validation ( true ) );
     }
     {
-        vpp::Instance myInstance;
+        vpp::Instance myInstance = vpp::createInstance();
 
         if ( ! myInstance.valid() )
             return -1;
@@ -45,20 +45,20 @@ int testInstance()
 
 void testPhysicalDevice()
 {
-    vpp::Instance myInstance ( vpp::Instance::VALIDATION );
+    vpp::Instance myInstance ( vpp::createInstance().validation ( true ) );
     vpp::PhysicalDevices physicalDevices;
     myInstance.enumeratePhysicalDevices ( & physicalDevices );
     const vpp::PhysicalDevice hPhysicalDevice = physicalDevices [ 0 ];
 
     const VkPhysicalDevice hPhysDev = hPhysicalDevice.handle();
 
-    VkPhysicalDeviceProperties pdprops = hPhysicalDevice.getPhysicalDeviceProperties();
+    VkPhysicalDeviceProperties pdprops = hPhysicalDevice.properties();
     VkPhysicalDeviceMemoryProperties memprops = hPhysicalDevice.getMemoryProperties();
     size_t qfc = hPhysicalDevice.queueFamilyCount();
     VkQueueFamilyProperties famprops = hPhysicalDevice.getQueueFamilyProperties ( 0 );
 
-    const bool bf1 = hPhysicalDevice.supportsFeature ( vpp::fGeometryShader );
-    const bool bf2 = hPhysicalDevice.supportsFeature ( vpp::fShaderClipDistance );
+    const bool bf1 = hPhysicalDevice.features() [ vpp::fGeometryShader ];
+    const bool bf2 = hPhysicalDevice.features() [ vpp::fShaderClipDistance ];
 
     VkFormatFeatureFlags ff1 = hPhysicalDevice.supportsFormat (
         VK_FORMAT_R5G6B5_UNORM_PACK16 );
@@ -79,7 +79,7 @@ void testPhysicalDevice()
 
 void testDevice()
 {
-    vpp::Instance myInstance ( vpp::Instance::VALIDATION );
+    vpp::Instance myInstance ( vpp::createInstance().validation ( true ) );
     vpp::PhysicalDevices physicalDevices;
     myInstance.enumeratePhysicalDevices ( & physicalDevices );
     const vpp::PhysicalDevice hPhysicalDevice = physicalDevices [ 0 ];
@@ -87,9 +87,9 @@ void testDevice()
     const vpp::Device hDevice0;
     const vpp::Device hDevice1 ( hPhysicalDevice );
 
-    vpp::DeviceFeatures feat ( hPhysicalDevice );
-    feat.enableIfSupported ( vpp::fDepthBiasClamp );
-    feat.enableIfSupported ( vpp::fAlphaToOne );
+    vpp::DeviceFeatures feat;
+    feat.enableIfSupported ( vpp::fDepthBiasClamp, hPhysicalDevice );
+    feat.enableIfSupported ( vpp::fAlphaToOne, hPhysicalDevice );
 
     vpp::Device hDevice2 ( hPhysicalDevice, feat );
 
@@ -118,7 +118,7 @@ void testDevice()
 
 void testSurface()
 {
-    vpp::Instance myInstance ( vpp::Instance::VALIDATION );
+    vpp::Instance myInstance ( vpp::createInstance().validation ( true ) );
     vpp::PhysicalDevices physicalDevices;
     myInstance.enumeratePhysicalDevices ( & physicalDevices );
     const vpp::PhysicalDevice hPhysicalDevice = physicalDevices [ 0 ];
@@ -170,7 +170,7 @@ void testSurface()
 
 void testSwapChain()
 {
-    vpp::Instance myInstance ( vpp::Instance::VALIDATION );
+    vpp::Instance myInstance ( vpp::createInstance().validation ( true ) );
     vpp::PhysicalDevices physicalDevices;
     myInstance.enumeratePhysicalDevices ( & physicalDevices );
     const vpp::PhysicalDevice hPhysicalDevice = physicalDevices [ 0 ];
@@ -531,7 +531,7 @@ void KPLPartitionReducedSet :: fComputeShader ( vpp::ComputeShader* pShader )
 {
     using namespace vpp;
 
-    UniformSimpleArray< KVector4, decltype ( d_lookupTable ) > lt ( d_lookupTable );
+    UniformSimpleArray< KVector4, decltype ( d_lookupTable ) > lt ( d_lookupTable, 100 );
 
     const IVec3 workgroupId = pShader->inWorkgroupId;
     const IVec3 localId = pShader->inLocalInvocationId;
@@ -544,8 +544,8 @@ void KPLPartitionReducedSet :: fComputeShader ( vpp::ComputeShader* pShader )
     const Int lightIndex = threadIndex & 255;
     const Int zoneIndex = threadIndex >> 8;
 
-    Shared(); VArray< Vec3, 512 > lookupTable;
-    VArray< Vec3, 8 > clusterCenters;
+    WArray< Vec3 > lookupTable ( 512 );
+    VArray< Vec3 > clusterCenters ( 8 );
     VInt i = 0;
     VInt j = 0;
     VInt activeClusters = 1;
@@ -1295,6 +1295,7 @@ public:
 
     void setBuffers (
         const vpp::UniformBufferView& inUniformBuffer,
+        const vpp::StorageBufferView& inStorageBuffer,
         const KVarConstU32View& imageView,
         const KStdTextureView& textureView,
         const KTexelInBufferView& texbufView1,
@@ -1410,6 +1411,7 @@ TestPipelineConfig :: TestPipelineConfig (
 
 void TestPipelineConfig :: setBuffers (
     const vpp::UniformBufferView& inUniformBuffer,
+    const vpp::StorageBufferView& inStorageBuffer,
     const KVarConstU32View& imageView,
     const KStdTextureView& textureView,
     const KTexelInBufferView& texbufView1,
@@ -1428,14 +1430,14 @@ void TestPipelineConfig :: setBuffers (
     ) );
 
     sdb->update ( (
-        d_ioBuffer = inUniformBuffer,
-        d_ioBufferArr = vpp::multi ( inUniformBuffer, 2 ),
-        d_ioBufferArr = vpp::multi ( { inUniformBuffer, inUniformBuffer }, 1 ),
-        d_ioBufferArr = vpp::multi ( { inUniformBuffer, inUniformBuffer } ),
-        d_ioBufferDyn = inUniformBuffer,
-        d_ioBufferDynArr = vpp::multi ( inUniformBuffer, 2 ),
-        d_ioBufferDynArr = vpp::multi ( { inUniformBuffer, inUniformBuffer }, 1 ),
-        d_ioBufferDynArr = vpp::multi ( { inUniformBuffer, inUniformBuffer } )
+        d_ioBuffer = inStorageBuffer,
+        d_ioBufferArr = vpp::multi ( inStorageBuffer, 2 ),
+        d_ioBufferArr = vpp::multi ( { inStorageBuffer, inStorageBuffer }, 1 ),
+        d_ioBufferArr = vpp::multi ( { inStorageBuffer, inStorageBuffer } ),
+        d_ioBufferDyn = inStorageBuffer,
+        d_ioBufferDynArr = vpp::multi ( inStorageBuffer, 2 ),
+        d_ioBufferDynArr = vpp::multi ( { inStorageBuffer, inStorageBuffer }, 1 ),
+        d_ioBufferDynArr = vpp::multi ( { inStorageBuffer, inStorageBuffer } )
     ) );
 
     sdb->update ( (
@@ -1817,13 +1819,13 @@ void TestPipelineConfig :: fFragmentShader ( vpp::FragmentShader* pShader, int a
     const auto est1 = ExtractSampledTexture ( st1 );
 
     IVec3 s11 = ImageSize ( d_ioImage );
-    IVec3 s12 = ImageSize ( d_inTexture );
-    IVec2 s13 = ImageSize ( d_inSampledTexture );
-    IVec2 s14 = ImageSize ( d_inConstSampledTexture );
+    IVec3 s12 = TextureSize ( d_inTexture, 0 );
+    IVec2 s13 = TextureSize ( d_inSampledTexture, 0 );
+    IVec2 s14 = TextureSize ( d_inConstSampledTexture, 0 );
     IVec3 s16 = ImageSize ( d_ioImageArr [ arrIdx ] );
-    IVec3 s17 = ImageSize ( d_inTextureArr [ arrIdx ] );
-    IVec2 s18 = ImageSize ( d_inSampledTextureArr [ arrIdx ] );
-    IVec2 s19 = ImageSize ( d_inConstSampledTextureArr [ arrIdx ] );
+    IVec3 s17 = TextureSize ( d_inTextureArr [ arrIdx ], 0 );
+    IVec2 s18 = TextureSize ( d_inSampledTextureArr [ arrIdx ], 0 );
+    IVec2 s19 = TextureSize ( d_inConstSampledTextureArr [ arrIdx ], 0 );
     IVec3 s1a = TextureSize ( d_inTexture, n );
     IVec2 s1b = TextureSize ( d_inSampledTexture, n );
     IVec2 s1c = TextureSize ( d_inConstSampledTexture, n );
@@ -2142,7 +2144,7 @@ TestRenderer :: TestRenderer ( vpp::Device hDevice ) :
     KTexelIoBufferView* pFakeTexelIoBufferView = 0;
 
     m_renderPipeline.definition().setBuffers (
-        v1,
+        v1, v1,
         *pFakeImageView, *pFakeTextureView,
         *pFakeTexelInBufferView, *pFakeTexelIoBufferView,
         & m_dataBlock

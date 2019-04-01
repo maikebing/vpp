@@ -1,5 +1,5 @@
 /*
-    Copyright 2016-2018 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
+    Copyright 2016-2019 SOFT-ERG, Przemek Kuczmierczyk (www.softerg.com)
     All rights reserved.
 
     Redistribution and use in source and binary forms, with or without modification,
@@ -41,7 +41,7 @@ Shader :: Shader ( spv::ExecutionModel shaderType ) :
     d_bDebugCodeDump ( false )
 {
     d_pTranslator->setSource ( spv::SourceLanguageGLSL, 450 );
-    d_pTranslator->addCapability ( spv::CapabilityShader );
+    d_pTranslator->useCapability ( spv::CapabilityShader );
 
     d_pFunction = d_pTranslator->makeEntrypoint ( "main" );
 
@@ -82,7 +82,7 @@ TessControlShader :: TessControlShader (
     int outputPatchVertices ) :
         Shader ( spv::ExecutionModelTessellationControl )
 {
-    d_pTranslator->addCapability ( spv::CapabilityTessellation );
+    d_pTranslator->useCapability ( spv::CapabilityTessellation );
 
     switch ( topology )
     {
@@ -130,7 +130,7 @@ TessEvalShader :: TessEvalShader (
     int inputPatchVertices ) :
         Shader ( spv::ExecutionModelTessellationEvaluation )
 {
-    d_pTranslator->addCapability ( spv::CapabilityTessellation );
+    d_pTranslator->useCapability ( spv::CapabilityTessellation );
 
     d_pTranslator->addExecutionMode (
         d_pFunction,
@@ -199,7 +199,7 @@ GeometryShader :: GeometryShader (
             break;
     }
 
-    d_pTranslator->addCapability ( spv::CapabilityGeometry );
+    d_pTranslator->useCapability ( spv::CapabilityGeometry );
     d_pTranslator->addExecutionMode ( d_pFunction, inputExecutionMode );
     d_pTranslator->addExecutionMode ( d_pFunction, outputExecutionMode );
 
